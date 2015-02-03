@@ -16,13 +16,15 @@ int main(int argc, char **argv)
 	//graph = (NODE *) malloc(Mnod * sizeof(NODE));	//dynamic memory allocation for graph structure
 	Max = ReadIsc(fisc, graph);						//read .isc file and return index of last node in graph formed
 	fclose(fisc);									//close file pointer for .isc file
-	PrintCircuit(graph,Max); 						//print all members of graph structure
+	PrintCircuit(graph, Max); 						//print all members of graph structure
 
 	manager = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);	//intializing CUDD package manger
 	//fout = fopen(argv[2],"w");										//file pointer to open .out file 
 
 	//Form the bdd functions with PIs as default ordering and find the maximum node size
 	CreateBDD(graph, Max);
+
+	FreeBDD(graph, Max);
 
 	//Dereference the bdds
 	printf("\nNo of Unreferenced Bdds %d\n", Cudd_CheckZeroRef(manager));
