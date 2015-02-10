@@ -262,10 +262,10 @@ void PrintCircuit(NODE *graph,int Max)
 /****************************************************************************************************************************
 Free the memory of all member of graph structure(bdd,fbdd and xrbdd should be dereferenced earlier)
 *****************************************************************************************************************************/
-void ClearCircuit(NODE *graph,int i)
+void ClearCircuit(NODE *graph)
 {
 	int num=0;
-	for(num=0;num<i;num++){
+	for(num=0;num<Mnod;num++){
 	  //free(graph[num].nam);
 	  if(graph[num].typ!=0){     
 	    graph[num].typ=graph[num].nfi=graph[num].nfo=graph[num].mar=graph[num].po=0;    

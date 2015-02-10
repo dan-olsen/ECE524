@@ -4,6 +4,7 @@
 void CreateBDD(NODE* graph, int max)
 {
 	int i, j;
+	DdNode *tmp;
 	
 	for(i = 0; i < max; i++)
 	{
@@ -16,7 +17,14 @@ void CreateBDD(NODE* graph, int max)
 
 				break;				
 			case AND:
-				graph[i].fun = Cudd_bddAnd(manager, );
+				graph[i].fun = Cudd_ReadOne(manager);
+				Cudd_Ref(graph[i].fun);
+
+				for(j = 0; j < graph[i].nfi; j++)
+				{
+					graph[i].fun = Cudd_bddAnd(manager, graph[graph[i].fin->nxt->id]);
+
+				}
 				
 				break;				 
 			case NAND:

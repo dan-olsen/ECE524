@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	FILE *fisc,*fout;	//file pointers used for .isc file and output file
 	int Max = 0, Bound = 0;		//maxnode id,Max nodes in a bdd of ckt 
-	NODE graph[15000];		//structure used to store the ckt information in .isc file 
+	NODE graph[Mnod];		//structure used to store the ckt information in .isc file
 
 
 	//Read the .isc file and store the information in graph structure
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 	//Dereference the bdds
 	printf("\nNo of Unreferenced Bdds %d\n", Cudd_CheckZeroRef(manager));
 	Cudd_Quit(manager);			//closing the cudd package manager
-	ClearCircuit(graph,Mnod); 	//clear memeory for all members of graph
+	ClearCircuit(graph); 	//clear memeory for all members of graph
 	//fclose(fout); 				//close the output file
 
 	return 0;
