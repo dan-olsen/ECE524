@@ -20,10 +20,12 @@ int main(int argc, char **argv)
 	PrintCircuit(graph, Max); 						//print all members of graph structure
 
 	manager = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);	//intializing CUDD package manger
-	//fout = fopen(argv[2],"w");										//file pointer to open .out file 
 
 	//Form the bdd functions with PIs as default ordering and find the maximum node size
 	CreateBDD(graph, Max);
+
+	//fout = fopen(argv[2],"w");										//file pointer to open .out file
+	//fclose(fout);
 
 	FreeBDD(graph, Max);
 
