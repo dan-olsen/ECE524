@@ -1,4 +1,5 @@
 #include "given.h"
+#include "user.h"
 /***************************************************************************************************************************
 Main Function( write all new functions in user.c only and call them in main.c) 
 Compile   Command: make
@@ -27,7 +28,7 @@ int main(int argc, char **argv)
 	FreeBDD(graph, Max);
 
 	//Dereference the bdds
-	printf("\nNo of Unreferenced Bdds %d\n", Cudd_CheckZeroRef(manager));
+	printf("\nNo of Unreferenced BDDs %d\n", Cudd_CheckZeroRef(manager));
 	Cudd_Quit(manager);			//closing the cudd package manager
 	ClearCircuit(graph); 	//clear memeory for all members of graph
 	//fclose(fout); 				//close the output file
