@@ -115,9 +115,19 @@ void CreateBDD(NODE* graph, int max)
 
 				break;
 			case BUFF:
+				printf("Buff %d\n", i);
+				tmpList = graph[i].fin;
+
+				graph[i].fun = graph[tmpList->id].fun;
+				Cudd_Ref(graph[i].fun);
 				
 				break;
 			case NOT:
+				printf("Not %d\n", i);
+				tmpList = graph[i].fin;
+
+				graph[i].fun = Cudd_Not(graph[tmpList->id].fun);
+				Cudd_Ref(graph[i].fun);
 				
 				break;
 			case FROM:
@@ -152,13 +162,10 @@ void FreeBDD(NODE *graph, int max)
 			case XOR:
 			case XNOR:
 			case FROM:
-				Cudd_RecursiveDeref(manager, graph[i].fun);
-
-				break;
-			case BUFF:
-
-				break;
 			case NOT:
+			case BUFF:
+				//printf("Recursive Deref %d\n", i);
+				Cudd_RecursiveDeref(manager, graph[i].fun);
 
 				break;
 
