@@ -4,6 +4,6 @@
 #include "given.h"
 
 void CreateBDD(NODE* graph, int max);
-void ClearBDD(NODE *graph, int max);
+void FreeBDD(NODE *graph, int max);
 
 #endif /* USER_H_ */

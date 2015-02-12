@@ -95,7 +95,7 @@ int ReadIsc(FILE *,NODE *);
 void InitializeCircuit(NODE *,int);
 int AssignType(char *);
 void PrintCircuit(NODE *,int);
-void ClearCircuit(NODE *,int);
+void ClearCircuit(NODE *);
 /***************************************************************************************************************************
  Demo Functions  
 ****************************************************************************************************************************/
