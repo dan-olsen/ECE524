@@ -1,6 +1,9 @@
 /***************************************************************************************************
 C Header Files
 ***************************************************************************************************/
+#ifndef GIVEN_H_
+#define GIVEN_H_
+
 #include <stdlib.h>           //standard library definitions
 #include <stdio.h>            //standard buffered input/output 
 #include <ctype.h>            //character types
@@ -55,7 +58,7 @@ typedef struct LIST_type {
 //2.Stucture declaration for GATE
 typedef struct GATE_type
 {
-  char *Name;                            //Name of the gate
+  char Name[Mnam];                            //Name of the gate
   int Type,Nfi,Nfo,Mark,Val;             //Type, No of fanins, No of fanouts, Marker,Value
   LIST *Fin,*Fot;                        //Fanin members, Fanout members 
   DdNode *Rpath,*Fpath;                  //ZDDS of Rising & Falling Path
@@ -90,10 +93,6 @@ Functions for reading .isc file
 ****************************************************************************************************************************/
 int AssignType(char *);
 int ReadIsc(FILE *,GATE *);
-/***************************************************************************************************************************
-User Defined Functions in user.c
-****************************************************************************************************************************/
 
-
-
+#endif /* GIVEN_H_ */
 /****************************************************************************************************************************/
