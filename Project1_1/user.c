@@ -6,12 +6,15 @@ void CreateBDD(NODE* graph, int max)
 	int i = 0, j = 0;
 	DdNode *tmpNode = NULL;
 	LIST *tmpList = NULL;
+	int inputCount = 0;
 	
 	for(i = 0; i < max; i++)
 	{
 		switch(graph[i].typ) {
 			case INPT:
-				graph[i].fun = Cudd_bddIthVar(manager, i);
+				graph[i].fun = Cudd_bddIthVar(manager, inputCount);
+				inputCount++;
+
 				Cudd_Ref(graph[i].fun);
 				printf("BDD input %d\n", i);
 				Cudd_PrintMinterm(manager, graph[i].fun);
