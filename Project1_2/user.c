@@ -11,32 +11,34 @@ void readPatternFile(int *patterns, FILE* patFile)
 	for(i = 0; !feof(patFile); i++)
 	{
 		readCount1 = fscanf(patFile, "%s", vector1);
+
 		if(readCount1 != 0)
 		{
 			readCount2 = fscanf(patFile, "%s", vector2);
+
 			if(readCount2 != 0)
 			{
 				if(readCount1 == readCount2)
 				{
-					for(j = 0; j < readCount2; j++)
+					for(j = 0; j < Mpi; j++)
 					{
 						if((vector1[j] == '0') && (vector2[j] == '0'))
 						{
-							printf("Here 00\n");
+							printf("Here 00 %d %d\n", i, j);
 						} else if((vector1[j] == '0') && (vector2[j] == '1')) {
-							printf("Here 01\n");
+							printf("Here 01 %d %d\n", i, j);
 
 						} else if((vector1[j] == '1') && (vector2[j] == '0')) {
-							printf("Here 10\n");
+							printf("Here 10 %d %d\n", i, j);
 
 						} else if((vector1[j] == '1') && (vector2[j] == '1')) {
-							printf("Here 11\n");
+							printf("Here 11 %d %d\n", i, j);
 
 						} else if(((vector1[j] == 'x') || (vector1[j] == 'X')) && (vector2[j] == '1')) {
-							printf("Here x1\n");
+							printf("Here x1 %d %d\n", i, j);
 
 						} else if(((vector1[j] == 'x') || (vector1[j] == 'X')) && (vector2[j] == '0')) {
-							printf("Here x0\n");
+							printf("Here x0 %d %d\n", i, j);
 
 						} else {
 							//error
