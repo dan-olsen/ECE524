@@ -16,8 +16,9 @@ int main(int argc, char **argv)
 	double Cpu;				//Total cpu time
 	int i, j;				//Temporary variables
 	int *Patterns = NULL;
+	int Tpat;
 
-	manager = Cudd_Init(0,0,CUDD_UNIQUE_SLOTS,CUDD_CACHE_SLOTS,0);	//Intializing CUDD package manger
+	manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);	//Intializing CUDD package manger
 	onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
 
 	/****************PART 1.-Read the .isc file and store the information in Node structure***********/
@@ -37,7 +38,16 @@ int main(int argc, char **argv)
 	Pat = fopen(argv[2],"r");		//File pointer to open .pattern file
 	Res = fopen(argv[3],"w");		//File pointer to open .result file
 
-	readPatternFile(&Patterns, Pat);
+	if ( NULL == (Patterns = (int *) malloc(Npi * sizeof(int))) ) {
+		printf("malloc failed\n");
+		//error
+	}
+
+	Tpat = readPatternFile(Patterns, Pat, Npi);
+
+	initDelay(Node);
+
+	patternSim(Node, Patterns, Tpat, Tgat, Npi, Npo);
 
 	fclose(Pat);
 	fclose(Res);
