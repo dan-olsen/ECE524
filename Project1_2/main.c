@@ -1,4 +1,5 @@
 #include "given.h"
+#include "user.h"
 /***************************************************************************************************
 Command Instructions
 ***************************************************************************************************/
@@ -38,14 +39,9 @@ int main(int argc, char **argv)
 	Pat = fopen(argv[2],"r");		//File pointer to open .pattern file
 	Res = fopen(argv[3],"w");		//File pointer to open .result file
 
-	if ( NULL == (Patterns = (int *) malloc(Npi * sizeof(int))) ) {
-		printf("malloc failed\n");
-		//error
-	}
+	Patterns = readPatternFile(&Tpat, Pat, Npi);
 
-	Tpat = readPatternFile(Patterns, Pat, Npi);
-
-	initDelay(Node);
+	initDelay(Node, Tgat);
 
 	patternSim(Node, Patterns, Tpat, Tgat, Npi, Npo);
 

@@ -12,17 +12,17 @@
 
 #include <stdio.h>
 
-#define STABLE_0 0
-#define RISING_1 1
-#define FALLING_0 2
-#define STABLE_1 3
-#define X_1 4
-#define X_0 5
+#define S0 0
+#define R1 1
+#define F0 2
+#define S1 3
+#define X1 4
+#define X0 5
 
-int readPatternFile(int*, FILE*, int);
+int* readPatternFile(int*, FILE*, int);
 
 void initDelay(GATE *Node, int Tgat);
 
-void patternSim(GATE *Node, int *Patterns, int Tgat, int Npi, int Npo);
+void patternSim(GATE *Node, int *Patterns, int Tpat, int Tgat, int Npi, int Npo);
 
 #endif /* USER_H_ */
