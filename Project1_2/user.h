@@ -19,10 +19,14 @@
 #define X1 4
 #define X0 5
 
-int* readPatternFile(int*, FILE*, int);
+int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
+GATE Node[Mnod];		//Structure to store the ckt given in .isc file
+int *patterns;
 
-void initDelay(GATE *Node, int Tgat);
+void readPatternFile(FILE*);
 
-void patternSim(GATE *Node, int *Patterns, int Tpat, int Tgat, int Npi, int Npo);
+void initDelay();
+
+void patternSim();
 
 #endif /* USER_H_ */

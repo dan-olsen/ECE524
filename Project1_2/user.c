@@ -31,16 +31,15 @@ const int nonRobustSimAND [6][6]	= 	{{S0, S0, S0, S0, S0, S0},
 
 const int simNOT [6] 				= 	 {S1, F0, R1, S0, X0, X1};
 
-void printInputVector(char * input, int Npi);
-void printPattern(int *patterns, int Npi, int patIndex);
+void printInputVector(char * input);
+void printPattern(int patIndex);
 
-int* readPatternFile(int *Tpat, FILE* patFile, int Npi)
+void readPatternFile(FILE* patFile)
 {
 	int patColIndex, patIndex;
 	char vector1 [Mpi];
 	char vector2  [Mpi];
 	int readCount1, readCount2;
-	int *patterns = NULL;
 
 	if ( NULL == (patterns =  malloc(Npi * sizeof(int)))) {
 		printf("malloc failed\n");
@@ -54,8 +53,8 @@ int* readPatternFile(int *Tpat, FILE* patFile, int Npi)
 
 		if((readCount2 != -1) && (readCount1 != -1) && (readCount1 == readCount2))
 		{
-				printInputVector(vector1, Npi);
-				printInputVector(vector2, Npi);
+				printInputVector(vector1);
+				printInputVector(vector2);
 
 			for(patColIndex = 0; patColIndex < Npi; patColIndex++, patIndex++)
 			{
@@ -86,19 +85,18 @@ int* readPatternFile(int *Tpat, FILE* patFile, int Npi)
 			}
 
 			printf("Resulting Pattern: ");
-			printPattern(patterns, Npi, patIndex-Npi);
+			printPattern(patIndex-Npi);
 			printf("\n");
 
 			patterns = realloc(patterns, (Npi+patIndex) * sizeof(int));
 
 		}
 	}
-	*Tpat = patIndex;
 
-	return patterns;
+	Tpat = patIndex;
 }
 
-void initDelay(GATE *Node, int Tgat)
+void initDelay()
 {
 	int i;
 	LIST *tmpList = NULL;
@@ -140,7 +138,7 @@ void initDelay(GATE *Node, int Tgat)
 	}
 }
 
-void patternSim(GATE *Node, int *Patterns, int Tpat, int Tgat, int Npi, int Npo)
+void patternSim()
 {
 	int i, patIndex, tmpVal;
 	LIST *tmpList = NULL;
@@ -148,13 +146,13 @@ void patternSim(GATE *Node, int *Patterns, int Tpat, int Tgat, int Npi, int Npo)
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
 	{
 		printf("Applying Pattern: ");
-		printPattern(Patterns, Npi, patIndex);
+		printPattern(patIndex);
 
 		for(tmpVal = 0, i = 0; i <= Tgat; i++, tmpVal = 0)
 		{
 			switch(Node[i].Type) {
 				case INPT:
-					Node[i].Val = Patterns[patIndex];
+					Node[i].Val = patterns[patIndex];
 
 					//printf("INPT %s Val = %d\n", Node[i].Name, Node[i].Val);
 
@@ -290,7 +288,7 @@ void patternSim(GATE *Node, int *Patterns, int Tpat, int Tgat, int Npi, int Npo)
 	}
 }
 
-void printInputVector(char * input, int Npi)
+void printInputVector(char * input)
 {
 	int i;
 
@@ -302,7 +300,7 @@ void printInputVector(char * input, int Npi)
 	printf("\n");
 }
 
-void printPattern(int *patterns, int Npi, int patIndex)
+void printPattern(int patIndex)
 {
 	int i;
 

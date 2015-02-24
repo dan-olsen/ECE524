@@ -11,13 +11,9 @@ Command Instructions
 int main(int argc, char **argv)
 {
 	FILE *Isc, *Pat, *Res;	//File pointers used for .isc, .pattern, and .res files
-	int Npi, Npo, Tgat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
-	GATE Node[Mnod];		//Structure to store the ckt given in .isc file
 	clock_t Start, End;		//Clock variables to calculate the Cputime
 	double Cpu;				//Total cpu time
 	int i, j;				//Temporary variables
-	int *Patterns = NULL;
-	int Tpat;
 
 	manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);	//Intializing CUDD package manger
 	onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
@@ -39,11 +35,13 @@ int main(int argc, char **argv)
 	Pat = fopen(argv[2],"r");		//File pointer to open .pattern file
 	Res = fopen(argv[3],"w");		//File pointer to open .result file
 
-	Patterns = readPatternFile(&Tpat, Pat, Npi);
+	readPatternFile(Pat);
 
-	initDelay(Node, Tgat);
+	initDelay();
 
-	patternSim(Node, Patterns, Tpat, Tgat, Npi, Npo);
+	patternSim();
+
+	free(patterns);
 
 	fclose(Pat);
 	fclose(Res);
