@@ -100,7 +100,7 @@ void initDelay()
 {
 	int i;
 	LIST *tmpList = NULL;
-	int tmpDelay;
+	int tmpDelay, tmpLongest = 0, tmp2ndLongest = 0;
 
 	for(i = 0, tmpDelay = 0; i < Tgat; i++, tmpDelay = 0)
 	{
@@ -280,10 +280,131 @@ void patternSim()
 					break;
 			}
 
+			if((Node[i].Val == R1) || (Node[i].Val == F0))
+			{
+				Node[i].Mark = 1;
+
+			} else {
+				Node[i].Mark = 0;
+
+			}
+
 			if(i > (Tgat-Npo))
 			{
+				if(tmpLongestPathDelay < Node[i].Delay)
+				{
+					tmp2ndLongestPathDelay = tmpLongestPathDelay;
+
+					tmpLongestPathDelay = Node[i].Delay;
+				} else if(tmp2ndLongestDelay < Node[i].Delay) {
+					tmp2ndLongestPathDelay = Node[i].Delay;
+
+				}
+
 				printf("Output of %s = %d\n", Node[i].Name, Node[i].Val);
+
 			}
+
+
+		}
+	}
+}
+
+void storeRobustPaths(int ouputGate)
+{
+	int i;
+	LIST *tmpList = NULL;
+	DdNode *tmp1, *tmp2, *tmp3;
+
+	for(i = ouputGate; i >= 0; i--)
+	{
+		switch(Node[i].Type) {
+			case INPT:
+				if(Node[i].Val == R1)
+				{
+					Node[i].Rpath = Cudd_zddChange(manager, onez, 2*i);
+
+				} else if(Node[i].Val == F0) {
+					Node[i].Fpath = Cudd_zddChange(manager, onez, (2*i)+1);
+
+				}
+
+				break;
+			case AND:
+				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				{
+
+
+				}
+				if(Node[i].Mark == 1)
+				{
+					if(Node[i].Val == R1)
+					{
+						tmp1 = Cudd_zddChange(manager, Node[i].Rpath, 2*i);
+
+					} else if(Node[i].Val == F0) {
+						tmp1 = Cudd_zddChange(manager, Node[i].Fpath, (2*i)+1);
+
+					}
+
+					tmp3 = Cudd_zddUnion(manager, tmp1, tmp2);
+
+					if(Node[i].Val == R1)
+					{
+						Node[i].Rpath = tmp3;
+					} else {
+
+					}
+				}
+
+
+				break;
+			case NAND:
+				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				{
+
+
+				}
+
+				break;
+			case OR:
+				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				{
+
+				}
+
+				break;
+			case NOR:
+				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				{
+
+				}
+
+
+				break;
+			case XOR:
+
+				break;
+			case XNOR:
+
+				break;
+			case BUFF:
+				tmpList = Node[i].Fin;
+
+				break;
+			case NOT:
+				tmpList = Node[i].Fin;
+
+
+				break;
+			case FROM:
+				tmpList = Node[i].Fin;
+
+				break;
+			default:
+				//printf("Hit Default at i: %d ", i);
+				//printf("Type: %d\n", graph[i].typ);
+				break;
 		}
 	}
 }

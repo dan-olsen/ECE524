@@ -29,4 +29,6 @@ void initDelay();
 
 void patternSim();
 
+void storeRobustPaths(int ouputGate);
+
 #endif /* USER_H_ */
