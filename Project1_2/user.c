@@ -31,6 +31,7 @@ const int nonRobustSimAND [6][6]	= 	{{S0, S0, S0, S0, S0, S0},
 
 const int simNOT [6] 				= 	 {S1, F0, R1, S0, X0, X1};
 
+void applyPattern(int i, int *patIndex, int *tmpVal);
 void printInputVector(char * input);
 void printPattern(int patIndex);
 
@@ -102,11 +103,12 @@ void initDelay()
 	LIST *tmpList = NULL;
 	int tmpDelay, tmpLongest = 0, tmp2ndLongest = 0;
 
-	for(i = 0, tmpDelay = 0; i < Tgat; i++, tmpDelay = 0)
+	for(i = 0, tmpDelay = 0; i <= Tgat; i++, tmpDelay = 0)
 	{
 		switch(Node[i].Type) {
 			case INPT:
 				Node[i].Delay = 0;
+				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
 				break;
 			case AND:
@@ -124,10 +126,12 @@ void initDelay()
 				}
 
 				Node[i].Delay = tmpDelay + 1;
+				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
 				break;
 			case FROM:
 				Node[i].Delay = Node[Node[i].Fin->Id].Delay;
+				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
 				break;
 			default:
@@ -135,151 +139,26 @@ void initDelay()
 				//printf("Type: %d\n", graph[i].typ);
 				break;
 		}
+
 	}
 }
 
 void patternSim()
 {
-	int i, patIndex, tmpVal;
-	LIST *tmpList = NULL;
+	int i, j, patIndex, tmpVal;
 
+	//iterate over patterns
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
 	{
 		printf("Applying Pattern: ");
 		printPattern(patIndex);
 
+		//topologoical traversal to apply pattern
 		for(tmpVal = 0, i = 0; i <= Tgat; i++, tmpVal = 0)
 		{
-			switch(Node[i].Type) {
-				case INPT:
-					Node[i].Val = patterns[patIndex];
+			applyPattern(i, &patIndex, &tmpVal);
 
-					//printf("INPT %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					patIndex++;
-
-					break;
-				case AND:
-					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-					{
-						if(tmpList == Node[i].Fin)
-						{
-							tmpVal = Node[tmpList->Id].Val;
-
-							//printf("AND %s Fin %s tmpVal = %d\n", Node[i].Name, Node[tmpList->Id].Name, tmpVal);
-
-							continue;
-						}
-
-						//printf("AND %s Fin %s val = %d tmpVal = %d\n", Node[i].Name, Node[tmpList->Id].Name, Node[tmpList->Id].Val, tmpVal);
-						tmpVal = robustSimAND[tmpVal][Node[tmpList->Id].Val];
-
-						//printf("AND %s Sim tmpVal = %d\n", Node[i].Name, tmpVal);
-
-					}
-
-					Node[i].Val = tmpVal;
-
-					//printf("AND %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				case NAND:
-					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-					{
-						if(tmpList == Node[i].Fin)
-						{
-							tmpVal = Node[tmpList->Id].Val;
-
-							continue;
-						}
-
-						tmpVal = robustSimAND[tmpVal][Node[tmpList->Id].Val];
-
-					}
-
-					Node[i].Val = simNOT[tmpVal];
-
-					//printf("NAND %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				case OR:
-					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-					{
-						if(tmpList == Node[i].Fin)
-						{
-							tmpVal = Node[tmpList->Id].Val;
-
-							continue;
-						}
-
-						tmpVal = robustSimOR[tmpVal][Node[tmpList->Id].Val];
-
-					}
-
-					Node[i].Val = tmpVal;
-
-					//printf("OR %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				case NOR:
-					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-					{
-						if(tmpList == Node[i].Fin)
-						{
-							tmpVal = Node[tmpList->Id].Val;
-
-							continue;
-						}
-
-						tmpVal = robustSimOR[tmpVal][Node[tmpList->Id].Val];
-
-					}
-
-					Node[i].Val = simNOT[tmpVal];
-
-					//printf("NOR %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				case XOR:
-					printf("XOR not supported");
-
-
-					break;
-				case XNOR:
-					printf("XNOR not supported");
-
-
-					break;
-				case BUFF:
-					tmpList = Node[i].Fin;
-
-					Node[i].Val = Node[tmpList->Id].Val;
-
-					//printf("BUFF %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				case NOT:
-					tmpList = Node[i].Fin;
-
-					Node[i].Val = simNOT[Node[tmpList->Id].Val];
-
-					//printf("NOT %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				case FROM:
-					tmpList = Node[i].Fin;
-
-					Node[i].Val = Node[tmpList->Id].Val;
-
-					//printf("FROM %s Val = %d\n", Node[i].Name, Node[i].Val);
-
-					break;
-				default:
-					//printf("Hit Default at i: %d ", i);
-					//printf("Type: %d\n", graph[i].typ);
-					break;
-			}
-
+			//set mark
 			if((Node[i].Val == R1) || (Node[i].Val == F0))
 			{
 				Node[i].Mark = 1;
@@ -288,35 +167,101 @@ void patternSim()
 				Node[i].Mark = 0;
 
 			}
+		}
 
-			if(i > (Tgat-Npo))
-			{
-				if(tmpLongestPathDelay < Node[i].Delay)
-				{
-					tmp2ndLongestPathDelay = tmpLongestPathDelay;
+		for(j = Tgat-Npo+1; j <= Tgat; j++)
+		{
+			printf("Output of %s = %d\n", Node[j].Name, Node[j].Val);
 
-					tmpLongestPathDelay = Node[i].Delay;
-				} else if(tmp2ndLongestDelay < Node[i].Delay) {
-					tmp2ndLongestPathDelay = Node[i].Delay;
+			//storeRobustPaths();
 
-				}
-
-				printf("Output of %s = %d\n", Node[i].Name, Node[i].Val);
-
-			}
-
+			findLongestPaths(j);
 
 		}
 	}
 }
 
-void storeRobustPaths(int ouputGate)
+void findLongestPaths(int outputGate)
 {
-	int i;
+	int i, longestDelay, j;
+	LIST *tmpList = NULL;
+
+	longestPaths.longest = malloc(sizeof(int*));
+	longestPaths.secondLongest = malloc(sizeof(int*));
+
+	*longestPaths.longest = malloc(sizeof(int));
+	*longestPaths.secondLongest = malloc(sizeof(int));
+
+	printf("Longest: %d->", outputGate);
+
+	longestPaths.longest[0][0] = outputGate;
+	*longestPaths.longest = realloc(*longestPaths.longest, 2);
+
+	for(j = 1, i = outputGate, longestDelay = 1, tmpList = Node[outputGate].Fin; tmpList != NULL; )
+	{
+		printf("\nDelays Node[%d] = %d, Node[i] = %d, Longest Delay = %d\n", tmpList->Id, Node[tmpList->Id].Delay, Node[i].Delay, longestDelay);
+		if((Node[tmpList->Id].Delay == (Node[i].Delay - 1)) || (Node[tmpList->Id].Delay == (Node[i].Delay)))
+		{
+			printf("%d->", tmpList->Id);
+
+			longestPaths.longest[0][j] = tmpList->Id;
+			j++;
+
+			*longestPaths.longest = realloc(*longestPaths.longest, j);
+
+			i = tmpList->Id;
+			tmpList = Node[tmpList->Id].Fin;
+
+			if(tmpList != NULL && Node[tmpList->Id].Type == NAND)
+			{
+				longestDelay++;
+			}
+
+		} else {
+			tmpList = tmpList->Next;
+
+		}
+	}
+	printf("\n");
+
+	longestPaths.numLongest = j;
+
+	printf("[");
+	for(j = 0; j < longestPaths.numLongest; j++)
+	{
+		printf("%d ", longestPaths.longest[0][j]);
+	}
+	printf("]\n");
+
+	printf("2nd Longest: %d->", outputGate);
+	for(i = outputGate, tmpList = Node[outputGate].Fin; tmpList != NULL; )
+	{
+		printf("\nDelays Node[%d] = %d, Node[%d] = %d, Longest Delay = %d\n", tmpList->Id, Node[tmpList->Id].Delay, i, Node[i].Delay, longestDelay);
+		if((Node[tmpList->Id].Delay == (longestDelay - 1)) || (Node[tmpList->Id].Delay == (Node[i].Delay)))
+		{
+			printf("%d->", tmpList->Id);
+
+			i = tmpList->Id;
+			tmpList = Node[tmpList->Id].Fin;
+
+			longestDelay--;
+
+		} else {
+			tmpList = tmpList->Next;
+
+		}
+	}
+	printf("\n");
+
+}
+
+void storeRobustPaths()
+{
+	int i, j;
 	LIST *tmpList = NULL;
 	DdNode *tmp1, *tmp2, *tmp3;
 
-	for(i = ouputGate; i >= 0; i--)
+	for(i = 0, tmpList = Node[i].Fin; i <= Tgat; i++)
 	{
 		switch(Node[i].Type) {
 			case INPT:
@@ -331,11 +276,6 @@ void storeRobustPaths(int ouputGate)
 
 				break;
 			case AND:
-				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-				{
-
-
-				}
 				if(Node[i].Mark == 1)
 				{
 					if(Node[i].Val == R1)
@@ -357,28 +297,16 @@ void storeRobustPaths(int ouputGate)
 					}
 				}
 
-
 				break;
 			case NAND:
-				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-				{
 
-
-				}
 
 				break;
 			case OR:
-				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-				{
 
-				}
 
 				break;
 			case NOR:
-				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-				{
-
-				}
 
 
 				break;
@@ -407,7 +335,176 @@ void storeRobustPaths(int ouputGate)
 				break;
 		}
 	}
+
+	for(j = Tgat-Npo+1; j <= Tgat; j++)
+	{
+		//check outputs to see if robustly sensitized
+
+		//Node[j].Rpath
+		//robustPaths.Rpath = Cudd_zddUnion(manager, Node[j].Rpath, robustPaths.Rpath);
+
+		//Node[j].Fpath
+		//robustPaths.Fpath = Cudd_zddUnion(manager, Node[j].Fpath, robustPaths.Fpath);
+
+	}
 }
+
+DdNode *createZDD(int *pathArray, int length)
+{
+	DdNode *node, *tmp;
+	int i;
+
+	node = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(node);
+
+	for(i = 0; i < length; i++)
+	{
+		tmp = Cudd_zddChange(manager, node, 2*i);
+		Cudd_Ref(tmp);
+
+		node = tmp;
+
+	}
+
+	return node;
+}
+
+void applyPattern(int i, int *patIndex, int *tmpVal)
+{
+	LIST *tmpList = NULL;
+
+	switch(Node[i].Type) {
+		case INPT:
+			Node[i].Val = patterns[*patIndex];
+
+			//printf("INPT %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			*patIndex = *patIndex + 1;
+
+			break;
+		case AND:
+			for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+			{
+				if(tmpList == Node[i].Fin)
+				{
+					*tmpVal = Node[tmpList->Id].Val;
+
+					//printf("AND %s Fin %s tmpVal = %d\n", Node[i].Name, Node[tmpList->Id].Name, tmpVal);
+
+					continue;
+				}
+
+				//printf("AND %s Fin %s val = %d tmpVal = %d\n", Node[i].Name, Node[tmpList->Id].Name, Node[tmpList->Id].Val, tmpVal);
+				*tmpVal = robustSimAND[*tmpVal][Node[tmpList->Id].Val];
+
+				//printf("AND %s Sim tmpVal = %d\n", Node[i].Name, tmpVal);
+
+			}
+
+			Node[i].Val = *tmpVal;
+
+			//printf("AND %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		case NAND:
+			for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+			{
+				if(tmpList == Node[i].Fin)
+				{
+					*tmpVal = Node[tmpList->Id].Val;
+
+					continue;
+				}
+
+				*tmpVal = robustSimAND[*tmpVal][Node[tmpList->Id].Val];
+
+			}
+
+			Node[i].Val = simNOT[*tmpVal];
+
+			//printf("NAND %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		case OR:
+			for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+			{
+				if(tmpList == Node[i].Fin)
+				{
+					*tmpVal = Node[tmpList->Id].Val;
+
+					continue;
+				}
+
+				*tmpVal = robustSimOR[*tmpVal][Node[tmpList->Id].Val];
+
+			}
+
+			Node[i].Val = *tmpVal;
+
+			//printf("OR %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		case NOR:
+			for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+			{
+				if(tmpList == Node[i].Fin)
+				{
+					*tmpVal = Node[tmpList->Id].Val;
+
+					continue;
+				}
+
+				*tmpVal = robustSimOR[*tmpVal][Node[tmpList->Id].Val];
+
+			}
+
+			Node[i].Val = simNOT[*tmpVal];
+
+			//printf("NOR %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		case XOR:
+			printf("XOR not supported");
+
+
+			break;
+		case XNOR:
+			printf("XNOR not supported");
+
+
+			break;
+		case BUFF:
+			tmpList = Node[i].Fin;
+
+			Node[i].Val = Node[tmpList->Id].Val;
+
+			//printf("BUFF %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		case NOT:
+			tmpList = Node[i].Fin;
+
+			Node[i].Val = simNOT[Node[tmpList->Id].Val];
+
+			//printf("NOT %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		case FROM:
+			tmpList = Node[i].Fin;
+
+			Node[i].Val = Node[tmpList->Id].Val;
+
+			//printf("FROM %s Val = %d\n", Node[i].Name, Node[i].Val);
+
+			break;
+		default:
+			//printf("Hit Default at i: %d ", i);
+			//printf("Type: %d\n", graph[i].typ);
+			break;
+	}
+}
+
+
 
 void printInputVector(char * input)
 {

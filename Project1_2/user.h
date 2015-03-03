@@ -19,9 +19,29 @@
 #define X1 4
 #define X0 5
 
+typedef struct PathSet_type {
+	DdNode *node;
+
+} PathSet;
+
+typedef struct Robust_type {
+	DdNode *Rpath, *Fpath;
+
+} RobustSet;
+
+typedef struct LongestPath_type {
+	int **longest, **secondLongest;
+	int numLongest, numSecondLongest;
+
+} LongestPathsSet;
+
 int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
-GATE Node[Mnod];		//Structure to store the ckt given in .isc file
+GATE Node[Mnod];				//Structure to store the ckt given in .isc file
+PathSet suspectSet;
+PathSet goodPaths;
+RobustSet robustPaths;
 int *patterns;
+LongestPathsSet longestPaths;
 
 void readPatternFile(FILE*);
 
@@ -29,6 +49,10 @@ void initDelay();
 
 void patternSim();
 
-void storeRobustPaths(int ouputGate);
+void findLongestPaths();
+
+void storeRobustPaths();
+
+DdNode *createZDD(int *pathArray, int length);
 
 #endif /* USER_H_ */
