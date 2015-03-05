@@ -31,6 +31,7 @@ typedef struct Robust_type {
 
 typedef struct LongestPath_type {
 	int **longest, **secondLongest;
+	int *lengthLongest, *lengthSecondLongest;
 	int numLongest, numSecondLongest;
 
 } LongestPathsSet;
@@ -41,7 +42,6 @@ PathSet suspectSet;
 PathSet goodPaths;
 RobustSet robustPaths;
 int *patterns;
-LongestPathsSet longestPaths;
 
 void readPatternFile(FILE*);
 
@@ -49,7 +49,7 @@ void initDelay();
 
 void patternSim();
 
-void findLongestPaths();
+LongestPathsSet *findLongestPaths(int outputGate);
 
 void storeRobustPaths();
 
