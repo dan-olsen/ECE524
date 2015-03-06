@@ -11,6 +11,7 @@
 #include "given.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #define S0 0
 #define R1 1

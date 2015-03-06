@@ -32,6 +32,7 @@ const int nonRobustSimAND [6][6]	= 	{{S0, S0, S0, S0, S0, S0},
 const int simNOT [6] 				= 	 {S1, F0, R1, S0, X0, X1};
 
 void applyPattern(int i, int *patIndex, int *tmpVal);
+int *checkNodeLongest(int nodeId, bool *visited, int delay, int *pathArray, int pathLength);
 void printInputVector(char * input);
 void printPattern(int patIndex);
 
@@ -185,8 +186,11 @@ void patternSim()
 LongestPathsSet *findLongestPaths(int outputGate)
 {
 	int i, longestDelay, j;
+	bool *visited;
 	LIST *tmpList = NULL;
 	LongestPathsSet longestPaths;
+
+	visited = malloc(Tgat*sizeof(bool*));
 
 	longestPaths.longest = malloc(sizeof(int*));
 	longestPaths.secondLongest = malloc(sizeof(int*));
@@ -255,6 +259,20 @@ LongestPathsSet *findLongestPaths(int outputGate)
 	}
 	printf("\n");
 
+}
+
+int *checkNodeLongest(int nodeId, bool *visited, int delay, int *pathArray, int pathLength)
+{
+	int i;
+	visited[nodeId] = true;
+
+	for(i = pathArray[nodeId]; i < pathLength; ++i)
+	{
+		if(!visited[i])
+		{
+			//checkNodeLongest(i, visited);
+		}
+	}
 }
 
 void storeRobustPaths()
