@@ -54,6 +54,10 @@ LongestPathsSet *findLongestPaths(int outputGate);
 
 void storeRobustPaths();
 
-DdNode *createZDD(int *pathArray, int length);
+DdNode *createZDD(LIST *pathList);
+
+void clearPathZDDs();
+
+void clearNodeZDDs();
 
 #endif /* USER_H_ */

@@ -62,6 +62,8 @@ typedef struct GATE_type
   int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
   LIST *Fin,*Fot;                        //Fanin members, Fanout members 
   DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
+  LIST *LongestPath[Min];
+  LIST *SecondLongestPath[Min];
 } GATE;
 /***************************************************************************************************************************
 Cudd Package Declarations 

@@ -32,7 +32,6 @@ const int nonRobustSimAND [6][6]	= 	{{S0, S0, S0, S0, S0, S0},
 const int simNOT [6] 				= 	 {S1, F0, R1, S0, X0, X1};
 
 void applyPattern(int i, int *patIndex, int *tmpVal);
-int *checkNodeLongest(int nodeId, bool *visited, int delay, int *pathArray, int pathLength);
 void printInputVector(char * input);
 void printPattern(int patIndex);
 
@@ -100,16 +99,23 @@ void readPatternFile(FILE* patFile)
 
 void initDelay()
 {
-	int i;
-	LIST *tmpList = NULL;
+	int i, j, k;
+	LIST *tmpList = NULL, *tmpList2 = NULL;
 	int tmpDelay, tmpLongest = 0, tmp2ndLongest = 0;
 
 	for(i = 0, tmpDelay = 0; i <= Tgat; i++, tmpDelay = 0)
 	{
+		LIST *LongestPath;
 		switch(Node[i].Type) {
 			case INPT:
 				Node[i].Delay = 0;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
+
+				InsertEle(&Node[i].LongestPath[0], i);
+				//InsertEle(&Node[i].SecondLongestPath[0], i);
+
+				printf("LongestPath at Input %d = %d\n", i, Node[i].LongestPath[0]->Id);
+				//printf("SecondLongestPath at Input %d = %d\n", i, Node[i].SecondLongestPath[0]->Id);
 
 				break;
 			case AND:
@@ -120,19 +126,123 @@ void initDelay()
 			case XNOR:
 			case BUFF:
 			case NOT:
-				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				for(j = 0, tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next, j++)
 				{
 					if(tmpDelay < Node[tmpList->Id].Delay)
+					{
 						tmpDelay = Node[tmpList->Id].Delay;
+
+
+					}
 				}
 
 				Node[i].Delay = tmpDelay + 1;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
+				for(j = 0, tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next, j++)
+				{
+					if(((Node[i].Delay - 1) == Node[tmpList->Id].Delay) || (Node[i].Delay == Node[tmpList->Id].Delay))
+					{
+
+						for(k = 0; k < Node[tmpList->Id].Nfi; k++)
+						{
+							InsertEle(&Node[i].LongestPath[k], i);
+
+							for(tmpList2 = Node[tmpList->Id].LongestPath[k]; tmpList2 != NULL; tmpList2 = tmpList2->Next)
+							{
+								printf("Inserting %d at fin: %d, at node %d\n", tmpList2->Id, k, i);
+								InsertEle(&Node[i].LongestPath[k], tmpList2->Id);
+
+							}
+
+							printf("node %d LongestPath at fin %d = ", i, j);
+
+							PrintList(Node[i].LongestPath[k]);
+
+							printf("\n");
+						}
+
+
+
+					} /*else if(((Node[i].Delay - 2) == Node[tmpList->Id].Delay)) {
+						InsertEle(&Node[i].SecondLongestPath[j], i);
+
+						for(k = 0, tmpList2 = Node[tmpList->Id].SecondLongestPath[j]; tmpList2 != NULL; tmpList2 = tmpList2->Next, k++)
+						{
+							InsertEle(&Node[i].SecondLongestPath[k], tmpList2->Id);
+
+						}
+
+						printf("node %d SecondLongestPath at fin %d = %d\n", i, j);
+
+						PrintList(Node[i].SecondLongestPath[j]);
+
+						printf("\n");
+
+					} */else {
+						Node[tmpList->Id].LongestPath[j] = NULL;
+						Node[tmpList->Id].SecondLongestPath[j] = NULL;
+					}
+				}
+
 				break;
 			case FROM:
 				Node[i].Delay = Node[Node[i].Fin->Id].Delay;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
+
+				j = 0;
+
+				//InsertEle(&Node[i].SecondLongestPath[j], i);
+
+				if(Node[Node[i].Fin->Id].Nfi == 0)
+				{
+					InsertEle(&Node[i].LongestPath[j], i);
+
+					for(tmpList2 = Node[Node[i].Fin->Id].LongestPath[j]; tmpList2 != NULL; tmpList2 = tmpList2->Next)
+					{
+						InsertEle(&Node[i].LongestPath[j], tmpList2->Id);
+					}
+
+					printf("node %d LongestPath at fin %d = ", i, j);
+
+					PrintList(Node[i].LongestPath[j]);
+
+					printf("\n");
+					break;
+				}
+
+
+				for(k = 0; k < Node[Node[i].Fin->Id].Nfi; k++)
+				{
+					InsertEle(&Node[i].LongestPath[k], i);
+
+					for(tmpList2 = Node[Node[i].Fin->Id].LongestPath[k]; tmpList2 != NULL; tmpList2 = tmpList2->Next)
+					{
+						InsertEle(&Node[i].LongestPath[k], tmpList2->Id);
+					}
+
+					printf("node %d LongestPath at fin %d = ", i, k);
+
+					PrintList(Node[i].LongestPath[k]);
+
+					printf("\n");
+				}
+
+
+
+				/*
+				for(k = 0, tmpList2 = Node[Node[i].Fin->Id].SecondLongestPath[j]; tmpList2 != NULL; tmpList2 = tmpList2->Next, k++)
+				{
+					InsertEle(&Node[i].SecondLongestPath[j], tmpList2->Id);
+
+				}
+
+				printf("node %d SecondLongestPath at fin %d = ", i, j);
+
+				PrintList(Node[i].SecondLongestPath[j]);
+
+				printf("\n");
+				*/
 
 				break;
 			default:
@@ -147,7 +257,7 @@ void initDelay()
 void patternSim()
 {
 	int i, j, patIndex, tmpVal;
-	LongestPathsSet *longestPaths;
+	DdNode *tmpNode;
 
 	//iterate over patterns
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
@@ -174,103 +284,10 @@ void patternSim()
 		for(j = Tgat-Npo+1; j <= Tgat; j++)
 		{
 			printf("Output of %s = %d\n", Node[j].Name, Node[j].Val);
+			/*
+			storeRobustPaths();
+			*/
 
-			//storeRobustPaths();
-
-			findLongestPaths(j);
-
-		}
-	}
-}
-
-LongestPathsSet *findLongestPaths(int outputGate)
-{
-	int i, longestDelay, j;
-	bool *visited;
-	LIST *tmpList = NULL;
-	LongestPathsSet longestPaths;
-
-	visited = malloc(Tgat*sizeof(bool*));
-
-	longestPaths.longest = malloc(sizeof(int*));
-	longestPaths.secondLongest = malloc(sizeof(int*));
-
-	*longestPaths.longest = malloc(sizeof(int));
-	*longestPaths.secondLongest = malloc(sizeof(int));
-
-	printf("Longest: %d->", outputGate);
-
-	longestPaths.longest[0][0] = outputGate;
-	*longestPaths.longest = realloc(*longestPaths.longest, 2);
-
-	for(j = 1, i = outputGate, longestDelay = 1, tmpList = Node[outputGate].Fin; tmpList != NULL; )
-	{
-		//printf("\nDelays Node[%d] = %d, Node[i] = %d, Longest Delay = %d\n", tmpList->Id, Node[tmpList->Id].Delay, Node[i].Delay, longestDelay);
-		if((Node[tmpList->Id].Delay == (Node[i].Delay - 1)) || (Node[tmpList->Id].Delay == (Node[i].Delay)))
-		{
-			printf("%d->", tmpList->Id);
-
-			longestPaths.longest[0][j] = tmpList->Id;
-			j++;
-
-			*longestPaths.longest = realloc(*longestPaths.longest, j);
-
-			i = tmpList->Id;
-			tmpList = Node[tmpList->Id].Fin;
-
-			if(tmpList != NULL && Node[tmpList->Id].Type == NAND)
-			{
-				longestDelay++;
-			}
-
-		} else {
-			tmpList = tmpList->Next;
-
-		}
-	}
-	printf("\n");
-
-	longestPaths.numLongest = j;
-
-	printf("[");
-	for(j = 0; j < longestPaths.numLongest; j++)
-	{
-		printf("%d ", longestPaths.longest[0][j]);
-	}
-	printf("]\n");
-
-	printf("2nd Longest: %d->", outputGate);
-	for(i = outputGate, tmpList = Node[outputGate].Fin; tmpList != NULL; )
-	{
-		//printf("\nDelays Node[%d] = %d, Node[%d] = %d, Longest Delay = %d\n", tmpList->Id, Node[tmpList->Id].Delay, i, Node[i].Delay, longestDelay);
-		if((Node[tmpList->Id].Delay == (longestDelay - 1)) || (Node[tmpList->Id].Delay == (Node[i].Delay)))
-		{
-			printf("%d->", tmpList->Id);
-
-			i = tmpList->Id;
-			tmpList = Node[tmpList->Id].Fin;
-
-			longestDelay--;
-
-		} else {
-			tmpList = tmpList->Next;
-
-		}
-	}
-	printf("\n");
-
-}
-
-int *checkNodeLongest(int nodeId, bool *visited, int delay, int *pathArray, int pathLength)
-{
-	int i;
-	visited[nodeId] = true;
-
-	for(i = pathArray[nodeId]; i < pathLength; ++i)
-	{
-		if(!visited[i])
-		{
-			//checkNodeLongest(i, visited);
 		}
 	}
 }
@@ -332,7 +349,37 @@ void storeRobustPaths()
 
 				break;
 			case NAND:
+				if(Node[i].Mark == 1)
+				{
+					if(Node[i].Val == R1)
+					{
+						Node[i].Rpath = Cudd_zddChange(manager, onez, 2*i);
+						Cudd_Ref(Node[i].Rpath);
 
+					} else if(Node[i].Val == F0) {
+						Node[i].Fpath = Cudd_zddChange(manager, onez, (2*i)+1);
+						Cudd_Ref(Node[i].Fpath);
+
+					}
+
+					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+					{
+
+						if(Node[i].Val == R1)
+						{
+							tmpNode = Cudd_zddUnion(manager, Node[tmpList->Id].Rpath, Node[i].Rpath);
+							Cudd_Ref(tmpNode);
+
+							Node[i].Rpath = tmpNode;
+
+						} else if(Node[i].Val == F0) {
+							tmpNode = Cudd_zddUnion(manager, Node[tmpList->Id].Fpath, Node[i].Fpath);
+							Cudd_Ref(tmpNode);
+
+							Node[i].Fpath = tmpNode;
+						}
+					}
+				}
 
 				break;
 			case OR:
@@ -382,18 +429,24 @@ void storeRobustPaths()
 
 	for(j = Tgat-Npo+1; j <= Tgat; j++)
 	{
-		//check outputs to see if robustly sensitized
+		if(Node[j].Val == R1)
+		{
+			tmpNode = Cudd_zddUnion(manager, robustPaths.Rpath, Node[j].Rpath);
+			Cudd_Ref(tmpNode);
 
-		//Node[j].Rpath
-		//robustPaths.Rpath = Cudd_zddUnion(manager, Node[j].Rpath, robustPaths.Rpath);
+			robustPaths.Rpath = tmpNode;
+		} else if(Node[j].Val == F0) {
+			tmpNode = Cudd_zddUnion(manager, robustPaths.Fpath, Node[j].Fpath);
+			Cudd_Ref(tmpNode);
 
-		//Node[j].Fpath
-		//robustPaths.Fpath = Cudd_zddUnion(manager, Node[j].Fpath, robustPaths.Fpath);
-
+			robustPaths.Fpath = tmpNode;
+		}
 	}
+
+	clearNodeZDDs();
 }
 
-DdNode *createZDD(int *pathArray, int length)
+DdNode *createZDD(LIST *pathList)
 {
 	DdNode *node, *tmp;
 	int i;
@@ -401,9 +454,9 @@ DdNode *createZDD(int *pathArray, int length)
 	node = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(node);
 
-	for(i = 0; i < length; i++)
+	for(i = 0; pathList != NULL; pathList = pathList->Next)
 	{
-		tmp = Cudd_zddChange(manager, node, 2*i);
+		tmp = Cudd_zddChange(manager, node, i);
 		Cudd_Ref(tmp);
 
 		node = tmp;
@@ -411,6 +464,54 @@ DdNode *createZDD(int *pathArray, int length)
 	}
 
 	return node;
+}
+
+void clearPathZDDs()
+{
+	/*
+	if(robustPaths.Rpath != NULL)
+		Cudd_RecursiveDeref(manager, robustPaths.Rpath);
+
+	if(robustPaths.Fpath != NULL)
+		Cudd_RecursiveDeref(manager, robustPaths.Fpath);
+	*/
+	Cudd_RecursiveDeref(manager, goodPaths.node);
+	Cudd_RecursiveDeref(manager, suspectSet.node);
+
+}
+
+void clearNodeZDDs()
+{
+	int i;
+
+	for(i = 0; i < Tgat; i++)
+	{
+		switch(Node[i].Type) {
+			case INPT:
+			case AND:
+			case NAND:
+			case OR:
+			case NOR:
+			case XOR:
+			case XNOR:
+			case FROM:
+			case NOT:
+			case BUFF:
+				//printf("Recursive Deref %d\n", i);
+				if(Node[i].Rpath != NULL)
+					Cudd_RecursiveDeref(manager, Node[i].Rpath);
+
+				if(Node[i].Fpath != NULL)
+					Cudd_RecursiveDeref(manager, Node[i].Fpath);
+
+				break;
+
+			default:
+				//printf("Hit Default at i: %d ", i);
+				//printf("Type: %d\n", graph[i].typ);
+				break;
+		}
+	}
 }
 
 void applyPattern(int i, int *patIndex, int *tmpVal)

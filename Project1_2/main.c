@@ -41,6 +41,8 @@ int main(int argc, char **argv)
 
 	patternSim();
 
+	//clearPathZDDs();
+
 	free(patterns);
 
 	fclose(Pat);
