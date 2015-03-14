@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 	printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));	//Checking any unreferenced bdds in manager
 	Cudd_Quit(manager);														//Closing the cudd package manager
 	ClearGat(Node,Tgat);													//Clear memeory for all members of Node
+	printf("Done\n");
 	return 0;
 }//end of main
 /****************************************************************************************************************************/

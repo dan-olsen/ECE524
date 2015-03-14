@@ -30,13 +30,6 @@ typedef struct Robust_type {
 
 } RobustSet;
 
-typedef struct LongestPath_type {
-	int **longest, **secondLongest;
-	int *lengthLongest, *lengthSecondLongest;
-	int numLongest, numSecondLongest;
-
-} LongestPathsSet;
-
 int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
 GATE Node[Mnod];				//Structure to store the ckt given in .isc file
 PathSet suspectSet;
@@ -49,8 +42,6 @@ void readPatternFile(FILE*);
 void initDelay();
 
 void patternSim();
-
-LongestPathsSet *findLongestPaths(int outputGate);
 
 void storeRobustPaths();
 

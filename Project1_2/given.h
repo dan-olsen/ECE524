@@ -52,9 +52,16 @@ Structure Declarations
 ****************************************************************************************************************************/
 //1.Stucture declaration for LIST
 typedef struct LIST_type {
-   int  Id;		   //Id for current element		
-   struct LIST_type *Next; //Pointer to next element (if there is no element,it will be NULL)		
+   int  Id;		   //Id for current element
+   struct LIST_type *Next; //Pointer to next element (if there is no element,it will be NULL)
 } LIST;
+
+typedef struct PATH_type
+{
+	LIST *Path;
+	struct PATH_type *Next; //Pointer to next element (if there is no element,it will be NULL)
+} PATH;
+
 //2.Stucture declaration for GATE
 typedef struct GATE_type
 {
@@ -62,8 +69,8 @@ typedef struct GATE_type
   int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
   LIST *Fin,*Fot;                        //Fanin members, Fanout members 
   DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
-  LIST *LongestPath[Min];
-  LIST *SecondLongestPath[Min];
+  PATH *LongestPath;
+  PATH *SecondLongestPath;
 } GATE;
 /***************************************************************************************************************************
 Cudd Package Declarations 
@@ -95,6 +102,8 @@ Functions for reading .isc file
 ****************************************************************************************************************************/
 int AssignType(char *);
 int ReadIsc(FILE *,GATE *);
+
+void freeLongestPaths(PATH **);
 
 #endif /* GIVEN_H_ */
 /****************************************************************************************************************************/
