@@ -140,17 +140,21 @@ void initDelay()
 				Node[i].Delay = tmpDelay + 1;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
-				InsertPath(&Node[i].LongestPath);
-
-				//printf("Address of Node[i].LongestPath = %p, i = %d\n", Node[i].LongestPath, i);
-
-				for(tmpList = Node[i].Fin, currPath = Node[i].LongestPath; tmpList != NULL; tmpList = tmpList->Next)
+				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
 				{
 					for(pathIter = Node[tmpList->Id].LongestPath; pathIter != NULL; pathIter = pathIter->Next)
 					{
 						if(((Node[i].Delay - 1) == Node[tmpList->Id].Delay) || (Node[i].Delay == Node[tmpList->Id].Delay))
 						{
-							//printf("Address of tmpPath2 = %p, i = %d, Fin = %d\n", currPath, i, tmpList->Id);
+							if(Node[i].LongestPath == NULL)
+							{
+								InsertPath(&Node[i].LongestPath);
+								currPath = Node[i].LongestPath;
+							} else {
+								InsertPath(&Node[i].LongestPath);
+								currPath = currPath->Next;
+
+							}
 
 							InsertEle(&currPath->Path, i);
 
@@ -161,18 +165,11 @@ void initDelay()
 
 							}
 
-							printf("node %d LongestPath = ", i);
+							printf("LongestPath at %s = ", Node[i].Name);
 
 							PrintList(currPath->Path);
 
 							printf("\n");
-
-							if(pathIter->Next != NULL || tmpList->Next != NULL)
-							{
-								InsertPath(&Node[i].LongestPath);
-							}
-
-							currPath = currPath->Next;
 
 						}
 					}
@@ -185,12 +182,9 @@ void initDelay()
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
 				InsertPath(&Node[i].LongestPath);
-				//printf("Address of Node[i].LongestPath = %p, i = %d\n", Node[i].LongestPath, i);
 
 				for(pathIter = Node[tmpList->Id].LongestPath, currPath = Node[i].LongestPath; pathIter != NULL; pathIter = pathIter->Next)
 				{
-					//printf("Address of tmpPath2 = %p, i = %d, Fin = %d\n", currPath, i, tmpList->Id);
-
 					InsertEle(&currPath->Path, i);
 
 					for(tmpList2 = pathIter->Path; tmpList2 != NULL; tmpList2 = tmpList2->Next)
@@ -200,7 +194,7 @@ void initDelay()
 
 					}
 
-					printf("node %d LongestPath = ", i);
+					printf("LongestPath at %s = ", Node[i].Name);
 
 					//PrintList(tmpPath2->Path);
 					PrintList(currPath->Path);
@@ -222,14 +216,25 @@ void initDelay()
 				//printf("Type: %d\n", graph[i].typ);
 				break;
 		}
-
 	}
+
+	printf("\n");
 }
 
 void patternSim()
 {
 	int i, j, patIndex, tmpVal;
-	DdNode *tmpNode;
+	DdNode *tmpNode, *tmpNode2;
+	PATH *tmpPath;
+
+	tmpNode = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(tmpNode);
+
+	tmpNode2 = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(tmpNode2);
+
+	goodPaths.node = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(goodPaths.node);
 
 	//iterate over patterns
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
@@ -259,6 +264,19 @@ void patternSim()
 			/*
 			storeRobustPaths();
 			*/
+
+			for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
+			{
+				tmpNode2 = createZDD(tmpPath->Path);
+				tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
+				Cudd_Ref(tmpNode);
+				Cudd_RecursiveDeref(manager, tmpNode2);
+				Cudd_RecursiveDeref(manager, goodPaths.node);
+
+				goodPaths.node = tmpNode;
+
+				//Cudd_PrintMinterm(manager, goodPaths.node);
+			}
 
 		}
 	}
@@ -421,15 +439,15 @@ void storeRobustPaths()
 DdNode *createZDD(LIST *pathList)
 {
 	DdNode *node, *tmp;
-	int i;
 
 	node = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(node);
 
-	for(i = 0; pathList != NULL; pathList = pathList->Next)
+	for( ; pathList != NULL; pathList = pathList->Next)
 	{
-		tmp = Cudd_zddChange(manager, node, i);
+		tmp = Cudd_zddChange(manager, node, pathList->Id);
 		Cudd_Ref(tmp);
+		Cudd_RecursiveDeref(manager, node);
 
 		node = tmp;
 
@@ -448,7 +466,7 @@ void clearPathZDDs()
 		Cudd_RecursiveDeref(manager, robustPaths.Fpath);
 	*/
 	Cudd_RecursiveDeref(manager, goodPaths.node);
-	Cudd_RecursiveDeref(manager, suspectSet.node);
+	//Cudd_RecursiveDeref(manager, suspectSet.node);
 
 }
 

@@ -27,9 +27,9 @@ int main(int argc, char **argv)
 
 	fclose(Isc);									//Close file pointer for .isc file
 
-	//PrintGats(Node,Tgat);							//Print the information of each active gate in Node structure after reading .isc file
+	PrintGats(Node,Tgat);							//Print the information of each active gate in Node structure after reading .isc file
 	CountPri(Node,Tgat,&Npi,&Npo);					//Count the No of Pis and Pos
-	printf("\n\nNpi: %d Npo: %d\n",Npi,Npo);		//Print the no of primary inputs and outputs
+	printf("\n\nNpi: %d Npo: %d\n\n",Npi,Npo);		//Print the no of primary inputs and outputs
 	/***************************************************************************************************/
 
 	Pat = fopen(argv[2],"r");		//File pointer to open .pattern file
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
 	patternSim();
 
-	//clearPathZDDs();
+	clearPathZDDs();
 
 	free(patterns);
 
