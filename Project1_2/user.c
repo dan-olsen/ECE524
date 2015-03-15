@@ -236,6 +236,9 @@ void patternSim()
 	goodPaths.node = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(goodPaths.node);
 
+	suspectSet.node = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(suspectSet.node);
+
 	//iterate over patterns
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
 	{
@@ -265,19 +268,34 @@ void patternSim()
 			storeRobustPaths();
 			*/
 
-			for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
+			if(Node[j].Mark == 1)
 			{
-				tmpNode2 = createZDD(tmpPath->Path);
-				tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
-				Cudd_Ref(tmpNode);
-				Cudd_RecursiveDeref(manager, tmpNode2);
-				Cudd_RecursiveDeref(manager, goodPaths.node);
+				for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
+				{
+					tmpNode2 = createZDD(tmpPath->Path);
+					tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
+					Cudd_Ref(tmpNode);
+					Cudd_RecursiveDeref(manager, tmpNode2);
+					Cudd_RecursiveDeref(manager, goodPaths.node);
 
-				goodPaths.node = tmpNode;
+					goodPaths.node = tmpNode;
 
-				//Cudd_PrintMinterm(manager, goodPaths.node);
+					//Cudd_PrintMinterm(manager, goodPaths.node);
+				}
+			} else {
+				for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
+				{
+					tmpNode2 = createZDD(tmpPath->Path);
+					tmpNode = Cudd_zddUnion(manager, tmpNode2, suspectSet.node);
+					Cudd_Ref(tmpNode);
+					Cudd_RecursiveDeref(manager, tmpNode2);
+					Cudd_RecursiveDeref(manager, suspectSet.node);
+
+					suspectSet.node = tmpNode;
+
+					//Cudd_PrintMinterm(manager, goodPaths.node);
+				}
 			}
-
 		}
 	}
 }
@@ -466,7 +484,7 @@ void clearPathZDDs()
 		Cudd_RecursiveDeref(manager, robustPaths.Fpath);
 	*/
 	Cudd_RecursiveDeref(manager, goodPaths.node);
-	//Cudd_RecursiveDeref(manager, suspectSet.node);
+	Cudd_RecursiveDeref(manager, suspectSet.node);
 
 }
 
