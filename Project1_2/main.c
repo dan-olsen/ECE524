@@ -41,12 +41,12 @@ int main(int argc, char **argv)
 
 	patternSim();
 
-	clearPathZDDs();
-
 	free(patterns);
-
 	fclose(Pat);
 	fclose(Res);
+
+	clearPathZDDs();
+	Cudd_RecursiveDeref(manager, onez);
 
 	/***************************************************************************************************/
 	printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));	//Checking any unreferenced bdds in manager

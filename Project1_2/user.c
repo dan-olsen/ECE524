@@ -32,7 +32,7 @@ const int nonRobustSimAND [6][6]	= 	{{S0, S0, S0, S0, S0, S0},
 const int simNOT [6] 				= 	 {S1, F0, R1, S0, X0, X1};
 
 void applyPattern(int i, int *patIndex, int *tmpVal);
-void printInputVector(char * input);
+void printInputVector(char *input);
 void printPattern(int patIndex);
 void InsertPath(PATH **Cur);
 
@@ -115,10 +115,11 @@ void initDelay()
 				InsertPath(&Node[i].LongestPath);
 				InsertEle(&Node[i].LongestPath->Path, i);
 
-				//InsertEle(&Node[i].SecondLongestPath[0], i);
+				InsertPath(&Node[i].SecondLongestPath);
+				InsertEle(&Node[i].SecondLongestPath->Path, i);
 
 				printf("LongestPath at Input %d = %d\n", i, Node[i].LongestPath->Path->Id);
-				//printf("SecondLongestPath at Input %d = %d\n", i, Node[i].SecondLongestPath[0]->Id);
+				printf("SecondLongestPath at Input %d = %d\n", i, Node[i].SecondLongestPath->Path->Id);
 
 				break;
 			case AND:
@@ -160,12 +161,42 @@ void initDelay()
 
 							for(tmpList2 = pathIter->Path; tmpList2 != NULL; tmpList2 = tmpList2->Next)
 							{
-								//printf("Inserting %d at node %d from %d\n", tmpList2->Id, i, tmpList->Id);
 								InsertEle(&currPath->Path, tmpList2->Id);
 
 							}
 
 							printf("LongestPath at %s = ", Node[i].Name);
+
+							PrintList(currPath->Path);
+
+							printf("\n");
+
+						}
+					}
+
+					for(pathIter = Node[tmpList->Id].SecondLongestPath; pathIter != NULL; pathIter = pathIter->Next)
+					{
+						if(((Node[i].Delay - 2) == Node[tmpList->Id].Delay) || (Node[i].Delay == Node[tmpList->Id].Delay))
+						{
+							if(Node[i].SecondLongestPath == NULL)
+							{
+								InsertPath(&Node[i].SecondLongestPath);
+								currPath = Node[i].SecondLongestPath;
+							} else {
+								InsertPath(&Node[i].SecondLongestPath);
+								currPath = currPath->Next;
+
+							}
+
+							InsertEle(&currPath->Path, i);
+
+							for(tmpList2 = pathIter->Path; tmpList2 != NULL; tmpList2 = tmpList2->Next)
+							{
+								InsertEle(&currPath->Path, tmpList2->Id);
+
+							}
+
+							printf("SecondLongestPath at %s = ", Node[i].Name);
 
 							PrintList(currPath->Path);
 
@@ -189,7 +220,6 @@ void initDelay()
 
 					for(tmpList2 = pathIter->Path; tmpList2 != NULL; tmpList2 = tmpList2->Next)
 					{
-						//printf("Inserting %d at node %d from %d\n", tmpList2->Id, i, tmpList->Id);
 						InsertEle(&currPath->Path, tmpList2->Id);
 
 					}
@@ -207,7 +237,33 @@ void initDelay()
 					}
 
 					currPath = currPath->Next;
+				}
 
+				InsertPath(&Node[i].SecondLongestPath);
+
+				for(pathIter = Node[tmpList->Id].SecondLongestPath, currPath = Node[i].SecondLongestPath; pathIter != NULL; pathIter = pathIter->Next)
+				{
+					InsertEle(&currPath->Path, i);
+
+					for(tmpList2 = pathIter->Path; tmpList2 != NULL; tmpList2 = tmpList2->Next)
+					{
+						InsertEle(&currPath->Path, tmpList2->Id);
+
+					}
+
+					printf("SecondLongestPath at %s = ", Node[i].Name);
+
+					//PrintList(tmpPath2->Path);
+					PrintList(currPath->Path);
+
+					printf("\n");
+
+					if(pathIter->Next != NULL)
+					{
+						InsertPath(&Node[i].SecondLongestPath);
+					}
+
+					currPath = currPath->Next;
 				}
 
 				break;
@@ -268,33 +324,19 @@ void patternSim()
 			storeRobustPaths();
 			*/
 
-			if(Node[j].Mark == 1)
+			for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
 			{
-				for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
-				{
-					tmpNode2 = createZDD(tmpPath->Path);
-					tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
-					Cudd_Ref(tmpNode);
-					Cudd_RecursiveDeref(manager, tmpNode2);
-					Cudd_RecursiveDeref(manager, goodPaths.node);
+				tmpNode2 = createZDD(tmpPath->Path);
+				tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
+				Cudd_Ref(tmpNode);
+				Cudd_RecursiveDeref(manager, tmpNode2);
+				Cudd_RecursiveDeref(manager, goodPaths.node);
 
-					goodPaths.node = tmpNode;
+				goodPaths.node = tmpNode;
 
-					//Cudd_PrintMinterm(manager, goodPaths.node);
-				}
-			} else {
-				for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
-				{
-					tmpNode2 = createZDD(tmpPath->Path);
-					tmpNode = Cudd_zddUnion(manager, tmpNode2, suspectSet.node);
-					Cudd_Ref(tmpNode);
-					Cudd_RecursiveDeref(manager, tmpNode2);
-					Cudd_RecursiveDeref(manager, suspectSet.node);
+				//Cudd_zddPrintMinterm(manager, goodPaths.node);
 
-					suspectSet.node = tmpNode;
-
-					//Cudd_PrintMinterm(manager, goodPaths.node);
-				}
+				printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
 			}
 		}
 	}
@@ -483,8 +525,8 @@ void clearPathZDDs()
 	if(robustPaths.Fpath != NULL)
 		Cudd_RecursiveDeref(manager, robustPaths.Fpath);
 	*/
-	Cudd_RecursiveDeref(manager, goodPaths.node);
-	Cudd_RecursiveDeref(manager, suspectSet.node);
+	//Cudd_RecursiveDeref(manager, goodPaths.node);
+	//Cudd_RecursiveDeref(manager, suspectSet.node);
 
 }
 
@@ -530,8 +572,6 @@ void applyPattern(int i, int *patIndex, int *tmpVal)
 		case INPT:
 			Node[i].Val = patterns[*patIndex];
 
-			//printf("INPT %s Val = %d\n", Node[i].Name, Node[i].Val);
-
 			*patIndex = *patIndex + 1;
 
 			break;
@@ -542,21 +582,13 @@ void applyPattern(int i, int *patIndex, int *tmpVal)
 				{
 					*tmpVal = Node[tmpList->Id].Val;
 
-					//printf("AND %s Fin %s tmpVal = %d\n", Node[i].Name, Node[tmpList->Id].Name, tmpVal);
-
 					continue;
 				}
 
-				//printf("AND %s Fin %s val = %d tmpVal = %d\n", Node[i].Name, Node[tmpList->Id].Name, Node[tmpList->Id].Val, tmpVal);
 				*tmpVal = robustSimAND[*tmpVal][Node[tmpList->Id].Val];
-
-				//printf("AND %s Sim tmpVal = %d\n", Node[i].Name, tmpVal);
-
 			}
 
 			Node[i].Val = *tmpVal;
-
-			//printf("AND %s Val = %d\n", Node[i].Name, Node[i].Val);
 
 			break;
 		case NAND:
@@ -575,8 +607,6 @@ void applyPattern(int i, int *patIndex, int *tmpVal)
 
 			Node[i].Val = simNOT[*tmpVal];
 
-			//printf("NAND %s Val = %d\n", Node[i].Name, Node[i].Val);
-
 			break;
 		case OR:
 			for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
@@ -593,8 +623,6 @@ void applyPattern(int i, int *patIndex, int *tmpVal)
 			}
 
 			Node[i].Val = *tmpVal;
-
-			//printf("OR %s Val = %d\n", Node[i].Name, Node[i].Val);
 
 			break;
 		case NOR:
@@ -613,8 +641,6 @@ void applyPattern(int i, int *patIndex, int *tmpVal)
 
 			Node[i].Val = simNOT[*tmpVal];
 
-			//printf("NOR %s Val = %d\n", Node[i].Name, Node[i].Val);
-
 			break;
 		case XOR:
 			printf("XOR not supported");
@@ -631,23 +657,17 @@ void applyPattern(int i, int *patIndex, int *tmpVal)
 
 			Node[i].Val = Node[tmpList->Id].Val;
 
-			//printf("BUFF %s Val = %d\n", Node[i].Name, Node[i].Val);
-
 			break;
 		case NOT:
 			tmpList = Node[i].Fin;
 
 			Node[i].Val = simNOT[Node[tmpList->Id].Val];
 
-			//printf("NOT %s Val = %d\n", Node[i].Name, Node[i].Val);
-
 			break;
 		case FROM:
 			tmpList = Node[i].Fin;
 
 			Node[i].Val = Node[tmpList->Id].Val;
-
-			//printf("FROM %s Val = %d\n", Node[i].Name, Node[i].Val);
 
 			break;
 		default:
