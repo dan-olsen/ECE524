@@ -176,7 +176,7 @@ void initDelay()
 
 					for(pathIter = Node[tmpList->Id].SecondLongestPath; pathIter != NULL; pathIter = pathIter->Next)
 					{
-						if(((Node[i].Delay - 2) == Node[tmpList->Id].Delay) || (Node[i].Delay == Node[tmpList->Id].Delay))
+						if((((Node[i].Delay - 2) == Node[tmpList->Id].Delay) || (Node[i].Delay == Node[tmpList->Id].Delay)) && (Node[i].SecondLongestPath == NULL))
 						{
 							if(Node[i].SecondLongestPath == NULL)
 							{
@@ -202,6 +202,23 @@ void initDelay()
 
 							printf("\n");
 
+						} else if (((Node[i].Delay - 1) == Node[tmpList->Id].Delay) || (Node[i].Delay == Node[tmpList->Id].Delay)) {
+							InsertPath(&Node[i].SecondLongestPath);
+							currPath = currPath->Next;
+
+							InsertEle(&currPath->Path, i);
+
+							for(tmpList2 = pathIter->Path; tmpList2 != NULL; tmpList2 = tmpList2->Next)
+							{
+								InsertEle(&currPath->Path, tmpList2->Id);
+
+							}
+
+							printf("SecondLongestPath at %s = ", Node[i].Name);
+
+							PrintList(currPath->Path);
+
+							printf("\n");
 						}
 					}
 				}
@@ -333,8 +350,6 @@ void patternSim()
 				Cudd_RecursiveDeref(manager, goodPaths.node);
 
 				goodPaths.node = tmpNode;
-
-				//Cudd_zddPrintMinterm(manager, goodPaths.node);
 
 				printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
 			}
