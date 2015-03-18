@@ -118,8 +118,7 @@ void InitiGat(GATE *Node,int Num)
 	Node[Num].Fin=Node[Num].Fot=NULL;
 	Node[Num].Rpath=Node[Num].Fpath=NULL;
 	Node[Num].Delay = 0;
-	Node[Num].LongestPath = NULL;
-	Node[Num].SecondLongestPath = NULL;
+	Node[Num].Path = NULL;
 	return;
 }//end of InitiGat
 /***************************************************************************************************
@@ -155,8 +154,7 @@ void ClearGat(GATE *Node,int Tgat)
 		Node[i].Type=Node[i].Nfi=Node[i].Nfo=Node[i].Mark=Node[i].Val=0;
 		FreeList(&Node[i].Fin);
 		FreeList(&Node[i].Fot);
-		freeLongestPaths(&Node[i].LongestPath);
-		freeLongestPaths(&Node[i].SecondLongestPath);
+		freePaths(&Node[i].Path);
 
 	}
 
@@ -225,7 +223,7 @@ int AssignType(char *Gtyp)
 ***************************************************************************************************/
 int ReadIsc(FILE *Isc,GATE *Node)
 {
-	char c, noty[Mlin], from[Mlin], str1[Mlin], str2[Mlin], name[Mlin], line[Mlin];
+	char noty[Mlin], from[Mlin], str1[Mlin], str2[Mlin], name[Mlin], line[Mlin];
 	int  i,id,fid,fin,fot,tot=0;
 
 	//Intialize all Gates in Node structure
@@ -324,7 +322,7 @@ int ReadIsc(FILE *Isc,GATE *Node)
 return tot;
 }//end of ReadIsc 
 
-void freeLongestPaths(PATH **Cur)
+void freePaths(PATH **Cur)
 {
 	PATH *tmp=NULL;
 
@@ -338,7 +336,6 @@ void freeLongestPaths(PATH **Cur)
 		while((*Cur) != NULL)
 		{
 		  tmp=tmp->Next;
-		  FreeList(&(*Cur)->Path);
 		  free(*Cur);
 		  (*Cur)=tmp;
 		}

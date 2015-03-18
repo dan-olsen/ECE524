@@ -58,7 +58,7 @@ typedef struct LIST_type {
 
 typedef struct PATH_type
 {
-	LIST *Path;
+	int Delay, Count;
 	struct PATH_type *Next; //Pointer to next element (if there is no element,it will be NULL)
 } PATH;
 
@@ -69,8 +69,7 @@ typedef struct GATE_type
   int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
   LIST *Fin,*Fot;                        //Fanin members, Fanout members 
   DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
-  PATH *LongestPath;
-  PATH *SecondLongestPath;
+  PATH *Path;
 } GATE;
 /***************************************************************************************************************************
 Cudd Package Declarations 
@@ -103,7 +102,7 @@ Functions for reading .isc file
 int AssignType(char *);
 int ReadIsc(FILE *,GATE *);
 
-void freeLongestPaths(PATH **);
+void freePaths(PATH **);
 
 #endif /* GIVEN_H_ */
 /****************************************************************************************************************************/

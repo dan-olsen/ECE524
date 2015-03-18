@@ -39,13 +39,9 @@ int *patterns;
 
 void readPatternFile(FILE*);
 
-void initDelay();
-
 void patternSim();
 
 void storeRobustPaths();
-
-DdNode *createZDD(LIST *pathList);
 
 void clearPathZDDs();
 

@@ -11,9 +11,9 @@ Command Instructions
 int main(int argc, char **argv)
 {
 	FILE *Isc, *Pat, *Res;	//File pointers used for .isc, .pattern, and .res files
-	clock_t Start, End;		//Clock variables to calculate the Cputime
-	double Cpu;				//Total cpu time
-	int i, j;				//Temporary variables
+	//clock_t Start, End;		//Clock variables to calculate the Cputime
+	//double Cpu;				//Total cpu time
+	//int i, j;				//Temporary variables
 
 	manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);	//Intializing CUDD package manger
 	onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
@@ -37,8 +37,6 @@ int main(int argc, char **argv)
 
 	readPatternFile(Pat);
 
-	initDelay();
-
 	patternSim();
 
 	free(patterns);
@@ -46,7 +44,6 @@ int main(int argc, char **argv)
 	fclose(Res);
 
 	clearPathZDDs();
-	Cudd_RecursiveDeref(manager, onez);
 
 	/***************************************************************************************************/
 	printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));	//Checking any unreferenced bdds in manager
