@@ -30,12 +30,28 @@ typedef struct Robust_type {
 
 } RobustSet;
 
+typedef struct PATH_type
+{
+	LIST *Path;
+
+} PATH;
+
+typedef struct PATH_SET_type {
+	int Id;
+	int numLongestPath;
+	int numSecondLongestPath;
+	PATH *longestPath;
+	PATH *secondLongestPath;
+
+} PATH_SET;
+
 int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
 GATE Node[Mnod];				//Structure to store the ckt given in .isc file
 PathSet suspectSet;
 PathSet goodPaths;
 RobustSet robustPaths;
 int *patterns;
+PATH_SET *pathSet;
 
 void readPatternFile(FILE*);
 

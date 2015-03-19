@@ -322,9 +322,9 @@ int ReadIsc(FILE *Isc,GATE *Node)
 return tot;
 }//end of ReadIsc 
 
-void freePaths(PATH **Cur)
+void freePaths(PATH_COUNT **Cur)
 {
-	PATH *tmp=NULL;
+	PATH_COUNT *tmp=NULL;
 
 		if(*Cur==NULL)
 		{
