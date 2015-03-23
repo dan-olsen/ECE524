@@ -458,22 +458,26 @@ void storeRobustPaths()
 
 DdNode *createZDD(LIST *pathList)
 {
-	DdNode *node, *tmp;
+	DdNode *tmpPath, *tmp, *path;
 
-	node = Cudd_zddChange(manager, onez, 0);
-	Cudd_Ref(node);
+	path = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(path);
 
 	for( ; pathList != NULL; pathList = pathList->Next)
 	{
-		tmp = Cudd_zddChange(manager, node, pathList->Id);
+		tmp = Cudd_zddChange(manager, onez, pathList->Id);
 		Cudd_Ref(tmp);
-		Cudd_RecursiveDeref(manager, node);
 
-		node = tmp;
+		tmpPath = Cudd_zddUnion(manager, tmp, path);
+		Cudd_Ref(tmpPath);
+		Cudd_RecursiveDeref(manager, path);
+		Cudd_RecursiveDeref(manager, tmp);
+
+		path = tmpPath;
 
 	}
 
-	return node;
+	return tmpPath;
 }
 
 void clearPathZDDs()
