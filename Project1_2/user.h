@@ -63,4 +63,6 @@ void clearPathZDDs();
 
 void clearNodeZDDs();
 
+void freePathSet();
+
 #endif /* USER_H_ */
