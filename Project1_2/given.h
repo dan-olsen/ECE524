@@ -69,7 +69,7 @@ typedef struct GATE_type
   int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
   LIST *Fin,*Fot;                        //Fanin members, Fanout members 
   DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
-  PATH_COUNT *Path;
+  PATH_COUNT *PathCount;
 } GATE;
 /***************************************************************************************************************************
 Cudd Package Declarations 
@@ -102,7 +102,7 @@ Functions for reading .isc file
 int AssignType(char *);
 int ReadIsc(FILE *,GATE *);
 
-void freePaths(PATH_COUNT **);
+void FreePathCounts(PATH_COUNT **);
 
 #endif /* GIVEN_H_ */
 /****************************************************************************************************************************/

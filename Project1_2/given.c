@@ -118,7 +118,7 @@ void InitiGat(GATE *Node,int Num)
 	Node[Num].Fin=Node[Num].Fot=NULL;
 	Node[Num].Rpath=Node[Num].Fpath=NULL;
 	Node[Num].Delay = 0;
-	Node[Num].Path = NULL;
+	Node[Num].PathCount = NULL;
 	return;
 }//end of InitiGat
 /***************************************************************************************************
@@ -154,7 +154,7 @@ void ClearGat(GATE *Node,int Tgat)
 		Node[i].Type=Node[i].Nfi=Node[i].Nfo=Node[i].Mark=Node[i].Val=0;
 		FreeList(&Node[i].Fin);
 		FreeList(&Node[i].Fot);
-		freePaths(&Node[i].Path);
+		FreePathCounts(&Node[i].PathCount);
 
 	}
 
@@ -322,7 +322,7 @@ int ReadIsc(FILE *Isc,GATE *Node)
 return tot;
 }//end of ReadIsc 
 
-void freePaths(PATH_COUNT **Cur)
+void FreePathCounts(PATH_COUNT **Cur)
 {
 	PATH_COUNT *tmp=NULL;
 
