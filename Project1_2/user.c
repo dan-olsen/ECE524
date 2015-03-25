@@ -37,7 +37,7 @@ void printPattern(int patIndex);
 void InsertPathCount(PATH_COUNT **Cur, int delay, int count);
 void initDelay();
 DdNode *createZDD(LIST *pathList);
-void buildNLongestPath(int n, int NodeIndex, int PathSetIndex);
+void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int PathIndex);
 
 void readPatternFile(FILE* patFile)
 {
@@ -103,7 +103,7 @@ void readPatternFile(FILE* patFile)
 
 void initDelay()
 {
-	int i, j, mark = 0, tmpCount;
+	int i, j, mark = 0, tmpCount, k;
 	LIST *tmpList = NULL;
 	PATH_COUNT *pathIter = NULL, *currPath = NULL;
 	int tmpDelay;
@@ -115,8 +115,8 @@ void initDelay()
 				Node[i].Delay = 0;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
-				InsertPathCount(&Node[i].Path, 0, 1);
-				printf("Path at %d = %d,%d\n", i, Node[i].Path->Delay, Node[i].Path->Count);
+				InsertPathCount(&Node[i].PathCount, 0, 1);
+				printf("Path at %d = %d,%d\n", i, Node[i].PathCount->Delay, Node[i].PathCount->Count);
 
 				break;
 			case AND:
@@ -140,11 +140,11 @@ void initDelay()
 
 				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
 				{
-					for(pathIter = Node[tmpList->Id].Path; pathIter != NULL; pathIter = pathIter->Next)
+					for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
 					{
-						if(Node[i].Path != NULL)
+						if(Node[i].PathCount != NULL)
 						{
-							for(currPath = Node[i].Path; currPath != NULL; currPath = currPath->Next)
+							for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
 							{
 								if(currPath->Delay == pathIter->Delay + 1)
 								{
@@ -159,17 +159,17 @@ void initDelay()
 								mark = 0;
 
 							} else {
-								InsertPathCount(&Node[i].Path, pathIter->Delay + 1, pathIter->Count);
+								InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
 
 							}
 						} else {
-							InsertPathCount(&Node[i].Path, pathIter->Delay + 1, pathIter->Count);
+							InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
 
 						}
 					}
 				}
 
-				for(currPath = Node[i].Path; currPath != NULL; currPath = currPath->Next)
+				for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
 				{
 					printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
 
@@ -182,13 +182,13 @@ void initDelay()
 				Node[i].Delay = Node[tmpList->Id].Delay;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
-				for(pathIter = Node[tmpList->Id].Path; pathIter != NULL; pathIter = pathIter->Next)
+				for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
 				{
-					InsertPathCount(&Node[i].Path, pathIter->Delay, pathIter->Count);
+					InsertPathCount(&Node[i].PathCount, pathIter->Delay, pathIter->Count);
 
 				}
 
-				for(currPath = Node[i].Path; currPath != NULL; currPath = currPath->Next)
+				for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
 				{
 					printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
 
@@ -210,7 +210,7 @@ void initDelay()
 		pathSet[i].numLongestPath = 0;
 		pathSet[i].numSecondLongestPath = 0;
 
-		for(currPath = Node[j].Path; currPath != NULL; currPath = currPath->Next)
+		for(currPath = Node[j].PathCount; currPath != NULL; currPath = currPath->Next)
 		{
 			if(currPath->Delay == Node[j].Delay)
 				pathSet[i].numLongestPath += currPath->Count;
@@ -225,12 +225,55 @@ void initDelay()
 		pathSet[i].longestPath = malloc(sizeof(PATH *) * pathSet[i].numLongestPath);
 		pathSet[i].secondLongestPath = malloc(sizeof(PATH *) * pathSet[i].numSecondLongestPath);
 
-		buildNLongestPath(1, j, i);
-		buildNLongestPath(2, j, i);
+		for(currPath = Node[j].PathCount; currPath != NULL; currPath = currPath->Next)
+		{
+			if(Node[j].Delay == currPath->Delay)
+			{
+				for(k = 0; k < pathSet[i].numLongestPath; k++)
+				{
+					InsertEle(&pathSet[i].longestPath[k].Path, j);
+					buildNLongestPath(1, j, i, k);
 
+					printf("Longest Path #%d at %d = ", k, j);
+					PrintList(pathSet[i].longestPath[k].Path);
+					printf("\n");
+				}
+			}
+		}
 	}
 
 	printf("\n");
+}
+
+void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int PathIndex)
+{
+	LIST *tmpList;
+	PATH_COUNT *finPathIter = NULL, *currPathIter = NULL;
+	int mark = 0;
+
+	for(tmpList = Node[NodeIndex].Fin; tmpList != NULL; tmpList = tmpList->Next)
+	{
+		for(finPathIter = Node[tmpList->Id].PathCount; finPathIter != NULL; finPathIter = finPathIter->Next)
+		{
+			for(currPathIter = Node[NodeIndex].PathCount; currPathIter != NULL; currPathIter = currPathIter->Next)
+			{
+				if(Node[NodeIndex].Delay == currPathIter->Delay)
+				{
+					if(((currPathIter->Delay == finPathIter->Delay + n) || (currPathIter->Delay == finPathIter->Delay)) && (finPathIter->Count != 0))
+					{
+						InsertEle(&pathSet[PathSetIndex].longestPath[PathIndex].Path, tmpList->Id);
+						finPathIter->Count--;
+
+						buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex);
+
+						return;
+
+					}
+				}
+			}
+
+		}
+	}
 }
 
 void patternSim()
@@ -241,7 +284,6 @@ void patternSim()
 
 	initDelay();
 
-	/*
 	tmpNode = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(tmpNode);
 
@@ -253,7 +295,6 @@ void patternSim()
 
 	suspectSet.node = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(suspectSet.node);
-	*/
 
 	//iterate over patterns
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
@@ -280,14 +321,17 @@ void patternSim()
 		for(j = Tgat-Npo+1; j <= Tgat; j++)
 		{
 			printf("Output of %s = %d\n", Node[j].Name, Node[j].Val);
-			/*
-			storeRobustPaths();
-			*/
 
-			/*
-			for(tmpPath = Node[j].LongestPath; tmpPath != NULL; tmpPath = tmpPath->Next)
+		}
+
+		storeRobustPaths();
+
+		/*
+		for(i = 0; i < Npo; i++)
+		{
+			for(j = 0; j < pathSet[i].numLongestPath; j++)
 			{
-				tmpNode2 = createZDD(tmpPath->Path);
+				tmpNode2 = createZDD(pathSet[i].longestPath[j].Path);
 				tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
 				Cudd_Ref(tmpNode);
 				Cudd_RecursiveDeref(manager, tmpNode2);
@@ -297,8 +341,8 @@ void patternSim()
 
 				printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
 			}
-			*/
-		}
+
+		}*/
 	}
 }
 
@@ -477,7 +521,7 @@ DdNode *createZDD(LIST *pathList)
 
 	}
 
-	return tmpPath;
+	return path;
 }
 
 void clearPathZDDs()
@@ -703,27 +747,28 @@ void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
 	return;
 }
 
-void buildNLongestPath(int n, int NodeIndex, int PathSetIndex)
+void freePathSet()
 {
-	LIST *tmpList;
-	PATH_COUNT *pathIter = NULL, *currPath = NULL;
-	int mark = 0;
+	int i, j;
 
-	for(tmpList = Node[NodeIndex].Fin; tmpList != NULL; tmpList = tmpList->Next)
+	for(i = 0; i < Npo; i++)
 	{
-		for(pathIter = Node[tmpList->Id].Path; pathIter != NULL; pathIter = pathIter->Next)
+		for(j = 0; j < pathSet[i].numLongestPath; j++)
 		{
-			for(currPath = Node[NodeIndex].Path; currPath != NULL; currPath = currPath->Next)
-			{
-				if(currPath->Delay == pathIter->Delay + 1)
-				{
-
-				}
-			}
-
+			if(pathSet[i].longestPath[j].Path != NULL)
+				FreeList(&pathSet[i].longestPath[j].Path);
 		}
-	}
-}
+		for(j = 0; j < pathSet[i].numSecondLongestPath; j++)
+		{
+			if(pathSet[i].secondLongestPath[j].Path != NULL)
+				FreeList(&pathSet[i].secondLongestPath[j].Path);
+		}
 
+		//free(pathSet[i].longestPath);
+		//free(pathSet[i].secondLongestPath);
+	}
+
+	free(pathSet);
+}
 
 /****************************************************************************************************************************/

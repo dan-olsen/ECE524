@@ -45,6 +45,7 @@ int main(int argc, char **argv)
 	fclose(Res);
 
 	clearPathZDDs();
+	//freePathSet();
 
 	/***************************************************************************************************/
 	printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));	//Checking any unreferenced bdds in manager
