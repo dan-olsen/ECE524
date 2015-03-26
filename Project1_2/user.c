@@ -47,11 +47,6 @@ void readPatternFile(FILE* patFile)
 	char vector2  [Mpi];
 	int readCount1, readCount2;
 
-	if ( NULL == (patterns =  malloc(Npi * sizeof(int)))) {
-		printf("malloc failed\n");
-		//error
-	}
-
 	for(patIndex = 0; !feof(patFile);)
 	{
 		readCount1 = fscanf(patFile, "%s", vector1);
@@ -94,7 +89,11 @@ void readPatternFile(FILE* patFile)
 			printPattern(patIndex-Npi);
 			printf("\n");
 
-			patterns = realloc(patterns, (Npi+patIndex) * sizeof(int));
+			if (NULL == (patterns = (int*)realloc(patterns, (Npi+patIndex) * sizeof(int))))
+			{
+				printf("realloc failed\n");
+
+			}
 
 		}
 	}
@@ -150,9 +149,8 @@ void initDelay()
 		}
 	}
 
-	pathSet = malloc(sizeof(PATH_SET *) * Npo);
 
-	for(i = 0, j = Tgat-Npo+1, markPath(); i < Npo; i++, j++)
+	for(i = 0, j = Tgat-Npo+1, markPath(Node, Tgat); i < Npo; i++, j++)
 	{
 		pathSet[i].Id = j;
 		pathSet[i].numLongestPath = Node[j].Long1;
@@ -160,10 +158,21 @@ void initDelay()
 
 		printf("%d %d\n", pathSet[i].numLongestPath, pathSet[i].numSecondLongestPath);
 
-		pathSet[i].longestPath = malloc(sizeof(PATH *) * pathSet[i].numLongestPath);
-		pathSet[i].secondLongestPath = malloc(sizeof(PATH *) * pathSet[i].numSecondLongestPath);
+		pathSet[i].longestPath = (PATH*)malloc(sizeof(PATH) * pathSet[i].numLongestPath);
 
-		for(k = 0; k < pathSet[i].numLongestPath; k++, markPath())
+		for(k = 0; k < pathSet[i].numLongestPath; k++)
+		{
+			pathSet[i].longestPath[k].Path = NULL;
+		}
+
+		pathSet[i].secondLongestPath = (PATH*)malloc(sizeof(PATH) * pathSet[i].numSecondLongestPath);
+
+		for(k = 0; k < pathSet[i].numSecondLongestPath; k++)
+		{
+			pathSet[i].secondLongestPath[k].Path = NULL;
+		}
+
+		for(k = 0; k < pathSet[i].numLongestPath; k++, markPath(Node, Tgat))
 		{
 			InsertEle(&pathSet[i].longestPath[k].Path, j);
 			buildNLongestPath(1, j, i, k);
@@ -299,7 +308,7 @@ void patternSim()
 	int i, j, patIndex, tmpVal;
 	DdNode *tmpNode, *tmpNode2;
 
-	initDelay();
+	initDelay(Node, pathSet, Tgat, Npo);
 
 	tmpNode = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(tmpNode);
@@ -347,9 +356,9 @@ void patternSim()
 
 		}
 
-		storeRobustPaths();
-		printf("Robust Path Rpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Rpath));
-		printf("Robust Path Fpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Fpath));
+		//storeRobustPaths();
+		//printf("Robust Path Rpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Rpath));
+		//printf("Robust Path Fpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Fpath));
 
 		/*
 		for(i = 0; i < Npo; i++)
@@ -438,8 +447,7 @@ void storeRobustPaths()
 
 						}
 
-						tmpRobust = Cudd_zddChange(manager, Node[tmpList->Id].RobustPath, 2*i);
-
+						//tmpRobust = Cudd_zddChange(manager, Node[tmpList->Id].RobustPath, 2*i);
 
 						tmpNode3 = Cudd_zddUnion(manager, tmpNode, tmpNode2);
 						Cudd_Ref(tmpNode3);
@@ -532,7 +540,7 @@ void clearNodeZDDs()
 {
 	int i;
 
-	for(i = 0; i < Tgat; i++)
+	for(i = 0; i <= Tgat; i++)
 	{
 		switch(Node[i].Type) {
 			case INPT:
@@ -545,7 +553,7 @@ void clearNodeZDDs()
 			case FROM:
 			case NOT:
 			case BUFF:
-				//printf("Recursive Deref %d\n", i);
+				printf("Recursive Deref %d\n", i);
 				if(Node[i].Rpath != NULL)
 					Cudd_RecursiveDeref(manager, Node[i].Rpath);
 
@@ -718,11 +726,11 @@ void freePathSet()
 				FreeList(&pathSet[i].secondLongestPath[j].Path);
 		}
 
-		//free(pathSet[i].longestPath);
-		//free(pathSet[i].secondLongestPath);
+		free(pathSet[i].longestPath);
+		free(pathSet[i].secondLongestPath);
 	}
-
 	free(pathSet);
+
 }
 
 int compareList(LIST *a, LIST *b)

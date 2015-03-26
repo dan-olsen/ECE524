@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 	FILE *Isc, *Pat, *Res;	//File pointers used for .isc, .pattern, and .res files
 	//clock_t Start, End;		//Clock variables to calculate the Cputime
 	//double Cpu;				//Total cpu time
-	//int i, j;				//Temporary variables
+	int i, j;				//Temporary variables
 
 	manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);	//Intializing CUDD package manger
 	onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
@@ -34,18 +34,30 @@ int main(int argc, char **argv)
 	/***************************************************************************************************/
 
 	Pat = fopen(argv[2],"r");		//File pointer to open .pattern file
-	Res = fopen(argv[3],"w");		//File pointer to open .result file
+	//Res = fopen(argv[3],"w");		//File pointer to open .result file
+
+	if ( NULL == (patterns =  (int*)malloc(Npi * sizeof(int)))) {
+		printf("malloc failed\n");
+		//error
+	}
+
+	for(i = 0; i < Npi; i++)
+	{
+		patterns[i] = 0;
+	}
 
 	readPatternFile(Pat);
+
+	pathSet =(PATH_SET*) malloc(sizeof(PATH_SET) * Npo);
 
 	patternSim();
 
 	free(patterns);
 	fclose(Pat);
-	fclose(Res);
+	//fclose(Res);
 
 	clearPathZDDs();
-	//freePathSet();
+	freePathSet();
 
 	/***************************************************************************************************/
 	printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));	//Checking any unreferenced bdds in manager

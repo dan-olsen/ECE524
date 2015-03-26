@@ -112,6 +112,7 @@ Initialize the paricular member of GATE structure
 ***************************************************************************************************/        
 void InitiGat(GATE *Node,int Num)
 {
+	//Node[Num].Name=(char *) malloc(Mnam *sizeof(char));           //Dynamic memory allocation for an array
 	bzero(Node[Num].Name,Mnam);                                   //Clearing the string
 	Node[Num].Type=Node[Num].Nfi=Node[Num].Nfo=Node[Num].Mark=0;
 	Node[Num].Val=6;
@@ -153,6 +154,7 @@ void ClearGat(GATE *Node,int Tgat)
 
 	for(i = 1; i <= Tgat; i++)
 	{
+		//free(Node[i].Name);
 		Node[i].Type=Node[i].Nfi=Node[i].Nfo=Node[i].Mark=Node[i].Val=0;
 		FreeList(&Node[i].Fin);
 		FreeList(&Node[i].Fot);
@@ -223,9 +225,12 @@ int AssignType(char *Gtyp)
 ***************************************************************************************************/
 int ReadIsc(FILE *Isc,GATE *Node)
 {
-	char noty[Mlin], from[Mlin], str1[Mlin], str2[Mlin], name[Mlin], line[Mlin];
+	char *noty, *from, *str1, *str2, *name, *line;
 	int  i,id,fid,fin,fot,tot=0;
-
+	//Dynamic memory allocation for temporary strings
+	noty=(char *) malloc(Mlin * sizeof(char));    from=(char *) malloc(Mlin * sizeof(char));  
+	str1=(char *) malloc(Mlin * sizeof(char));    str2=(char *) malloc(Mlin * sizeof(char));  
+	name=(char *) malloc(Mlin * sizeof(char));    line=(char *) malloc(Mlin * sizeof(char));
 	//Intialize all Gates in Node structure
 	for(i=0;i<Mnod;i++)
 	{
@@ -317,6 +322,7 @@ int ReadIsc(FILE *Isc,GATE *Node)
 		bzero(line,strlen(line));
 		fgets(line,Mlin,Isc);
 	}//end while
+	free(noty);  free(from);  free(str1);  free(str2);  free(name);  free(line);
 
 //Return the Maximum node of the Isc file
 return tot;
