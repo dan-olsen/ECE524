@@ -37,8 +37,8 @@ void printPattern(int patIndex);
 void initDelay();
 DdNode *createZDD(LIST *pathList);
 void markPath();
-void resetPathMark();
 void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int PathIndex);
+int compareList(LIST *a, LIST *b);
 
 void readPatternFile(FILE* patFile)
 {
@@ -152,7 +152,7 @@ void initDelay()
 
 	pathSet = malloc(sizeof(PATH_SET *) * Npo);
 
-	for(i = 0, j = Tgat-Npo+1, markPath(); i < Npo; i++, j++, resetPathMark())
+	for(i = 0, j = Tgat-Npo+1, markPath(); i < Npo; i++, j++)
 	{
 		pathSet[i].Id = j;
 		pathSet[i].numLongestPath = Node[j].Long1;
@@ -162,8 +162,6 @@ void initDelay()
 
 		pathSet[i].longestPath = malloc(sizeof(PATH *) * pathSet[i].numLongestPath);
 		pathSet[i].secondLongestPath = malloc(sizeof(PATH *) * pathSet[i].numSecondLongestPath);
-
-		printf("%d, %d, %d\n", Node[6].Delay, Node[6].Long1, Node[6].PathMark);
 
 		for(k = 0; k < pathSet[i].numLongestPath; k++, markPath())
 		{
@@ -258,56 +256,40 @@ void markPath()
 	}
 }
 
-void resetPathMark()
-{
-	LIST *tmpList = NULL;
-	int i, j;
-
-	for(i = 1, j = 1; i <= Npi; j++)
-	{
-		if(Node[j].Type == INPT)
-		{
-			Node[j].PathMark = 0;
-
-			for(tmpList = Node[j].Fot; tmpList != NULL; tmpList = tmpList->Next)
-			{
-				if(Node[tmpList->Id].Type == FROM)
-				{
-					Node[tmpList->Id].PathMark = 0;
-
-				}
-			}
-
-			i++;
-		}
-	}
-}
-
 void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int PathIndex)
 {
 	LIST *tmpList;
 	int mark = 0;
+	int i;
 
 	for(tmpList = Node[NodeIndex].Fin; tmpList != NULL; tmpList = tmpList->Next)
 	{
-			if(tmpList->Id == 6)
+			if(((Node[NodeIndex].Delay == Node[tmpList->Id].Delay + n) || (Node[NodeIndex].Delay == Node[tmpList->Id].Delay)) && (Node[tmpList->Id].Long1 != 0))
 			{
-				printf("%d, %d, %d\n", Node[6].Delay, Node[6].Long1, Node[6].PathMark);
-			}
-			if(((Node[NodeIndex].Delay == Node[tmpList->Id].Delay + n) || (Node[NodeIndex].Delay == Node[tmpList->Id].Delay)) && (Node[tmpList->Id].Long1 != 0) && (Node[tmpList->Id].PathMark == 0))
-			{
-				if(Node[tmpList->Id].Type == INPT || ((Node[tmpList->Id].Type == FROM) && Node[Node[tmpList->Id].Fin->Id].Type == INPT))
+				InsertEle(&pathSet[PathSetIndex].longestPath[PathIndex].Path, tmpList->Id);
+
+				for(i = 0; i < pathSet[PathSetIndex].numLongestPath; i++)
 				{
-					Node[tmpList->Id].PathMark = 1;
+					if(compareList(pathSet[PathSetIndex].longestPath[PathIndex].Path, pathSet[PathSetIndex].longestPath[i].Path) && PathIndex != i)
+					{
+						mark = 1;
+					}
 				}
 
-				InsertEle(&pathSet[PathSetIndex].longestPath[PathIndex].Path, tmpList->Id);
+				if(mark == 1)
+				{
+					mark = 0;
+
+					DeleteEle(&pathSet[PathSetIndex].longestPath[PathIndex].Path, tmpList->Id);
+
+					continue;
+				}
+
 				Node[tmpList->Id].Long1--;
 
 				buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex);
 
 				return;
-
 			}
 	}
 }
@@ -330,6 +312,12 @@ void patternSim()
 
 	suspectSet.node = Cudd_zddChange(manager, onez, 0);
 	Cudd_Ref(suspectSet.node);
+
+	robustPaths.Rpath = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(robustPaths.Rpath);
+
+	robustPaths.Fpath = Cudd_zddChange(manager, onez, 0);
+	Cudd_Ref(robustPaths.Fpath);
 
 	//iterate over patterns
 	for(patIndex = 0; patIndex < Tpat; printf("\n"))
@@ -359,9 +347,11 @@ void patternSim()
 
 		}
 
-		//storeRobustPaths();
+		storeRobustPaths();
+		printf("Robust Path Rpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Rpath));
+		printf("Robust Path Fpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Fpath));
 
-
+		/*
 		for(i = 0; i < Npo; i++)
 		{
 			for(j = 0; j < pathSet[i].numLongestPath; j++)
@@ -377,7 +367,7 @@ void patternSim()
 				printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
 			}
 
-		}
+		}*/
 	}
 }
 
@@ -385,128 +375,91 @@ void storeRobustPaths()
 {
 	int i, j;
 	LIST *tmpList = NULL;
-	DdNode *tmpNode;
+	DdNode *tmpNode, *tmpNode2, *tmpNode3, *tmpRobust;
 
-	for(i = 0, tmpList = Node[i].Fin; i <= Tgat; i++)
+	for(i = 0, tmpList = Node[i].Fin; i <= Tgat; i++, tmpList = Node[i].Fin)
 	{
 		switch(Node[i].Type) {
 			case INPT:
-				if(Node[i].Val == R1)
+				if(Node[i].Mark == 1)
 				{
-					Node[i].Rpath = Cudd_zddChange(manager, onez, 2*i);
-					Cudd_Ref(Node[i].Rpath);
+					if(Node[i].Val == R1)
+					{
+						Node[i].Rpath = Cudd_zddChange(manager, onez, 2*i);
+						Cudd_Ref(Node[i].Rpath);
 
-				} else if(Node[i].Val == F0) {
-					Node[i].Fpath = Cudd_zddChange(manager, onez, (2*i)+1);
-					Cudd_Ref(Node[i].Fpath);
+					} else if(Node[i].Val == F0) {
+						Node[i].Fpath = Cudd_zddChange(manager, onez, (2*i)+1);
+						Cudd_Ref(Node[i].Fpath);
 
+					}
+
+					Node[i].RobustPath = Cudd_zddChange(manager, onez, i);
+					Cudd_Ref(Node[i].RobustPath);
 				}
 
 				break;
 			case AND:
-				if(Node[i].Mark == 1)
-				{
-					if(Node[i].Val == R1)
-					{
-						Node[i].Rpath = Cudd_zddChange(manager, onez, 2*i);
-						Cudd_Ref(Node[i].Rpath);
-
-					} else if(Node[i].Val == F0) {
-						Node[i].Fpath = Cudd_zddChange(manager, onez, (2*i)+1);
-						Cudd_Ref(Node[i].Fpath);
-
-					}
-
-					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-					{
-
-						if(Node[i].Val == R1)
-						{
-							tmpNode = Cudd_zddUnion(manager, Node[tmpList->Id].Rpath, Node[i].Rpath);
-							Cudd_Ref(tmpNode);
-
-							Node[i].Rpath = tmpNode;
-
-						} else if(Node[i].Val == F0) {
-							tmpNode = Cudd_zddUnion(manager, Node[tmpList->Id].Fpath, Node[i].Fpath);
-							Cudd_Ref(tmpNode);
-
-							Node[i].Fpath = tmpNode;
-						}
-					}
-				}
-
-				break;
 			case NAND:
-				if(Node[i].Mark == 1)
-				{
-					if(Node[i].Val == R1)
-					{
-						Node[i].Rpath = Cudd_zddChange(manager, onez, 2*i);
-						Cudd_Ref(Node[i].Rpath);
-
-					} else if(Node[i].Val == F0) {
-						Node[i].Fpath = Cudd_zddChange(manager, onez, (2*i)+1);
-						Cudd_Ref(Node[i].Fpath);
-
-					}
-
-					for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-					{
-
-						if(Node[i].Val == R1)
-						{
-							tmpNode = Cudd_zddUnion(manager, Node[tmpList->Id].Rpath, Node[i].Rpath);
-							Cudd_Ref(tmpNode);
-
-							Node[i].Rpath = tmpNode;
-
-						} else if(Node[i].Val == F0) {
-							tmpNode = Cudd_zddUnion(manager, Node[tmpList->Id].Fpath, Node[i].Fpath);
-							Cudd_Ref(tmpNode);
-
-							Node[i].Fpath = tmpNode;
-						}
-					}
-				}
-
-				break;
 			case OR:
-
-
-				break;
 			case NOR:
-
-
-				break;
 			case XOR:
-
-				break;
 			case XNOR:
-
-				break;
 			case BUFF:
-				tmpList = Node[i].Fin;
-
-				if(Node[i].Val == R1)
-				{
-					Node[i].Rpath = Cudd_zddChange(manager, Node[tmpList->Id].Rpath, 2*i);
-					Cudd_Ref(Node[i].Rpath);
-
-				} else if(Node[i].Val == F0) {
-					Node[i].Fpath = Cudd_zddChange(manager, Node[tmpList->Id].Fpath, (2*i)+1);
-					Cudd_Ref(Node[i].Fpath);
-
-				}
-
-				break;
 			case NOT:
-				tmpList = Node[i].Fin;
-
-
-				break;
 			case FROM:
 				tmpList = Node[i].Fin;
+
+				if(Node[i].Mark == 1)
+				{
+					if(Node[tmpList->Id].Val == R1)
+					{
+						tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].Rpath, 2*i);
+						Cudd_Ref(tmpNode);
+
+					} else if(Node[tmpList->Id].Val == F0) {
+						tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].Fpath, (2*i)+1);
+						Cudd_Ref(tmpNode);
+					}
+
+					for(tmpList = tmpList->Next; tmpList != NULL; tmpList = tmpList->Next)
+					{
+						if(Node[tmpList->Id].Val == R1)
+						{
+							tmpNode2 = Cudd_zddChange(manager, Node[tmpList->Id].Rpath, 2*i);
+							Cudd_Ref(tmpNode2);
+
+						} else if(Node[tmpList->Id].Val == F0) {
+							tmpNode2 = Cudd_zddChange(manager, Node[tmpList->Id].Fpath, (2*i)+1);
+							Cudd_Ref(tmpNode2);
+
+						} else {
+							continue;
+
+						}
+
+						tmpRobust = Cudd_zddChange(manager, Node[tmpList->Id].RobustPath, 2*i);
+
+
+						tmpNode3 = Cudd_zddUnion(manager, tmpNode, tmpNode2);
+						Cudd_Ref(tmpNode3);
+						Cudd_RecursiveDeref(manager, tmpNode);
+						Cudd_RecursiveDeref(manager, tmpNode2);
+
+						tmpNode = tmpNode3;
+						//Node[i].RobustPath = Cudd_zddChange(manager, Node[tmpList->Id].Rpath, i);
+						//Cudd_Ref(Node[i].RobustPath);
+					}
+
+					if(Node[i].Val == R1)
+					{
+						Node[i].Rpath = tmpNode;
+
+					} else if(Node[i].Val == F0) {
+						Node[i].Fpath = tmpNode;
+					}
+
+				}
 
 				break;
 			default:
@@ -522,11 +475,13 @@ void storeRobustPaths()
 		{
 			tmpNode = Cudd_zddUnion(manager, robustPaths.Rpath, Node[j].Rpath);
 			Cudd_Ref(tmpNode);
+			Cudd_RecursiveDeref(manager, robustPaths.Rpath);
 
 			robustPaths.Rpath = tmpNode;
 		} else if(Node[j].Val == F0) {
 			tmpNode = Cudd_zddUnion(manager, robustPaths.Fpath, Node[j].Fpath);
 			Cudd_Ref(tmpNode);
+			Cudd_RecursiveDeref(manager, robustPaths.Fpath);
 
 			robustPaths.Fpath = tmpNode;
 		}
@@ -770,4 +725,37 @@ void freePathSet()
 	free(pathSet);
 }
 
+int compareList(LIST *a, LIST *b)
+{
+	while(1)
+	{
+		/* base case */
+		if(a == NULL && b == NULL)
+		{
+			return 1;
+		}
+
+		if(a == NULL && b != NULL)
+		{
+			return 0;
+		}
+
+		if(a != NULL && b == NULL)
+		{
+			return 0;
+		}
+
+		if(a->Id != b->Id)
+		{
+			return 0;
+		}
+
+		/* If we reach here, then a and b are not NULL and their
+		   data is same, so move to next nodes in both lists */
+		a = a->Next;
+		b = b->Next;
+	}
+
+	return 0;
+}
 /****************************************************************************************************************************/

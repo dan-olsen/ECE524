@@ -26,7 +26,7 @@ typedef struct PathSet_type {
 } PathSet;
 
 typedef struct Robust_type {
-	DdNode *Rpath, *Fpath;
+	DdNode *Rpath, *Fpath, *RobustPath;
 
 } RobustSet;
 

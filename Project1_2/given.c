@@ -117,10 +117,10 @@ void InitiGat(GATE *Node,int Num)
 	Node[Num].Val=6;
 	Node[Num].Fin=Node[Num].Fot=NULL;
 	Node[Num].Rpath=Node[Num].Fpath=NULL;
+	Node[Num].RobustPath = NULL;
 	Node[Num].Delay = 0;
 	Node[Num].Long1 = 0;
 	Node[Num].Long2 = 0;
-	Node[Num].PathMark = 0;
 	return;
 }//end of InitiGat
 /***************************************************************************************************
