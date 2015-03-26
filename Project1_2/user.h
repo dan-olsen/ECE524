@@ -46,7 +46,7 @@ typedef struct PATH_SET_type {
 } PATH_SET;
 
 int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
-GATE Node[Mnod];				//Structure to store the ckt given in .isc file
+GATE *Node;				//Structure to store the ckt given in .isc file
 PathSet suspectSet;
 PathSet goodPaths;
 RobustSet robustPaths;

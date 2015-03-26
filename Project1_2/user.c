@@ -34,9 +34,10 @@ const int simNOT [6] 				= 	 {S1, F0, R1, S0, X0, X1};
 void applyPattern(int i, int *patIndex, int *tmpVal);
 void printInputVector(char *input);
 void printPattern(int patIndex);
-void InsertPathCount(PATH_COUNT **Cur, int delay, int count);
 void initDelay();
 DdNode *createZDD(LIST *pathList);
+void markPath();
+void resetPathMark();
 void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int PathIndex);
 
 void readPatternFile(FILE* patFile)
@@ -105,7 +106,6 @@ void initDelay()
 {
 	int i, j, mark = 0, tmpCount, k;
 	LIST *tmpList = NULL;
-	PATH_COUNT *pathIter = NULL, *currPath = NULL;
 	int tmpDelay;
 
 	for(i = 0, tmpDelay = 0; i <= Tgat; i++, tmpDelay = 0)
@@ -114,9 +114,6 @@ void initDelay()
 			case INPT:
 				Node[i].Delay = 0;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
-
-				InsertPathCount(&Node[i].PathCount, 0, 1);
-				printf("Path at %d = %d,%d\n", i, Node[i].PathCount->Delay, Node[i].PathCount->Count);
 
 				break;
 			case AND:
@@ -138,61 +135,12 @@ void initDelay()
 				Node[i].Delay = tmpDelay + 1;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
-				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-				{
-					for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
-					{
-						if(Node[i].PathCount != NULL)
-						{
-							for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-							{
-								if(currPath->Delay == pathIter->Delay + 1)
-								{
-									currPath->Count = currPath->Count + pathIter->Count;
-
-									mark = 1;
-								}
-							}
-
-							if(mark == 1)
-							{
-								mark = 0;
-
-							} else {
-								InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
-
-							}
-						} else {
-							InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
-
-						}
-					}
-				}
-
-				for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-				{
-					printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
-
-				}
-
 				break;
 			case FROM:
 				tmpList = Node[i].Fin;
 
 				Node[i].Delay = Node[tmpList->Id].Delay;
 				printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
-
-				for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
-				{
-					InsertPathCount(&Node[i].PathCount, pathIter->Delay, pathIter->Count);
-
-				}
-
-				for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-				{
-					printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
-
-				}
 
 				break;
 			default:
@@ -204,75 +152,163 @@ void initDelay()
 
 	pathSet = malloc(sizeof(PATH_SET *) * Npo);
 
-	for(i = 0, j = Tgat-Npo+1; i < Npo; i++, j++)
+	for(i = 0, j = Tgat-Npo+1, markPath(); i < Npo; i++, j++, resetPathMark())
 	{
 		pathSet[i].Id = j;
-		pathSet[i].numLongestPath = 0;
-		pathSet[i].numSecondLongestPath = 0;
-
-		for(currPath = Node[j].PathCount; currPath != NULL; currPath = currPath->Next)
-		{
-			if(currPath->Delay == Node[j].Delay)
-				pathSet[i].numLongestPath += currPath->Count;
-			else if(currPath->Delay == Node[j].Delay - 1)
-				pathSet[i].numSecondLongestPath += currPath->Count;
-			else
-				printf("Error\n");
-		}
+		pathSet[i].numLongestPath = Node[j].Long1;
+		pathSet[i].numSecondLongestPath = Node[j].Long2;
 
 		printf("%d %d\n", pathSet[i].numLongestPath, pathSet[i].numSecondLongestPath);
 
 		pathSet[i].longestPath = malloc(sizeof(PATH *) * pathSet[i].numLongestPath);
 		pathSet[i].secondLongestPath = malloc(sizeof(PATH *) * pathSet[i].numSecondLongestPath);
 
-		for(currPath = Node[j].PathCount; currPath != NULL; currPath = currPath->Next)
-		{
-			if(Node[j].Delay == currPath->Delay)
-			{
-				for(k = 0; k < pathSet[i].numLongestPath; k++)
-				{
-					InsertEle(&pathSet[i].longestPath[k].Path, j);
-					buildNLongestPath(1, j, i, k);
+		printf("%d, %d, %d\n", Node[6].Delay, Node[6].Long1, Node[6].PathMark);
 
-					printf("Longest Path #%d at %d = ", k, j);
-					PrintList(pathSet[i].longestPath[k].Path);
-					printf("\n");
-				}
-			}
+		for(k = 0; k < pathSet[i].numLongestPath; k++, markPath())
+		{
+			InsertEle(&pathSet[i].longestPath[k].Path, j);
+			buildNLongestPath(1, j, i, k);
+
+			printf("Longest Path #%d at %d = ", k, j);
+			PrintList(pathSet[i].longestPath[k].Path);
+			printf("\n");
 		}
 	}
 
 	printf("\n");
 }
 
+void markPath()
+{
+	int i, j, mark = 0, tmpCount, k;
+	LIST *tmpList = NULL;
+	int tmpDelay;
+
+	for(i = 0, tmpDelay = 0; i <= Tgat; i++, tmpDelay = 0)
+	{
+		switch(Node[i].Type) {
+			case INPT:
+				Node[i].Long1 = 1;
+				Node[i].Long2 = 1;
+
+				//printf("Long1 at %d = %d\n", i, Node[i].Long1);
+				//printf("Long2 at %d = %d\n", i, Node[i].Long2);
+
+				break;
+			case AND:
+			case NAND:
+			case OR:
+			case NOR:
+			case XOR:
+			case XNOR:
+			case BUFF:
+			case NOT:
+				Node[i].Long1 = 0;
+				Node[i].Long2 = 0;
+
+				for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				{
+					if(Node[i].Delay == Node[tmpList->Id].Delay + 1)
+					{
+						Node[i].Long1 += Node[tmpList->Id].Long1;
+
+						if(Node[tmpList->Id].Long2 != 0)
+						{
+							mark = tmpList->Id;
+						}
+
+					} else if(Node[i].Delay == Node[tmpList->Id].Delay + 2) {
+						Node[i].Long2 += Node[tmpList->Id].Long2;
+
+					}
+				}
+
+				if(mark != 0)
+				{
+					Node[i].Long2 += Node[mark].Long2;
+
+				} else {
+					mark = 0;
+				}
+
+				//printf("Long1 at %d = %d\n", i, Node[i].Long1);
+				//printf("Long2 at %d = %d\n", i, Node[i].Long2);
+
+
+				break;
+			case FROM:
+				Node[i].Long1 = 0;
+				Node[i].Long2 = 0;
+
+				tmpList = Node[i].Fin;
+
+				Node[i].Long1 = Node[tmpList->Id].Long1;
+				Node[i].Long2 = Node[tmpList->Id].Long2;
+
+				//printf("Long1 at %d = %d\n", i, Node[i].Long1);
+				//printf("Long2 at %d = %d\n", i, Node[i].Long2);
+
+				break;
+			default:
+				//printf("Hit Default at i: %d ", i);
+				//printf("Type: %d\n", graph[i].typ);
+				break;
+		}
+	}
+}
+
+void resetPathMark()
+{
+	LIST *tmpList = NULL;
+	int i, j;
+
+	for(i = 1, j = 1; i <= Npi; j++)
+	{
+		if(Node[j].Type == INPT)
+		{
+			Node[j].PathMark = 0;
+
+			for(tmpList = Node[j].Fot; tmpList != NULL; tmpList = tmpList->Next)
+			{
+				if(Node[tmpList->Id].Type == FROM)
+				{
+					Node[tmpList->Id].PathMark = 0;
+
+				}
+			}
+
+			i++;
+		}
+	}
+}
+
 void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int PathIndex)
 {
 	LIST *tmpList;
-	PATH_COUNT *finPathIter = NULL, *currPathIter = NULL;
 	int mark = 0;
 
 	for(tmpList = Node[NodeIndex].Fin; tmpList != NULL; tmpList = tmpList->Next)
 	{
-		for(finPathIter = Node[tmpList->Id].PathCount; finPathIter != NULL; finPathIter = finPathIter->Next)
-		{
-			for(currPathIter = Node[NodeIndex].PathCount; currPathIter != NULL; currPathIter = currPathIter->Next)
+			if(tmpList->Id == 6)
 			{
-				if(Node[NodeIndex].Delay == currPathIter->Delay)
-				{
-					if(((currPathIter->Delay == finPathIter->Delay + n) || (currPathIter->Delay == finPathIter->Delay)) && (finPathIter->Count != 0))
-					{
-						InsertEle(&pathSet[PathSetIndex].longestPath[PathIndex].Path, tmpList->Id);
-						finPathIter->Count--;
-
-						buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex);
-
-						return;
-
-					}
-				}
+				printf("%d, %d, %d\n", Node[6].Delay, Node[6].Long1, Node[6].PathMark);
 			}
+			if(((Node[NodeIndex].Delay == Node[tmpList->Id].Delay + n) || (Node[NodeIndex].Delay == Node[tmpList->Id].Delay)) && (Node[tmpList->Id].Long1 != 0) && (Node[tmpList->Id].PathMark == 0))
+			{
+				if(Node[tmpList->Id].Type == INPT || ((Node[tmpList->Id].Type == FROM) && Node[Node[tmpList->Id].Fin->Id].Type == INPT))
+				{
+					Node[tmpList->Id].PathMark = 1;
+				}
 
-		}
+				InsertEle(&pathSet[PathSetIndex].longestPath[PathIndex].Path, tmpList->Id);
+				Node[tmpList->Id].Long1--;
+
+				buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex);
+
+				return;
+
+			}
 	}
 }
 
@@ -280,7 +316,6 @@ void patternSim()
 {
 	int i, j, patIndex, tmpVal;
 	DdNode *tmpNode, *tmpNode2;
-	PATH_COUNT *tmpPath;
 
 	initDelay();
 
@@ -324,9 +359,9 @@ void patternSim()
 
 		}
 
-		storeRobustPaths();
+		//storeRobustPaths();
 
-		/*
+
 		for(i = 0; i < Npo; i++)
 		{
 			for(j = 0; j < pathSet[i].numLongestPath; j++)
@@ -342,7 +377,7 @@ void patternSim()
 				printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
 			}
 
-		}*/
+		}
 	}
 }
 
@@ -709,42 +744,6 @@ void printPattern(int patIndex)
 	}
 
 	printf("\n");
-}
-
-void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
-{
-	PATH_COUNT *tl=NULL;
-	PATH_COUNT *nl=NULL;
-
-	if ((tl=(PATH_COUNT *) malloc(sizeof(PATH_COUNT)))==NULL){
-		printf("LIST: Out of memory\n");
-		exit(1);
-	} else {
-		tl->Next = NULL;
-		tl->Delay = delay;
-		tl->Count = count;
-
-		if(*Cur==NULL)
-		{
-			*Cur=tl;
-			return;
-		}
-
-		nl=*Cur;
-
-		while(nl!=NULL)
-		{
-			if(nl->Next==NULL)
-			{
-				nl->Next=tl;
-				break;
-			}
-
-			nl=nl->Next;
-		}
-	}
-
-	return;
 }
 
 void freePathSet()
