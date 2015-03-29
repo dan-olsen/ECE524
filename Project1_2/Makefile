@@ -1,5 +1,5 @@
 CC              = cc
-SRC             = main.c given.c user.c
+SRC             = main.c given.c stack.c user.c
 TARGET          = project1
 INCLUDE       = /opt/net/apps/cudd/include 
 WHERE	 = /opt/net/apps/cudd

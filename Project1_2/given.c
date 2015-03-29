@@ -119,9 +119,8 @@ void InitiGat(GATE *Node,int Num)
 	Node[Num].Fin=Node[Num].Fot=NULL;
 	Node[Num].Rpath=Node[Num].Fpath=NULL;
 	Node[Num].RobustPath = NULL;
-	Node[Num].Delay = 0;
-	Node[Num].Long1 = 0;
-	Node[Num].Long2 = 0;
+	Node[Num].Delay=0;
+	Node[Num].PathCount = NULL;
 	return;
 }//end of InitiGat
 /***************************************************************************************************
@@ -158,6 +157,7 @@ void ClearGat(GATE *Node,int Tgat)
 		Node[i].Type=Node[i].Nfi=Node[i].Nfo=Node[i].Mark=Node[i].Val=0;
 		FreeList(&Node[i].Fin);
 		FreeList(&Node[i].Fot);
+		FreePathCounts(&Node[i].PathCount);
 	}
 
 	return;
@@ -326,5 +326,28 @@ int ReadIsc(FILE *Isc,GATE *Node)
 
 //Return the Maximum node of the Isc file
 return tot;
-}//end of ReadIsc 
+}//end of ReadIsc
+
+void FreePathCounts(PATH_COUNT **Cur)
+{
+	PATH_COUNT *tmp=NULL;
+
+		if(*Cur==NULL)
+		{
+			return;
+		}
+
+		tmp=(*Cur);
+
+		while((*Cur) != NULL)
+		{
+		  tmp=tmp->Next;
+		  free(*Cur);
+		  (*Cur)=tmp;
+		}
+
+		(*Cur)=NULL;
+
+		return;
+}
 /****************************************************************************************************************************/

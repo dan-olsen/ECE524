@@ -36,19 +36,7 @@ int main(int argc, char **argv)
 	Pat = fopen(argv[2],"r");		//File pointer to open .pattern file
 	//Res = fopen(argv[3],"w");		//File pointer to open .result file
 
-	if ( NULL == (patterns =  (int*)malloc(Npi * sizeof(int)))) {
-		printf("malloc failed\n");
-		//error
-	}
-
-	for(i = 0; i < Npi; i++)
-	{
-		patterns[i] = 0;
-	}
-
 	readPatternFile(Pat);
-
-	pathSet =(PATH_SET*) malloc(sizeof(PATH_SET) * Npo);
 
 	patternSim();
 
