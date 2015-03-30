@@ -17,7 +17,8 @@ void StackInit(stackT *stackP)
 	}
 
 	stackP->contents = newContents;
-	stackP->size = INIT_SIZE;
+    stackP->capacity = INIT_SIZE;
+    stackP->contentSize = 0;
 	stackP->top = -1;  /* I.e., empty */
 }
 
@@ -27,7 +28,8 @@ void StackDestroy(stackT *stackP)
 	free(stackP->contents);
 
 	stackP->contents = NULL;
-	stackP->size = 0;
+    stackP->capacity = 0;
+    stackP->contentSize = 0;
 	stackP->top = -1;  /* I.e., empty */
 }
 
@@ -35,10 +37,11 @@ void StackPush(stackT *stackP, int element)
 {
 	if (StackIsFull(stackP)) {
 		stackP->contents = (int *)realloc(stackP->contents, sizeof(int) * INCREASE_SIZE);
+        stackP->capacity += INCREASE_SIZE;
 	}
 
 	/* Put information in array; update top. */
-
+    stackP->contentSize++;
 	stackP->contents[++stackP->top] = element;
 }
 
@@ -48,7 +51,7 @@ int StackPop(stackT *stackP)
 		fprintf(stderr, "Can't pop element from stack: stack is empty.\n");
 		exit(1);  /* Exit, returning error code. */
 	}
-
+    stackP->contentSize--;
 	return stackP->contents[stackP->top--];
 }
 
@@ -59,5 +62,16 @@ int StackIsEmpty(stackT *stackP)
 
 int StackIsFull(stackT *stackP)
 {
-	return stackP->top >= stackP->size - 1;
+    return stackP->top >= stackP->capacity - 1;
+}
+
+void StackCopyToList(stackT *stackP, LIST **list)
+{
+    int i;
+
+    for(i = 0; i <= stackP->top; i++)
+    {
+        InsertEle(list, stackP->contents[i]);
+    }
+
 }

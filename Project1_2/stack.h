@@ -4,9 +4,12 @@
 #define INIT_SIZE 32
 #define INCREASE_SIZE 8
 
+#include "given.h"
+
 typedef struct {
   int *contents;
-  int size;
+  int contentSize;
+  int capacity;
   int top;
 } stackT;
 
@@ -16,5 +19,6 @@ void StackPush(stackT *stackP, int element);
 int StackPop(stackT *stackP);
 int StackIsEmpty(stackT *stackP);
 int StackIsFull(stackT *stackP);
+void StackCopyToList(stackT *stackP, LIST **list);
 
 #endif  /* not defined _STACK_H */

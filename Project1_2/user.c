@@ -37,7 +37,7 @@ void printInputVector(char *input);
 void printPattern(int patIndex);
 void initDelay();
 DdNode *createZDD(LIST *pathList);
-void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int *PathIndex);
+void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int *PathIndex, int numPaths, stackT *pathStack);
 int compareList(LIST *a, LIST *b);
 void InsertPathCount(PATH_COUNT **Cur, int delay, int count);
 int checkPathSensitivity(LIST *path);
@@ -250,21 +250,22 @@ void initDelay()
 		{
 			if(Node[j].Delay == currPath->Delay)
 			{
+                fflush(stdout);
 				k = 0;
-				InsertEle(&pathSet[i].longestPath[k].Path, j);
-				//buildNLongestPath(1, j, i, &k);
-
-				printf("Longest Path #%d at %d = ", k, j);
-				PrintList(pathSet[i].longestPath[k].Path);
-				printf("\n");
+                StackPush(&pathStack, j);
+                //InsertEle(&pathSet[i].longestPath[k].Path, j);
+                buildNLongestPath(1, j, i, &k, pathSet[i].numLongestPath, &pathStack);
+                StackPop(&pathStack);
 
 				k = 0;
-				InsertEle(&pathSet[i].secondLongestPath[k].Path, j);
-				//buildNLongestPath(2, j, i, &k);
+                //StackPush(&pathStack, j);
+                //InsertEle(&pathSet[i].secondLongestPath[k].Path, j);
+                //buildNLongestPath(2, j, i, &k, pathSet[i].numSecondLongestPath, &pathStack);
+                //StackPop(&pathStack);
 
-				printf("SecondLongestPath Path #%d at %d = ", k, j);
-				PrintList(pathSet[i].secondLongestPath[k].Path);
-				printf("\n");
+                //printf("SecondLongestPath Path #%d at %d = ", k, j);
+                //PrintList(pathSet[i].secondLongestPath[k].Path);
+                //printf("\n");
 			}
 		}
 	}
@@ -272,11 +273,13 @@ void initDelay()
 	printf("\n");
 }
 
-void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int *PathIndex)
+void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, PATH_COUNT *currPathCount, int *PathIndex, int numPaths, stackT *pathStack)
 {
 	LIST *tmpList;
 	PATH_COUNT *finPathIter = NULL, *currPathIter = NULL;
 	int mark = 0;
+    //printf("L Path Enter at %d\n", NodeIndex);
+    //fflush(stdout);
 
 	for(tmpList = Node[NodeIndex].Fin; tmpList != NULL; tmpList = tmpList->Next)
 	{
@@ -284,22 +287,45 @@ void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int *PathIndex)
 		{
 			for(currPathIter = Node[NodeIndex].PathCount; currPathIter != NULL; currPathIter = currPathIter->Next)
 			{
-				if(Node[NodeIndex].Delay == currPathIter->Delay)
-				{
-					if(((currPathIter->Delay == finPathIter->Delay + n) || (currPathIter->Delay == finPathIter->Delay)))
-					{
-						InsertEle(&pathSet[PathSetIndex].longestPath[*PathIndex].Path, tmpList->Id);
-						//finPathIter->Count--;
+                //printf("Cur Path = C:%d D:%d Fin Path C:%d D:%d\n", currPathIter->Count, currPathIter->Delay, finPathIter->Count, finPathIter->Delay);
+                //fflush(stdout);
 
-						buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex);
-						(*PathIndex)++;
+                if(((Node[NodeIndex].Delay == finPathIter->Delay + n) || (Node[NodeIndex].Delay == finPathIter->Delay)))
+                {
+                    //InsertEle(&pathSet[PathSetIndex].longestPath[*PathIndex].Path, tmpList->Id);
+                    StackPush(pathStack, tmpList->Id);
 
-					}
-				}
+                    if(Node[tmpList->Id].Type == INPT)
+                    {
+                        StackCopyToList(pathStack, &pathSet[PathSetIndex].longestPath[*PathIndex].Path);
+
+                        printf("Longest Path #%d at %d = ", *PathIndex, NodeIndex);
+                        PrintList(pathSet[PathSetIndex].longestPath[*PathIndex].Path);
+                        printf("\n");
+                        fflush(stdout);
+
+                        (*PathIndex)++;
+                        StackPop(pathStack);
+
+                    } else {
+                        buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex, numPaths, pathStack);
+                        StackPop(pathStack);
+
+                    }
+
+                    if(*PathIndex >= numPaths)
+                    {
+                        return;
+                    }
+                }
+
 			}
 
 		}
 	}
+    //printf("L Path Exit at %d\n", NodeIndex);
+    //fflush(stdout);
+
 }
 
 void patternSim()
