@@ -352,8 +352,8 @@ void patternSim()
 	//goodPaths.node = Cudd_zddChange(manager, onez, 0);
 	//Cudd_Ref(goodPaths.node);
 
-	//suspectSet.node = Cudd_zddChange(manager, onez, 0);
-	//Cudd_Ref(suspectSet.node);
+    suspectSet.node = Cudd_zddChange(manager, onez, 0);
+    Cudd_Ref(suspectSet.node);
 
 	//robustPaths.Rpath = Cudd_zddChange(manager, onez, 0);
 	//Cudd_Ref(robustPaths.Rpath);
@@ -393,23 +393,25 @@ void patternSim()
 		//printf("Robust Path Rpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Rpath));
 		//printf("Robust Path Fpath ZDD Count: %d\n", Cudd_zddCount(manager, robustPaths.Fpath));
 
-		/*
 		for(i = 0; i < Npo; i++)
 		{
 			for(j = 0; j < pathSet[i].numLongestPath; j++)
 			{
-				tmpNode2 = createZDD(pathSet[i].longestPath[j].Path);
-				tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
-				Cudd_Ref(tmpNode);
-				Cudd_RecursiveDeref(manager, tmpNode2);
-				Cudd_RecursiveDeref(manager, goodPaths.node);
+                if(checkPathSensitivity(pathSet[i].longestPath[j].Path) == 1)
+                {
+                    tmpNode2 = createZDD(pathSet[i].longestPath[j].Path);
+                    tmpNode = Cudd_zddUnion(manager, tmpNode2, goodPaths.node);
+                    Cudd_Ref(tmpNode);
+                    Cudd_RecursiveDeref(manager, tmpNode2);
+                    Cudd_RecursiveDeref(manager, goodPaths.node);
 
-				goodPaths.node = tmpNode;
+                    goodPaths.node = tmpNode;
 
-				printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
+                    printf("ZDD Count: %d\n", Cudd_zddCount(manager, goodPaths.node));
+                }
 			}
 
-		}*/
+        }
 	}
 }
 
@@ -841,10 +843,14 @@ void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
 
 int checkPathSensitivity(LIST *path)
 {
-	int sensitized = 0;
+    for( ; path != NULL; path = path->Next)
+    {
+        if(Node[path->Id].Mark == 0)
+        {
+            return 0;
+        }
+    }
 
-
-
-	return sensitized;
+    return 1;
 }
 /****************************************************************************************************************************/
