@@ -37,7 +37,7 @@ void printInputVector(char *input);
 void printPattern(int patIndex);
 void initDelay();
 DdNode *createZDD(LIST *pathList);
-void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int *PathIndex, int numPaths, stackT *pathStack);
+void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths, stackT *pathStack);
 int compareList(LIST *a, LIST *b);
 void InsertPathCount(PATH_COUNT **Cur, int delay, int count);
 int checkPathSensitivity(LIST *path);
@@ -249,34 +249,30 @@ void initDelay()
 		for(currPath = Node[j].PathCount; currPath != NULL; currPath = currPath->Next)
 		{
 			if(Node[j].Delay == currPath->Delay)
-			{
-                fflush(stdout);
-				k = 0;
+            {
+                k = 0;
                 StackPush(&pathStack, j);
-                //InsertEle(&pathSet[i].longestPath[k].Path, j);
-                buildNLongestPath(1, j, i, &k, pathSet[i].numLongestPath, &pathStack);
+                buildNLongestPath(1, j, i, currPath->Delay-1, &k, pathSet[i].numLongestPath, &pathStack);
                 StackPop(&pathStack);
 
-				k = 0;
-                //StackPush(&pathStack, j);
-                //InsertEle(&pathSet[i].secondLongestPath[k].Path, j);
-                //buildNLongestPath(2, j, i, &k, pathSet[i].numSecondLongestPath, &pathStack);
-                //StackPop(&pathStack);
 
-                //printf("SecondLongestPath Path #%d at %d = ", k, j);
-                //PrintList(pathSet[i].secondLongestPath[k].Path);
-                //printf("\n");
-			}
+            } else {
+                k = 0;
+                StackPush(&pathStack, j);
+                buildNLongestPath(2, j, i, currPath->Delay-1, &k, pathSet[i].numSecondLongestPath, &pathStack);
+                StackPop(&pathStack);
+
+            }
 		}
 	}
 
 	printf("\n");
 }
 
-void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, PATH_COUNT *currPathCount, int *PathIndex, int numPaths, stackT *pathStack)
+void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths, stackT *pathStack)
 {
 	LIST *tmpList;
-	PATH_COUNT *finPathIter = NULL, *currPathIter = NULL;
+    PATH_COUNT *finPathIter = NULL;
 	int mark = 0;
     //printf("L Path Enter at %d\n", NodeIndex);
     //fflush(stdout);
@@ -285,17 +281,17 @@ void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, PATH_COUNT *currP
 	{
 		for(finPathIter = Node[tmpList->Id].PathCount; finPathIter != NULL; finPathIter = finPathIter->Next)
 		{
-			for(currPathIter = Node[NodeIndex].PathCount; currPathIter != NULL; currPathIter = currPathIter->Next)
-			{
-                //printf("Cur Path = C:%d D:%d Fin Path C:%d D:%d\n", currPathIter->Count, currPathIter->Delay, finPathIter->Count, finPathIter->Delay);
-                //fflush(stdout);
+            //printf("Cur Path = C:%d D:%d Fin Path C:%d D:%d\n", currPathIter->Count, currPathIter->Delay, finPathIter->Count, finPathIter->Delay);
+            //fflush(stdout);
 
-                if(((Node[NodeIndex].Delay == finPathIter->Delay + n) || (Node[NodeIndex].Delay == finPathIter->Delay)))
+            if(currPathDelay == finPathIter->Delay)
+            {
+                //InsertEle(&pathSet[PathSetIndex].longestPath[*PathIndex].Path, tmpList->Id);
+                StackPush(pathStack, tmpList->Id);
+
+                if(Node[tmpList->Id].Type == INPT)
                 {
-                    //InsertEle(&pathSet[PathSetIndex].longestPath[*PathIndex].Path, tmpList->Id);
-                    StackPush(pathStack, tmpList->Id);
-
-                    if(Node[tmpList->Id].Type == INPT)
+                    if(n == 1)
                     {
                         StackCopyToList(pathStack, &pathSet[PathSetIndex].longestPath[*PathIndex].Path);
 
@@ -304,23 +300,35 @@ void buildNLongestPath(int n, int NodeIndex, int PathSetIndex, PATH_COUNT *currP
                         printf("\n");
                         fflush(stdout);
 
-                        (*PathIndex)++;
-                        StackPop(pathStack);
+                    } else if(n == 2) {
+                        StackCopyToList(pathStack, &pathSet[PathSetIndex].secondLongestPath[*PathIndex].Path);
 
-                    } else {
-                        buildNLongestPath(1, tmpList->Id, PathSetIndex, PathIndex, numPaths, pathStack);
-                        StackPop(pathStack);
-
+                        printf("Second LongestPath Path #%d at %d = ", *PathIndex, NodeIndex);
+                        PrintList(pathSet[PathSetIndex].secondLongestPath[*PathIndex].Path);
+                        printf("\n");
+                        fflush(stdout);
                     }
 
-                    if(*PathIndex >= numPaths)
-                    {
-                        return;
-                    }
+
+
+                    (*PathIndex)++;
+                    StackPop(pathStack);
+
+                } else {
+                    if(Node[tmpList->Id].Type != FROM)
+                        buildNLongestPath(n, tmpList->Id, PathSetIndex, finPathIter->Delay-1, PathIndex, numPaths, pathStack);
+                    else
+                        buildNLongestPath(n, tmpList->Id, PathSetIndex, finPathIter->Delay, PathIndex, numPaths, pathStack);
+
+                    StackPop(pathStack);
+
                 }
 
-			}
-
+                if(*PathIndex >= numPaths)
+                {
+                    return;
+                }
+            }
 		}
 	}
     //printf("L Path Exit at %d\n", NodeIndex);
