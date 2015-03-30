@@ -69,7 +69,7 @@ void StackCopyToList(stackT *stackP, LIST **list)
 {
     int i;
 
-    for(i = 0; i <= stackP->top; i++)
+    for(i = stackP->top; i > -1; i--)
     {
         InsertEle(list, stackP->contents[i]);
     }

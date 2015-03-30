@@ -20,11 +20,6 @@
 #define X1 4
 #define X0 5
 
-typedef struct PathSet_type {
-	DdNode *node;
-
-} PathSet;
-
 typedef struct Robust_type {
 	DdNode *Rpath, *Fpath, *RobustPath;
 
@@ -47,8 +42,8 @@ typedef struct PATH_SET_type {
 
 int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
 GATE *Node;				//Structure to store the ckt given in .isc file
-PathSet suspectSet;
-PathSet goodPaths;
+DdNode *suspectSet;
+DdNode *goodPaths;
 RobustSet robustPaths;
 int *patterns;
 PATH_SET *pathSet;
