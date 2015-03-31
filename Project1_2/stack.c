@@ -5,18 +5,21 @@
 
 void StackInit(stackT *stackP)
 {
-	int *newContents;
 
-	/* Allocate a new array to hold the contents. */
+	if(stackP->contents == NULL){
+		stackP->contents = (int *)malloc(sizeof(int) * INIT_SIZE);
 
-	newContents = (int *)malloc(sizeof(int) * INIT_SIZE);
+		if (stackP->contents == NULL) {
+			fprintf(stderr, "Insufficient memory to initialize stack.\n");
+			exit(1);  /* Exit, returning error code. */
+		}
 
-	if (newContents == NULL) {
-		fprintf(stderr, "Insufficient memory to initialize stack.\n");
+	} else {
+		fprintf(stderr, "Stack Init called and contents not NULL.\n");
 		exit(1);  /* Exit, returning error code. */
+
 	}
 
-	stackP->contents = newContents;
     stackP->capacity = INIT_SIZE;
     stackP->contentSize = 0;
 	stackP->top = -1;  /* I.e., empty */

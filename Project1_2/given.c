@@ -119,7 +119,7 @@ void InitiGat(GATE *Node,int Num)
 	Node[Num].Fin=Node[Num].Fot=NULL;
 	Node[Num].Rpath=Node[Num].Fpath=NULL;
 	Node[Num].RobustPath = NULL;
-	Node[Num].Delay=0;
+	Node[Num].Delay = 0;
 	Node[Num].PathCount = NULL;
 	return;
 }//end of InitiGat
@@ -225,12 +225,15 @@ int AssignType(char *Gtyp)
 ***************************************************************************************************/
 int ReadIsc(FILE *Isc,GATE *Node)
 {
-	char *noty, *from, *str1, *str2, *name, *line;
+	char *noty, *from, *str1, *str2, *name, *line = NULL;
 	int  i,id,fid,fin,fot,tot=0;
 	//Dynamic memory allocation for temporary strings
-	noty=(char *) malloc(Mlin * sizeof(char));    from=(char *) malloc(Mlin * sizeof(char));  
-	str1=(char *) malloc(Mlin * sizeof(char));    str2=(char *) malloc(Mlin * sizeof(char));  
-	name=(char *) malloc(Mlin * sizeof(char));    line=(char *) malloc(Mlin * sizeof(char));
+	noty=(char *) malloc(Mlin * sizeof(char));
+	from=(char *) malloc(Mlin * sizeof(char));
+	str1=(char *) malloc(Mlin * sizeof(char));
+	str2=(char *) malloc(Mlin * sizeof(char));
+	name=(char *) malloc(Mlin * sizeof(char));
+	line=(char *) malloc(Mlin * sizeof(char));
 	//Intialize all Gates in Node structure
 	for(i=0;i<Mnod;i++)
 	{
