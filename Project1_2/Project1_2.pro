@@ -8,9 +8,6 @@ SOURCES += main.c \
     stack.c \
     user.c
 
-include(deployment.pri)
-qtcAddDeployment()
-
 HEADERS += \
     given.h \
     stack.h \

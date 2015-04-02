@@ -400,8 +400,8 @@ void patternSim()
                 		createZDD(pathSet[i].longestPath[j].Path, &tmpNode2);
 						tmpNode = Cudd_zddUnion(manager, tmpNode2, suspectSet);
 						Cudd_Ref(tmpNode);
-						Cudd_RecursiveDeref(manager, tmpNode2);
-						Cudd_RecursiveDeref(manager, suspectSet);
+                        //Cudd_RecursiveDeref(manager, tmpNode2);
+                        //Cudd_RecursiveDeref(manager, suspectSet);
 
 						suspectSet = tmpNode;
                 	}
@@ -422,8 +422,8 @@ void patternSim()
 						createZDD(pathSet[i].secondLongestPath[j].Path, &tmpNode2);
 						tmpNode = Cudd_zddUnion(manager, tmpNode2, suspectSet);
 						Cudd_Ref(tmpNode);
-						Cudd_RecursiveDeref(manager, tmpNode2);
-						Cudd_RecursiveDeref(manager, suspectSet);
+                        //Cudd_RecursiveDeref(manager, tmpNode2);
+                        //Cudd_RecursiveDeref(manager, suspectSet);
 
 						suspectSet = tmpNode;
 					}
@@ -506,8 +506,8 @@ void storeRobustPaths()
 
 						tmpNode3 = Cudd_zddUnion(manager, tmpNode, tmpNode2);
 						Cudd_Ref(tmpNode3);
-						Cudd_RecursiveDeref(manager, tmpNode);
-						Cudd_RecursiveDeref(manager, tmpNode2);
+                        //Cudd_RecursiveDeref(manager, tmpNode);
+                        //Cudd_RecursiveDeref(manager, tmpNode2);
 
 						tmpNode = tmpNode3;
 						//Node[i].RobustPath = Cudd_zddChange(manager, Node[tmpList->Id].Rpath, i);
@@ -538,13 +538,13 @@ void storeRobustPaths()
 		{
 			tmpNode = Cudd_zddUnion(manager, robustPaths.Rpath, Node[j].Rpath);
 			Cudd_Ref(tmpNode);
-			Cudd_RecursiveDeref(manager, robustPaths.Rpath);
+            //Cudd_RecursiveDeref(manager, robustPaths.Rpath);
 
 			robustPaths.Rpath = tmpNode;
 		} else if(Node[j].Val == F0) {
 			tmpNode = Cudd_zddUnion(manager, robustPaths.Fpath, Node[j].Fpath);
 			Cudd_Ref(tmpNode);
-			Cudd_RecursiveDeref(manager, robustPaths.Fpath);
+            //Cudd_RecursiveDeref(manager, robustPaths.Fpath);
 
 			robustPaths.Fpath = tmpNode;
 		}
@@ -568,8 +568,8 @@ void createZDD(LIST *pathList, DdNode **path)
 
 		tmpPath = Cudd_zddUnion(manager, tmp, *path);
 		Cudd_Ref(tmpPath);
-		Cudd_RecursiveDeref(manager, *path);
-		Cudd_RecursiveDeref(manager, tmp);
+        //Cudd_RecursiveDeref(manager, *path);
+        //Cudd_RecursiveDeref(manager, tmp);
 
 		*path = tmpPath;
 
@@ -580,13 +580,13 @@ void clearPathZDDs()
 {
 	/*
 	if(robustPaths.Rpath != NULL)
-		Cudd_RecursiveDeref(manager, robustPaths.Rpath);
+        //Cudd_RecursiveDeref(manager, robustPaths.Rpath);
 
 	if(robustPaths.Fpath != NULL)
-		Cudd_RecursiveDeref(manager, robustPaths.Fpath);
+        //Cudd_RecursiveDeref(manager, robustPaths.Fpath);
 	*/
-	//Cudd_RecursiveDeref(manager, goodPaths.node);
-	//Cudd_RecursiveDeref(manager, suspectSet);
+    //Cudd_RecursiveDeref(manager, goodPaths.node);
+    //Cudd_RecursiveDeref(manager, suspectSet);
 
 }
 
@@ -609,10 +609,10 @@ void clearNodeZDDs()
 			case BUFF:
 				//printf("Recursive Deref %d\n", i);
 				if(Node[i].Rpath != NULL)
-					Cudd_RecursiveDeref(manager, Node[i].Rpath);
+                    //Cudd_RecursiveDeref(manager, Node[i].Rpath);
 
 				if(Node[i].Fpath != NULL)
-					Cudd_RecursiveDeref(manager, Node[i].Fpath);
+                    //Cudd_RecursiveDeref(manager, Node[i].Fpath);
 
 				break;
 
