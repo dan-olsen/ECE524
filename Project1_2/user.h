@@ -54,6 +54,8 @@ void patternSim();
 
 void storeRobustPaths();
 
+void storeRobustPathsRF();
+
 void clearPathZDDs();
 
 void clearNodeZDDs();
