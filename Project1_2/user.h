@@ -21,27 +21,27 @@
 #define X0 5
 
 typedef struct Robust_type {
-	DdNode *Rpath, *Fpath, *RobustPath;
+    DdNode *Rpath, *Fpath, *RobustPath;
 
 } RobustSet;
 
 typedef struct PATH_type
 {
-	LIST *Path;
+    LIST *Path;
 
 } PATH;
 
 typedef struct PATH_SET_type {
-	int Id;
-	int numLongestPath;
-	int numSecondLongestPath;
-	PATH *longestPath;
-	PATH *secondLongestPath;
+    int Id;
+    int numLongestPath;
+    int numSecondLongestPath;
+    PATH *longestPath;
+    PATH *secondLongestPath;
 
 } PATH_SET;
 
-int Npi, Npo, Tgat, Tpat;		//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
-GATE *Node;				//Structure to store the ckt given in .isc file
+int Npi, Npo, Tgat, Tpat;        //Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
+GATE *Node;                //Structure to store the ckt given in .isc file
 DdNode *suspectSet;
 DdNode *goodPaths;
 RobustSet robustPaths;

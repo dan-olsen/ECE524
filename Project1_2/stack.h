@@ -7,10 +7,10 @@
 #include "given.h"
 
 typedef struct {
-  int *contents;
-  int contentSize;
-  int capacity;
-  int top;
+    int *contents;
+    int contentSize;
+    int capacity;
+    int top;
 } stackT;
 
 void StackInit(stackT *stackP);
