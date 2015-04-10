@@ -25,28 +25,28 @@ C Header Files
 Constant Declarations
 ***************************************************************************************************/
 // VARIOUS CONSTANTS
-#define Mfnam      20        // Max number of characters in the input/output file name
-#define Mlin      500        // Max number of characters in a single line in the input file
-#define Mnod    15000         // Max number of gates in a circuit/netlist
-#define Mnam       25        // Max number of characters in the node name
-#define Mtyp       10        // Max number of nodes/gates type
-#define Min         9        // Max number of fanin of a gate
-#define Mout       16        // Max number of fanout of a gate
-#define Mpi       233        // Max number of total primary inputs in a circuit/netlist
-#define Mpo       140        // Max number of total primary outputs in a circuit/netlist
-#define Mpt       10        // Max number of lines(inputpatterns) in .vec file
-#define Mft       31        // Max number of lines(stuck at faults) in .fau file
+#define Mfnam   20      // Max number of characters in the input/output file name
+#define Mlin    500     // Max number of characters in a single line in the input file
+#define Mnod    15000   // Max number of gates in a circuit/netlist
+#define Mnam    25      // Max number of characters in the node name
+#define Mtyp    10      // Max number of nodes/gates type
+#define Min     9       // Max number of fanin of a gate
+#define Mout    16      // Max number of fanout of a gate
+#define Mpi     233     // Max number of total primary inputs in a circuit/netlist
+#define Mpo     140     // Max number of total primary outputs in a circuit/netlist
+#define Mpt     10      // Max number of lines(inputpatterns) in .vec file
+#define Mft     31      // Max number of lines(stuck at faults) in .fau file
 // GATE TYPE CONSTANTS
-#define INPT 1            // Primary Input
-#define FROM 2            // STEM BRANCH
-#define BUFF 3            // BUFFER
-#define NOT  4            // INVERTER
-#define AND  5            // AND
-#define NAND 6            // NAND
-#define OR   7            // OR
-#define NOR  8            // NOR
-#define XOR  9            // XOR
-#define XNOR 10            // XNOR
+#define INPT    1   // Primary Input
+#define FROM    2   // STEM BRANCH
+#define BUFF    3   // BUFFER
+#define NOT     4   // INVERTER
+#define AND     5   // AND
+#define NAND    6   // NAND
+#define OR      7   // OR
+#define NOR     8   // NOR
+#define XOR     9   // XOR
+#define XNOR    10  // XNOR
 /***************************************************************************************************************************
 Structure Declarations
 ****************************************************************************************************************************/
@@ -65,18 +65,18 @@ typedef struct PATH_COUNT_type
 //2.Stucture declaration for GATE
 typedef struct GATE_type
 {
-  char Name[Mnam];                            //Name of the gate
-  int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
-  LIST *Fin,*Fot;                        //Fanin members, Fanout members
-  DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
-  DdNode *RobustPath;
-  PATH_COUNT *PathCount;
+    char Name[Mnam];                            //Name of the gate
+    int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
+    LIST *Fin,*Fot;                        //Fanin members, Fanout members
+    DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
+    DdNode *RobustPath;
+    PATH_COUNT *PathCount;
 } GATE;
 /***************************************************************************************************************************
 Cudd Package Declarations
 ****************************************************************************************************************************/
 DdManager *manager;          //Manager for Cudd Package
-static int view_number=0;    //Global Variable used by Manager
+static int view_number = 0;  //Global Variable used by Manager
 DdNode *onez;                //Global Variable used by Manager
 /***************************************************************************************************************************
 Functions in declared in input.c
@@ -84,24 +84,24 @@ Functions in declared in input.c
 /***************************************************************************************************************************
 LIST Structure Functions
 ****************************************************************************************************************************/
-void InsertEle(LIST **,int);
-void DeleteEle(LIST **,int);
-int FindEle(LIST *,int );
+void InsertEle(LIST **, int);
+void DeleteEle(LIST **, int);
+int FindEle(LIST *, int );
 void PrintList(LIST *);
 int CountList(LIST *);
 void FreeList(LIST **);
 /***************************************************************************************************************************
  GATE Structure Functions
 ****************************************************************************************************************************/
-void InitiGat(GATE *,int);
-void PrintGats(GATE *,int);
-void CountPri(GATE *,int,int *,int *);
-void ClearGat(GATE *,int);
+void InitiGat(GATE *, int);
+void PrintGats(GATE *, int);
+void CountPri(GATE *, int, int *, int *);
+void ClearGat(GATE *, int);
 /***************************************************************************************************************************
 Functions for reading .isc file
 ****************************************************************************************************************************/
 int AssignType(char *);
-int ReadIsc(FILE *,GATE *);
+int ReadIsc(FILE *, GATE *);
 
 void FreePathCounts(PATH_COUNT **);
 
