@@ -10,10 +10,22 @@ Command Instructions
 ***************************************************************************************************/
 int main(int argc, char **argv)
 {
+    if(argc < 4)
+    {
+        fprintf(stderr, "Wrong number of arguments.\n");
+        exit(1);  /* Exit, returning error code. */
+    }
+
+    if(argv[1] == '-v')
+    {
+        verbose = 1;
+    }
+
+
     FILE *Isc = NULL, *Pat = NULL, *Res = NULL;    //File pointers used for .isc, .pattern, and .res files
     //clock_t Start, End;        //Clock variables to calculate the Cputime
     //double Cpu;                //Total cpu time
-    Node = NULL;                //Structure to store the ckt given in .isc file
+    GATE *Node = NULL;                //Structure to store the ckt given in .isc file
     //DdNode *GoodPaths = NULL;
     //DdNode *SuspectSet = NULL;
 
@@ -53,7 +65,6 @@ int main(int argc, char **argv)
     fclose(Pat);
     //fclose(Res);
 
-    clearPathZDDs();
     //freePathSet();
 
     /***************************************************************************************************/
