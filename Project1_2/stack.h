@@ -1,7 +1,7 @@
 #ifndef _STACK_H
 #define _STACK_H
 
-#define INIT_SIZE 32
+#define INIT_SIZE 1000
 #define INCREASE_SIZE 8
 
 #include "given.h"
@@ -20,5 +20,6 @@ void StackPop(stackT *stackP);
 int StackIsEmpty(stackT *stackP);
 int StackIsFull(stackT *stackP);
 void StackCopyToList(stackT *stackP, LIST **list);
+void PrintStack(stackT *stackP);
 
 #endif  /* not defined _STACK_H */

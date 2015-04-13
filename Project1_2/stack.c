@@ -63,7 +63,6 @@ void StackPop(stackT *stackP)
     stackP->contentSize--;
     stackP->top--;
 
-    stackP->contents[stackP->top];
 }
 
 int StackIsEmpty(stackT *stackP)
