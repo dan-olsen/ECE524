@@ -10,9 +10,13 @@ Command Instructions
 ***************************************************************************************************/
 int main(int argc, char **argv)
 {
-    FILE *Isc, *Pat, *Res;    //File pointers used for .isc, .pattern, and .res files
+    FILE *Isc = NULL, *Pat = NULL, *Res = NULL;    //File pointers used for .isc, .pattern, and .res files
     //clock_t Start, End;        //Clock variables to calculate the Cputime
     //double Cpu;                //Total cpu time
+    Node = NULL;                //Structure to store the ckt given in .isc file
+    //DdNode *GoodPaths = NULL;
+    //DdNode *SuspectSet = NULL;
+
 
     manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);    //Intializing CUDD package manger
     onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
@@ -22,6 +26,12 @@ int main(int argc, char **argv)
     Node=(GATE *) malloc(Mnod * sizeof(GATE));     //Dynamic memory allocation for Node structure
 
     Isc = fopen(argv[1],"r");                        //File pointer to open .isc file
+
+    if(Isc == NULL)
+    {
+        fprintf(stderr, "Failed to open Isc file.\n");
+        exit(1);  /* Exit, returning error code. */
+    }
 
     Tgat = ReadIsc(Isc,Node);                        //Read .isc file and return index of last node
 
@@ -37,14 +47,14 @@ int main(int argc, char **argv)
 
     readPatternFile(Pat);
 
-    patternSim();
+    patternSim(Node);
 
     free(patterns);
     fclose(Pat);
     //fclose(Res);
 
     clearPathZDDs();
-    freePathSet();
+    //freePathSet();
 
     /***************************************************************************************************/
     printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));    //Checking any unreferenced bdds in manager

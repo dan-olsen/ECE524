@@ -5,7 +5,6 @@
 
 void StackInit(stackT *stackP)
 {
-
     if(stackP->contents == NULL){
         stackP->contents = (int *)malloc(sizeof(int) * INIT_SIZE);
 
@@ -40,22 +39,31 @@ void StackPush(stackT *stackP, int element)
 {
     if (StackIsFull(stackP)) {
         stackP->contents = (int *)realloc(stackP->contents, sizeof(int) * INCREASE_SIZE);
+
+        if (stackP->contents == NULL) {
+            fprintf(stderr, "Insufficient memory to initialize stack.\n");
+            exit(1);  /* Exit, returning error code. */
+        }
+
         stackP->capacity += INCREASE_SIZE;
     }
 
     /* Put information in array; update top. */
     stackP->contentSize++;
-    stackP->contents[++stackP->top] = element;
+    stackP->top++;
+    stackP->contents[stackP->top] = element;
 }
 
-int StackPop(stackT *stackP)
+void StackPop(stackT *stackP)
 {
     if (StackIsEmpty(stackP)) {
         fprintf(stderr, "Can't pop element from stack: stack is empty.\n");
         exit(1);  /* Exit, returning error code. */
     }
     stackP->contentSize--;
-    return stackP->contents[stackP->top--];
+    stackP->top--;
+
+    stackP->contents[stackP->top];
 }
 
 int StackIsEmpty(stackT *stackP)
@@ -77,4 +85,16 @@ void StackCopyToList(stackT *stackP, LIST **list)
         InsertEle(list, stackP->contents[i]);
     }
 
+}
+
+void PrintStack(stackT *stackP)
+{
+    int i;
+
+    for(i = stackP->top; i > -1; i--)
+    {
+    	printf("%d ", stackP->contents[i]);
+    }
+
+    printf("\n");
 }

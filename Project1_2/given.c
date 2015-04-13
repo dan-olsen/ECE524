@@ -5,24 +5,39 @@ If the "Cur" is Null, it creates a single element List using "X"
 ***************************************************************************************************/
 void InsertEle(LIST **Cur,int X)
 {
-LIST *tl=NULL;
-LIST *nl=NULL;
+	LIST *tl = (LIST *) malloc(sizeof(LIST));
+	LIST *nl = NULL;
 
-if ((tl=(LIST *) malloc(sizeof(LIST)))==NULL){
-  printf("LIST: Out of memory\n");
-  exit(1);  }
-else{
-  tl->Id=X;  tl->Next=NULL;
-  if(*Cur==NULL){
-    *Cur=tl;
-    return;  }
-  nl=*Cur;
-  while(nl!=NULL){
-    if(nl->Id==X){       break;       }
-    if(nl->Next==NULL){  nl->Next=tl; }
-    nl=nl->Next; }
- }
-return;
+	if (tl==NULL)
+	{
+	  printf("LIST: Out of memory\n");
+	  exit(1);
+	} else {
+		tl->Id=X;  tl->Next=NULL;
+
+		if(*Cur==NULL){
+			*Cur=tl;
+			return;
+		}
+
+		nl=*Cur;
+
+		while(nl!=NULL)
+		{
+			if(nl->Id==X)
+			{
+				break;
+			}
+
+			if(nl->Next==NULL)
+			{
+				nl->Next=tl;
+			}
+
+			nl=nl->Next;
+		}
+	 }
+	return;
 }//end of InsertEle
 /***************************************************************************************************
 Delete an element "X" from LIST "Cur",

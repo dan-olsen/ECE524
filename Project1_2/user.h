@@ -9,6 +9,7 @@
 #define USER_H_
 
 #include "given.h"
+#include "stack.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -19,11 +20,6 @@
 #define S1 3
 #define X1 4
 #define X0 5
-
-typedef struct Robust_type {
-    DdNode *Rpath, *Fpath, *RobustPath;
-
-} RobustSet;
 
 typedef struct PATH_type
 {
@@ -42,11 +38,12 @@ typedef struct PATH_SET_type {
 
 int Npi, Npo, Tgat, Tpat;        //Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
 GATE *Node;                //Structure to store the ckt given in .isc file
-DdNode *suspectSet;
-DdNode *goodPaths;
-RobustSet robustPaths;
+DdNode *SuspectSet;
+DdNode *GoodPaths;
+DdNode *RpathSet, *FpathSet, *RobustPathSet;
 int *patterns;
 PATH_SET *pathSet;
+stackT pathStack;
 
 void readPatternFile(FILE*);
 
