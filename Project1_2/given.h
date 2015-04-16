@@ -70,6 +70,7 @@ typedef struct GATE_type
     LIST *Fin,*Fot;                        //Fanin members, Fanout members
     DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
     DdNode *RobustPath;
+    DdNode *NonRobustPath;
     PATH_COUNT *PathCount;
 } GATE;
 /***************************************************************************************************************************

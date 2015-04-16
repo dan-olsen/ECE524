@@ -134,6 +134,7 @@ void InitiGat(GATE *Node,int Num)
     Node[Num].Fin=Node[Num].Fot=NULL;
     Node[Num].Rpath=Node[Num].Fpath=NULL;
     Node[Num].RobustPath = NULL;
+    Node[Num].NonRobustPath = NULL;
     Node[Num].Delay = 0;
     Node[Num].PathCount = NULL;
     return;

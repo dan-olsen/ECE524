@@ -16,12 +16,6 @@ int main(int argc, char **argv)
         exit(1);  /* Exit, returning error code. */
     }
 
-    if(argv[1] == '-v')
-    {
-        verbose = 1;
-    }
-
-
     FILE *Isc = NULL, *Pat = NULL, *Res = NULL;    //File pointers used for .isc, .pattern, and .res files
     //clock_t Start, End;        //Clock variables to calculate the Cputime
     //double Cpu;                //Total cpu time
