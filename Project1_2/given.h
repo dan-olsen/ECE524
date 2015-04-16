@@ -68,9 +68,9 @@ typedef struct GATE_type
     char Name[Mnam];                            //Name of the gate
     int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
     LIST *Fin,*Fot;                        //Fanin members, Fanout members
-    DdNode *Rpath, *Fpath;                  //ZDDS of Rising & Falling Path
-    DdNode *RobustPath;
-    DdNode *NonRobustPath;
+    DdNode *TempRpath, *TempFpath;                  //ZDDS of Rising & Falling Path
+    DdNode *TempPath;
+    DdNode *NnT, *RnT, *SnT, *PnT;
     PATH_COUNT *PathCount;
 } GATE;
 /***************************************************************************************************************************

@@ -49,16 +49,19 @@ void storePaths(GATE *Node, DdNode **PathSet);
 void storeRPaths(GATE *Node, DdNode **RPathSet);
 void storeFPaths(GATE *Node, DdNode **FPathSet);
 
+void storeNnT(GATE *Node, DdNode **PathSet);
+void storeRnT(GATE *Node, DdNode **PathSet);
+
 void ListToZdd(LIST *pathList, DdNode **PathSet);
 
-void storeNonRobustPaths(GATE *Node, DdNode **NonRobustPathSet);
-void clearPathZDDs(DdNode **RpathSet, DdNode **FpathSet, DdNode **RobustPathSet, DdNode **GoodPaths, DdNode **SuspectSet);
+void clearPathZDDs(DdNode **PathSet);
 void clearNodeZDDs(GATE *Node);
-
 void freePathSet();
 
 void initDelay(GATE *Node);
+
 void applyPattern(GATE *Node, int i, int *patIndex, int *tmpVal);
+
 int checkPathSensitivity(GATE *Node, LIST *path);
 DdNode* createZDD(LIST *pathList);
 

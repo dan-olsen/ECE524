@@ -132,9 +132,12 @@ void InitiGat(GATE *Node,int Num)
     Node[Num].Type=Node[Num].Nfi=Node[Num].Nfo=Node[Num].Mark=0;
     Node[Num].Val=6;
     Node[Num].Fin=Node[Num].Fot=NULL;
-    Node[Num].Rpath=Node[Num].Fpath=NULL;
-    Node[Num].RobustPath = NULL;
-    Node[Num].NonRobustPath = NULL;
+    Node[Num].TempRpath=Node[Num].TempFpath=NULL;
+    Node[Num].TempPath = NULL;
+    Node[Num].NnT = NULL;
+    Node[Num].RnT = NULL;
+    Node[Num].SnT = NULL;
+    Node[Num].PnT = NULL;
     Node[Num].Delay = 0;
     Node[Num].PathCount = NULL;
     return;
