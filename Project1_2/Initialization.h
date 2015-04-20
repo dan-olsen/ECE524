@@ -21,7 +21,6 @@ typedef struct PATH_SET_type {
 } PATH_SET;
 
 PATH_SET *pathSet;
-stackT pathStack;
 int *primaryInputs;
 int *primaryOutputs;
 

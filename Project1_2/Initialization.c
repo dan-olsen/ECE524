@@ -1,5 +1,7 @@
 #include "Initialization.h"
 
+stackT pathStack;
+
 void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
 {
     int i, mark = 0, k;
@@ -21,7 +23,6 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
                 //printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
                 InsertPathCount(&Node[i].PathCount, 0, 1);
-                //printf("Path at %d = %d,%d\n", i, Node[i].PathCount->Delay, Node[i].PathCount->Count);
 
                 break;
             case AND:
@@ -73,13 +74,7 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
                         }
                     }
                 }
-                /*
-                for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-                {
-                    printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
 
-                }
-                */
                 break;
             case FROM:
                 tmpList = Node[i].Fin;
@@ -92,13 +87,7 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
                     InsertPathCount(&Node[i].PathCount, pathIter->Delay, pathIter->Count);
 
                 }
-                /*
-                for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-                {
-                    printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
 
-                }
-                */
                 break;
             default:
                 //printf("Hit Default at i: %d ", i);
