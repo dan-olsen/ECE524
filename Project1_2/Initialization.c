@@ -2,14 +2,14 @@
 
 stackT pathStack;
 
-void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
+void initDelay(GATE *Node, int Npi, int Npo, int Tgat)
 {
     int i, mark = 0, k;
     LIST *tmpList = NULL;
     int tmpDelay;
     PATH_COUNT *pathIter = NULL, *currPath = NULL;
 
-    InitInputOuputArrays(Node, Npi, Npo, Tgat);
+    initInputOuputArrays(Node, Npi, Npo, Tgat);
 
     pathStack.contents = NULL;
 
@@ -22,7 +22,7 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
                 Node[i].Delay = 0;
                 //printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
 
-                InsertPathCount(&Node[i].PathCount, 0, 1);
+                insertPathCount(&Node[i].PathCount, 0, 1);
 
                 break;
             case AND:
@@ -65,11 +65,11 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
                                 mark = 0;
 
                             } else {
-                                InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
+                                insertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
 
                             }
                         } else {
-                            InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
+                            insertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
 
                         }
                     }
@@ -84,7 +84,7 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
 
                 for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
                 {
-                    InsertPathCount(&Node[i].PathCount, pathIter->Delay, pathIter->Count);
+                    insertPathCount(&Node[i].PathCount, pathIter->Delay, pathIter->Count);
 
                 }
 
@@ -138,14 +138,14 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
             {
                 k = 0;
                 StackPush(&pathStack, primaryOutputs[i]);
-                BuildNLongestPath(Node, 1, primaryOutputs[i], i, currPath->Delay-1, &k, pathSet[i].numLongestPath);
+                buildNLongestPath(Node, 1, primaryOutputs[i], i, currPath->Delay-1, &k, pathSet[i].numLongestPath);
                 StackPop(&pathStack);
 
 
             } else {
                 k = 0;
                 StackPush(&pathStack, primaryOutputs[i]);
-                BuildNLongestPath(Node, 2, primaryOutputs[i], i, currPath->Delay-1, &k, pathSet[i].numSecondLongestPath);
+                buildNLongestPath(Node, 2, primaryOutputs[i], i, currPath->Delay-1, &k, pathSet[i].numSecondLongestPath);
                 StackPop(&pathStack);
 
             }
@@ -157,7 +157,7 @@ void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
     printf("\n");
 }
 
-void InitInputOuputArrays(GATE *Node, int Npi, int Npo, int Tgat)
+void initInputOuputArrays(GATE *Node, int Npi, int Npo, int Tgat)
 {
     int i, j, k;
 
@@ -180,7 +180,7 @@ void InitInputOuputArrays(GATE *Node, int Npi, int Npo, int Tgat)
     }
 }
 
-void FreeInputOutputArrays()
+void freeInputOutputArrays()
 {
     if(primaryOutputs != NULL)
         free(primaryOutputs);
@@ -189,7 +189,7 @@ void FreeInputOutputArrays()
         free(primaryInputs);
 }
 
-void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
+void insertPathCount(PATH_COUNT **Cur, int delay, int count)
 {
     PATH_COUNT *tl= NULL;
     PATH_COUNT *nl= NULL;
@@ -228,7 +228,7 @@ void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
     return;
 }
 
-void BuildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths)
+void buildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths)
 {
     LIST *tmpList;
     PATH_COUNT *finPathIter = NULL;
@@ -269,9 +269,9 @@ void BuildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int c
 
                 } else {
                     if(Node[tmpList->Id].Type != FROM)
-                        BuildNLongestPath(Node, n, tmpList->Id, PathSetIndex, finPathIter->Delay-1, PathIndex, numPaths);
+                        buildNLongestPath(Node, n, tmpList->Id, PathSetIndex, finPathIter->Delay-1, PathIndex, numPaths);
                     else
-                        BuildNLongestPath(Node, n, tmpList->Id, PathSetIndex, finPathIter->Delay, PathIndex, numPaths);
+                        buildNLongestPath(Node, n, tmpList->Id, PathSetIndex, finPathIter->Delay, PathIndex, numPaths);
 
                     StackPop(&pathStack);
                 }
@@ -285,7 +285,7 @@ void BuildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int c
     }
 }
 
-void FreePathSet(int Npo)
+void freePathSet(int Npo)
 {
     int i, j;
 

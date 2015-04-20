@@ -1,7 +1,7 @@
 #ifndef _STACK_H
 #define _STACK_H
 
-#define INIT_SIZE 1000
+#define INIT_SIZE 15000
 #define INCREASE_SIZE 8
 
 #include "given.h"

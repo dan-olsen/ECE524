@@ -1,5 +1,6 @@
 #include "given.h"
-#include "user.h"
+#include "PatternSim.h"
+#include "StorePaths.h"
 /***************************************************************************************************
 Command Instructions
 ***************************************************************************************************/
@@ -10,11 +11,17 @@ Command Instructions
 ***************************************************************************************************/
 int main(int argc, char **argv)
 {
-    int Npi, Npo, Tgat;                             //Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
-    FILE *Isc = NULL, *Pat = NULL, *Res = NULL;     //File pointers used for .isc, .pattern, and .res files
-    clock_t Start, End;                             //Clock variables to calculate the Cputime
-    double Cpu;                                     //Total cpu time
-    GATE *Node = NULL;                              //Structure to store the ckt given in .isc file
+    int Npi, Npo, Tgat;                                         //Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
+    FILE *iscFile = NULL, *patFile = NULL, *resFile = NULL;     //File pointers used for .isc, .pattern, and .res files
+    clock_t Start, End;                                         //Clock variables to calculate the Cputime
+    double Cpu;                                                 //Total cpu time
+    GATE *Node = NULL;                                          //Structure to store the ckt given in .isc file
+
+    int *pattern = NULL;
+    DdNode *RobustRpathSet = NULL, *RobustFpathSet = NULL, *RobustPathSet = NULL;
+    DdNode *SuspectSet = NULL;
+    DdNode *GoodPaths = NULL;
+    DdNode *tmpNode = NULL;
 
     if(argc < 4)
     {
@@ -22,67 +29,87 @@ int main(int argc, char **argv)
         exit(1);  /* Exit, returning error code. */
     }
 
-    //Intializing CUDD package manger
-    manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);
+    manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);      //Intializing CUDD package manger
     onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
 
     /****************PART 1.-Read the .isc file and store the information in Node structure***********/
-    //Intialize values of all variables
-    Npi = Npo = Tgat = 0;
+    Npi = Npo = Tgat = 0;                           //Intialize values of all variables
+    Node = (GATE *) malloc(Mnod * sizeof(GATE));    //Dynamic memory allocation for Node structure
 
-    //Dynamic memory allocation for Node structure
-    Node = (GATE *) malloc(Mnod * sizeof(GATE));
+    iscFile = fopen(argv[1], "r");                  //File pointer to open .isc file
 
-    //File pointer to open .isc file
-    Isc = fopen(argv[1], "r");
-
-    if(Isc == NULL)
+    if(iscFile == NULL)
     {
         fprintf(stderr, "Failed to open Isc file.\n");
         exit(1);  /* Exit, returning error code. */
     }
 
-    //Read .isc file and return index of last node
-    Tgat = ReadIsc(Isc, Node);
+    Tgat = ReadIsc(iscFile, Node);  //Read .isc file and return index of last node
+    fclose(iscFile);                //Close file pointer for .isc file
 
-    //Close file pointer for .isc file
-    fclose(Isc);
+    //PrintGats(Node, Tgat);                        //Print the information of each active gate in Node structure after reading .isc file
+    CountPri(Node, Tgat, &Npi, &Npo);               //Count the No of Pis and Pos
+    printf("\n\nNpi: %d Npo: %d\n\n", Npi, Npo);    //Print the no of primary inputs and outputs
 
-    //Print the information of each active gate in Node structure after reading .isc file
-    //PrintGats(Node, Tgat);
-
-    //Count the No of Pis and Pos
-    CountPri(Node, Tgat, &Npi, &Npo);
-
-    //Print the no of primary inputs and outputs
-    printf("\n\nNpi: %d Npo: %d\n\n", Npi, Npo);
     /***************************************************************************************************/
 
-    //File pointer to open .pattern file
-    Pat = fopen(argv[2], "r");
+    patFile = fopen(argv[2], "r");      //File pointer to open .pattern file
+    //resFile = fopen(argv[3], "w");    //File pointer to open .result file
 
-    //File pointer to open .result file
-    //Res = fopen(argv[3], "w");
+    initDelay(Node, Npi, Npo, Tgat);
 
-    patternSim(Node, Pat, Npi, Npo, Tgat);
+    //iterate over patterns
+    while((pattern = getNextPattern(&patFile, Npi)) != NULL)
+    {
+        printf("Applying Pattern: ");
+        printPattern(pattern, Npi);
+        printf("\n");
 
-    fclose(Pat);
+        //topologoical traversal to apply pattern
+        applyPattern(Node, pattern, Tgat);
+
+        free(pattern);
+
+        storeSensitizedPaths(Node, &RobustPathSet, Tgat);
+        storeSensitizedRPaths(Node, &RobustRpathSet);
+        storeSensitizedFPaths(Node, &RobustFpathSet);
+
+        storeLSPaths(Node, Npo, &GoodPaths, &SuspectSet);
+    }
+
+    if(RobustPathSet != NULL)
+        printf("Robust Path ZDD Count: %d\n", Cudd_zddCount(manager, RobustPathSet));
+
+    if(GoodPaths != NULL)
+         printf("Good Path ZDD Count: %d\n", Cudd_zddCount(manager, GoodPaths));
+
+     if(SuspectSet != NULL) {
+         tmpNode = Cudd_zddDiff(manager, SuspectSet, GoodPaths);
+         Cudd_Ref(tmpNode);
+         Cudd_RecursiveDerefZdd(manager, SuspectSet);
+
+         SuspectSet = tmpNode;
+
+         printf("Suspect Set ZDD Count: %d\n", Cudd_zddCount(manager, SuspectSet));
+     }
+
+    clearPathZDDs(&RobustRpathSet);
+    clearPathZDDs(&RobustFpathSet);
+    clearPathZDDs(&RobustPathSet);
+    clearPathZDDs(&GoodPaths);
+    clearPathZDDs(&SuspectSet);
+
+    fclose(patFile);
     //fclose(Res);
 
-    //freePathSet();
-
     /***************************************************************************************************/
-    //Checking any unreferenced bdds in manager
-    printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));
+    printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));      //Checking any unreferenced bdds in manager
+    Cudd_Quit(manager);                                                         //Closing the cudd package manager
+    ClearGat(Node, Tgat);                                                       //Clear memeory for all members of Node
 
-    //Closing the cudd package manager
-    Cudd_Quit(manager);
-
-    //Clear memeory for all members of Node
-    ClearGat(Node, Tgat);
-
+    freePathSet(Npo);
     free(Node);
-    FreeInputOutputArrays();
+    freeInputOutputArrays();
 
     printf("Done\n");
     return 0;

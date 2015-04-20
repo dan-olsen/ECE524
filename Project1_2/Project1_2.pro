@@ -5,17 +5,20 @@ CONFIG -= qt
 
 SOURCES += main.c \
     given.c \
-    user.c \
     Initialization.c \
-    Print.c \
-    Stack.c
+    Stack.c \
+    Cleanup.c \
+    StorePaths.c \
+    PatternSim.c
 
 HEADERS += \
     given.h \
-    user.h \
     Initialization.h \
-    Print.h \
-    Stack.h
+    Stack.h \
+    Cleanup.h \
+    StorePaths.h \
+    PathSet.h \
+    PatternSim.h
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../opt/cudd-2.5.1/cudd/ -lcudd
