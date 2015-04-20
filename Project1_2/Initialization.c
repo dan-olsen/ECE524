@@ -114,7 +114,7 @@ void initDelay(GATE *Node, int Npi, int Npo, int Tgat)
                 pathSet[i].numSecondLongestPath += currPath->Count;
         }
 
-        printf("Num longest and second longest at %d = %d %d\n", primaryOutputs[i], pathSet[i].numLongestPath, pathSet[i].numSecondLongestPath);
+        //printf("Num longest and second longest at %d = %d %d\n", primaryOutputs[i], pathSet[i].numLongestPath, pathSet[i].numSecondLongestPath);
 
         pathSet[i].longestPath = (PATH*)malloc(sizeof(PATH) * pathSet[i].numLongestPath);
 
