@@ -16,22 +16,34 @@ int main(int argc, char **argv)
         exit(1);  /* Exit, returning error code. */
     }
 
-    FILE *Isc = NULL, *Pat = NULL, *Res = NULL;    //File pointers used for .isc, .pattern, and .res files
-    //clock_t Start, End;        //Clock variables to calculate the Cputime
-    //double Cpu;                //Total cpu time
-    GATE *Node = NULL;                //Structure to store the ckt given in .isc file
+    //File pointers used for .isc, .pattern, and .res files
+    FILE *Isc = NULL, *Pat = NULL, *Res = NULL;
+
+    //Clock variables to calculate the Cputime
+    //clock_t Start, End;
+
+    //Total cpu time
+    //double Cpu;
+
+     //Structure to store the ckt given in .isc file
+    GATE *Node = NULL;
+
     //DdNode *GoodPaths = NULL;
     //DdNode *SuspectSet = NULL;
 
-
-    manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);    //Intializing CUDD package manger
+    //Intializing CUDD package manger
+    manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);
     onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
 
     /****************PART 1.-Read the .isc file and store the information in Node structure***********/
-    Npi = Npo = Tgat = 0;                            //Intialize values of all variables
-    Node=(GATE *) malloc(Mnod * sizeof(GATE));     //Dynamic memory allocation for Node structure
+    //Intialize values of all variables
+    Npi = Npo = Tgat = 0;
 
-    Isc = fopen(argv[1],"r");                        //File pointer to open .isc file
+    //Dynamic memory allocation for Node structure
+    Node = (GATE *) malloc(Mnod * sizeof(GATE));
+
+    //File pointer to open .isc file
+    Isc = fopen(argv[1],"r");
 
     if(Isc == NULL)
     {
@@ -39,35 +51,49 @@ int main(int argc, char **argv)
         exit(1);  /* Exit, returning error code. */
     }
 
-    Tgat = ReadIsc(Isc,Node);                        //Read .isc file and return index of last node
+    //Read .isc file and return index of last node
+    Tgat = ReadIsc(Isc,Node);
 
-    fclose(Isc);                                    //Close file pointer for .isc file
+    //Close file pointer for .isc file
+    fclose(Isc);
 
-    PrintGats(Node,Tgat);                            //Print the information of each active gate in Node structure after reading .isc file
-    CountPri(Node,Tgat,&Npi,&Npo);                    //Count the No of Pis and Pos
-    printf("\n\nNpi: %d Npo: %d\n\n",Npi,Npo);        //Print the no of primary inputs and outputs
+    //Print the information of each active gate in Node structure after reading .isc file
+    //PrintGats(Node,Tgat);
+
+    //Count the No of Pis and Pos
+    CountPri(Node,Tgat,&Npi,&Npo);
+
+    //Print the no of primary inputs and outputs
+    printf("\n\nNpi: %d Npo: %d\n\n",Npi,Npo);
     /***************************************************************************************************/
 
-    Pat = fopen(argv[2],"r");        //File pointer to open .pattern file
-    //Res = fopen(argv[3],"w");        //File pointer to open .result file
+    //File pointer to open .pattern file
+    Pat = fopen(argv[2],"r");
 
-    readPatternFile(Pat);
+    //File pointer to open .result file
+    //Res = fopen(argv[3],"w");
 
-    patternSim(Node);
+    patternSim(Node, Pat);
 
-    free(patterns);
     fclose(Pat);
     //fclose(Res);
 
     //freePathSet();
 
     /***************************************************************************************************/
-    printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));    //Checking any unreferenced bdds in manager
-    Cudd_Quit(manager);                                                        //Closing the cudd package manager
-    ClearGat(Node,Tgat);                                                    //Clear memeory for all members of Node
+    //Checking any unreferenced bdds in manager
+    printf("\nNo of Unreferenced Zdds: %d\n", Cudd_CheckZeroRef(manager));
+
+    //Closing the cudd package manager
+    Cudd_Quit(manager);
+
+    //Clear memeory for all members of Node
+    ClearGat(Node,Tgat);
+
     free(Node);
+    FreeInputOutputArrays();
 
     printf("Done\n");
     return 0;
 }//end of main
-/****************************************************************************************************************************/
+/*******************************************************************************************************/

@@ -9,7 +9,8 @@
 #define USER_H_
 
 #include "given.h"
-#include "stack.h"
+#include "Initialization.h"
+#include "Print.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -21,29 +22,9 @@
 #define X1 4
 #define X0 5
 
-typedef struct PATH_type
-{
-    LIST *Path;
-    int suspect;
-
-} PATH;
-
-typedef struct PATH_SET_type {
-    int Id;
-    int numLongestPath;
-    int numSecondLongestPath;
-    PATH *longestPath;
-    PATH *secondLongestPath;
-
-} PATH_SET;
-
-int Npi, Npo, Tgat, Tpat;        //Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
-int *patterns;
-PATH_SET *pathSet;
-stackT pathStack;
-
-void readPatternFile(FILE*);
-void patternSim(GATE *Node);
+int *getNextPattern(FILE **Pat);
+void patternSim(GATE *Node, FILE *patFile);
+void applyPattern(GATE *Node, int i, int *pattern);
 
 void storePaths(GATE *Node, DdNode **PathSet);
 void storeRPaths(GATE *Node, DdNode **RPathSet);
@@ -56,19 +37,10 @@ void ListToZdd(LIST *pathList, DdNode **PathSet);
 
 void clearPathZDDs(DdNode **PathSet);
 void clearNodeZDDs(GATE *Node);
-void freePathSet();
-
-void initDelay(GATE *Node);
-
-void applyPattern(GATE *Node, int i, int *patIndex, int *tmpVal);
 
 int checkPathSensitivity(GATE *Node, LIST *path);
 DdNode* createZDD(LIST *pathList);
 
-void InsertPathCount(PATH_COUNT **Cur, int delay, int count);
-void buildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths);
 
-void printInputVector(char *input);
-void printPattern(int patIndex);
 
 #endif /* USER_H_ */

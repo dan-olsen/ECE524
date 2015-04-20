@@ -1,78 +1,79 @@
 #include "given.h"
 #include "user.h"
 
-const int robustSimOR [6][6]         =    {{S0, R1, F0, S1, X1, X0},
+const int robustSimOR [6][6]        =   {{S0, R1, F0, S1, X1, X0},
                                          {R1, X1, X1, S1, X1, X1},
                                          {F0, X1, F0, S1, X1, F0},
                                          {S1, S1, S1, S1, S1, S1},
                                          {X1, X1, X1, S1, X1, X1},
                                          {X0, X1, F0, S1, X1, X0}};
 
-const int nonRobustSimOR [6][6]        =     {{S0, R1, F0, S1, X1, X0},
+const int nonRobustSimOR [6][6]     =   {{S0, R1, F0, S1, X1, X0},
                                          {R1, X1, R1, S1, X1, R1},
                                          {F0, R1, F0, S1, X1, F0},
                                          {S1, S1, S1, S1, S1, S1},
                                          {X1, X1, X1, S1, X1, X1},
                                          {X0, R1, F0, S1, X1, X0}};
 
-const int robustSimAND [6][6]         =     {{S0, S0, S0, S0, S0, S0},
+const int robustSimAND [6][6]       =   {{S0, S0, S0, S0, S0, S0},
                                          {S0, R1, X0, R1, R1, X0},
                                          {S0, X0, X0, F0, X0, X0},
                                          {S0, R1, F0, S1, X1, X0},
                                          {S0, R1, X0, X1, X1, X0},
                                          {S0, X0, X0, X0, X0, X0}};
 
-const int nonRobustSimAND [6][6]    =     {{S0, S0, S0, S0, S0, S0},
-                                           {S0, R1, F0, R1, R1, X0},
-                                           {S0, F0, X0, F0, F0, X0},
-                                           {S0, R1, F0, S1, X1, X0},
-                                           {S0, R1, F0, X1, X1, X0},
-                                           {S0, X0, X0, X0, X0, X0}};
+const int nonRobustSimAND [6][6]    =   {{S0, S0, S0, S0, S0, S0},
+                                         {S0, R1, F0, R1, R1, X0},
+                                         {S0, F0, X0, F0, F0, X0},
+                                         {S0, R1, F0, S1, X1, X0},
+                                         {S0, R1, F0, X1, X1, X0},
+                                         {S0, X0, X0, X0, X0, X0}};
 
-const int simNOT [6]                 =      {S1, F0, R1, S0, X0, X1};
+const int simNOT [6]                =   {S1, F0, R1, S0, X0, X1};
 
-void readPatternFile(FILE* patFile)
+int* getNextPattern(FILE **patFile)
 {
-    int patColIndex, patIndex;
+    int patIndex;
     char vector1 [Mpi];
     char vector2  [Mpi];
     int readCount1, readCount2;
+    int *pattern;
 
-    if ( NULL == (patterns =  (int*)malloc(Npi * sizeof(int)))) {
+    if ( NULL == (pattern =  (int*)malloc(Npi * sizeof(int)))) {
         printf("malloc failed\n");
         //error
     }
 
-    for(patIndex = 0; !feof(patFile);)
+    if(!feof(*patFile))
     {
-        readCount1 = fscanf(patFile, "%s", vector1);
-        readCount2 = fscanf(patFile, "%s", vector2);
+        readCount1 = fscanf(*patFile, "%s", vector1);
+        readCount2 = fscanf(*patFile, "%s", vector2);
 
         if((readCount2 != -1) && (readCount1 != -1) && (readCount1 == readCount2))
         {
-            //printInputVector(vector1);
-            //printInputVector(vector2);
+            printInputVector(vector1);
+            printInputVector(vector2);
 
-            for(patColIndex = 0; patColIndex < Npi; patColIndex++, patIndex++)
+            for(patIndex = 0; patIndex < Npi; patIndex++)
             {
-                if((vector1[patColIndex] == '0') && (vector2[patColIndex] == '0'))
+                if((vector1[patIndex] == '0') && (vector2[patIndex] == '0'))
                 {
-                    patterns[patIndex] = S0;
+                    pattern[patIndex] = S0;
 
-                } else if((vector1[patColIndex] == '0') && (vector2[patColIndex] == '1')) {
-                    patterns[patIndex] = R1;
+                } else if((vector1[patIndex] == '0') && (vector2[patIndex] == '1')) {
+                    pattern[patIndex] = R1;
 
-                } else if((vector1[patColIndex] == '1') && (vector2[patColIndex] == '0')) {
-                    patterns[patIndex] = F0;
+                } else if((vector1[patIndex] == '1') && (vector2[patIndex] == '0')) {
+                    pattern[patIndex] = F0;
 
-                } else if((vector1[patColIndex] == '1') && (vector2[patColIndex] == '1')) {
-                    patterns[patIndex] = S1;
+                } else if((vector1[patIndex] == '1') && (vector2[patIndex] == '1')) {
+                    pattern[patIndex] = S1;
 
-                } else if(((vector1[patColIndex] == 'x') || (vector1[patColIndex] == 'X')) && (vector2[patColIndex] == '1')) {
-                    patterns[patIndex] = X1;
+                } else if(((vector1[patIndex] == 'x') || (vector1[patIndex] == 'X')) && (vector2[patIndex] == '1')) {
+                    pattern[patIndex] = X1;
 
-                } else if(((vector1[patColIndex] == 'x') || (vector1[patColIndex] == 'X')) && (vector2[patColIndex] == '0')) {
-                    patterns[patIndex] = X0;
+                } else if(((vector1[patIndex] == 'x') || (vector1[patIndex] == 'X')) && (vector2[patIndex] == '0')) {
+                    pattern[patIndex] = X0;
 
                 } else {
                     //error
@@ -81,285 +82,46 @@ void readPatternFile(FILE* patFile)
                 }
             }
 
-            //printf("Resulting Pattern: ");
-            //printPattern(patIndex-Npi);
-            //printf("\n");
+            printf("Resulting Pattern: ");
+            printPattern(pattern);
+            printf("\n");
 
-            if (NULL == (patterns = (int*)realloc(patterns, (Npi+patIndex) * sizeof(int))))
-            {
-                printf("realloc failed\n");
-
-            }
-
+        } else {
+            printf("End of Pattern File\n");
+            free(pattern);
+            return NULL;
         }
+    } else {
+        printf("End of Pattern File\n");
+        free(pattern);
+        return NULL;
     }
 
-    Tpat = patIndex;
+    return pattern;
 }
 
-void initDelay(GATE *Node)
+void patternSim(GATE *Node, FILE *patFile)
 {
-    int i, j, mark = 0, k;
-    int *outputs = NULL;
-    LIST *tmpList = NULL;
-    int tmpDelay;
-    PATH_COUNT *pathIter = NULL, *currPath = NULL;
-
-    pathStack.contents = NULL;
-    outputs = (int*) malloc(sizeof(int) * Npo);
-
-    StackInit(&pathStack);
-
-    for(i = 0, tmpDelay = 0, j = 0; i <= Tgat; i++, tmpDelay = 0)
-    {
-        switch(Node[i].Type) {
-            case INPT:
-                Node[i].Delay = 0;
-                //printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
-
-                InsertPathCount(&Node[i].PathCount, 0, 1);
-                printf("Path at %d = %d,%d\n", i, Node[i].PathCount->Delay, Node[i].PathCount->Count);
-
-                break;
-            case AND:
-            case NAND:
-            case OR:
-            case NOR:
-            case XOR:
-            case XNOR:
-            case BUFF:
-            case NOT:
-                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-                {
-                    if(tmpDelay < Node[tmpList->Id].Delay)
-                    {
-                        tmpDelay = Node[tmpList->Id].Delay;
-                    }
-                }
-
-                Node[i].Delay = tmpDelay + 1;
-                //("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
-
-                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-                {
-                    for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
-                    {
-                        if(Node[i].PathCount != NULL)
-                        {
-                            for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-                            {
-                                if(currPath->Delay == pathIter->Delay + 1)
-                                {
-                                    currPath->Count = currPath->Count + pathIter->Count;
-
-                                    mark = 1;
-                                }
-                            }
-
-                            if(mark == 1)
-                            {
-                                mark = 0;
-
-                            } else {
-                                InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
-
-                            }
-                        } else {
-                            InsertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
-
-                        }
-                    }
-                }
-
-                for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-                {
-                    printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
-
-                }
-
-                break;
-            case FROM:
-                tmpList = Node[i].Fin;
-
-                Node[i].Delay = Node[tmpList->Id].Delay;
-                //printf("Delay at %s = %d\n", Node[i].Name, Node[i].Delay);
-
-                for(pathIter = Node[tmpList->Id].PathCount; pathIter != NULL; pathIter = pathIter->Next)
-                {
-                    InsertPathCount(&Node[i].PathCount, pathIter->Delay, pathIter->Count);
-
-                }
-
-                for(currPath = Node[i].PathCount; currPath != NULL; currPath = currPath->Next)
-                {
-                    printf("Path at %d: Delay = %d Count = %d\n", i, currPath->Delay, currPath->Count);
-
-                }
-
-                break;
-            default:
-                //printf("Hit Default at i: %d ", i);
-                //printf("Type: %d\n", graph[i].typ);
-                break;
-        }
-
-        if(Node[i].Fot == NULL && Node[i].Fin != NULL)
-        {
-            outputs[j] = i;
-            j++;
-        }
-    }
-
-    pathSet = (PATH_SET*) malloc(sizeof(PATH_SET) * Npo);
-
-    for(i = 0; i < Npo; i++)
-    {
-        pathSet[i].Id = outputs[i];
-        pathSet[i].numLongestPath = 0;
-        pathSet[i].numSecondLongestPath = 0;
-        pathSet[i].longestPath = NULL;
-        pathSet[i].secondLongestPath = NULL;
-
-        for(currPath = Node[outputs[i]].PathCount; currPath != NULL; currPath = currPath->Next)
-        {
-            if(currPath->Delay == Node[outputs[i]].Delay)
-                pathSet[i].numLongestPath += currPath->Count;
-            else if(currPath->Delay == Node[outputs[i]].Delay - 1)
-                pathSet[i].numSecondLongestPath += currPath->Count;
-        }
-
-        printf("Num longest and second longest at %d = %d %d\n", outputs[i], pathSet[i].numLongestPath, pathSet[i].numSecondLongestPath);
-
-        pathSet[i].longestPath = (PATH*)malloc(sizeof(PATH) * pathSet[i].numLongestPath);
-
-        for(k = 0; k < pathSet[i].numLongestPath; k++)
-        {
-            pathSet[i].longestPath[k].Path = NULL;
-            pathSet[i].longestPath[k].suspect = 0;
-        }
-
-        pathSet[i].secondLongestPath = (PATH*)malloc(sizeof(PATH) * pathSet[i].numSecondLongestPath);
-
-        for(k = 0; k < pathSet[i].numSecondLongestPath; k++)
-        {
-            pathSet[i].secondLongestPath[k].Path = NULL;
-            pathSet[i].secondLongestPath[k].suspect = 0;
-        }
-
-        for(currPath = Node[outputs[i]].PathCount; currPath != NULL; currPath = currPath->Next)
-        {
-            if(Node[outputs[i]].Delay == currPath->Delay)
-            {
-                k = 0;
-                StackPush(&pathStack, outputs[i]);
-                buildNLongestPath(Node, 1, outputs[i], i, currPath->Delay-1, &k, pathSet[i].numLongestPath);
-                StackPop(&pathStack);
-
-
-            } else {
-                k = 0;
-                StackPush(&pathStack, outputs[i]);
-                buildNLongestPath(Node, 2, outputs[i], i, currPath->Delay-1, &k, pathSet[i].numSecondLongestPath);
-                StackPop(&pathStack);
-
-            }
-        }
-    }
-
-    StackDestroy(&pathStack);
-    free(outputs);
-
-    printf("\n");
-}
-
-void buildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths)
-{
-    LIST *tmpList;
-    PATH_COUNT *finPathIter = NULL;
-
-    for(tmpList = Node[NodeIndex].Fin; tmpList != NULL; tmpList = tmpList->Next)
-    {
-        for(finPathIter = Node[tmpList->Id].PathCount; finPathIter != NULL; finPathIter = finPathIter->Next)
-        {
-            if(currPathDelay == finPathIter->Delay)
-            {
-                StackPush(&pathStack, tmpList->Id);
-
-                if(Node[tmpList->Id].Type == INPT)
-                {
-                    if(n == 1)
-                    {
-                        if(pathSet[PathSetIndex].longestPath[*PathIndex].Path != NULL)
-                        	printf("Path == NULL\n");
-
-                        StackCopyToList(&pathStack, &pathSet[PathSetIndex].longestPath[*PathIndex].Path);
-
-                        //printf("Longest Path #%d at %d = ", *PathIndex, NodeIndex);
-                        //PrintList(pathSet[PathSetIndex].longestPath[*PathIndex].Path);
-                        //printf("\n");
-                        //fflush(stdout);
-
-                    } else if(n == 2) {
-                        StackCopyToList(&pathStack, &pathSet[PathSetIndex].secondLongestPath[*PathIndex].Path);
-
-                        //printf("Second LongestPath Path #%d at %d = ", *PathIndex, NodeIndex);
-                        //PrintList(pathSet[PathSetIndex].secondLongestPath[*PathIndex].Path);
-                        //printf("\n");
-                        //fflush(stdout);
-                    }
-
-                    (*PathIndex)++;
-                    StackPop(&pathStack);
-
-                } else {
-                    if(Node[tmpList->Id].Type != FROM)
-                        buildNLongestPath(Node, n, tmpList->Id, PathSetIndex, finPathIter->Delay-1, PathIndex, numPaths);
-                    else
-                        buildNLongestPath(Node, n, tmpList->Id, PathSetIndex, finPathIter->Delay, PathIndex, numPaths);
-
-                    StackPop(&pathStack);
-                }
-
-                if(*PathIndex >= numPaths)
-                {
-                    return;
-                }
-            }
-        }
-    }
-}
-
-void patternSim(GATE *Node)
-{
-    int i, j, patIndex, tmpVal;
+    int i, j;
+    int *pattern = NULL;
     DdNode *RobustRpathSet = NULL, *RobustFpathSet = NULL, *RobustPathSet = NULL;
     DdNode *SuspectSet = NULL;
     DdNode *GoodPaths = NULL;
     DdNode *tmpNode = NULL;
 
-    initDelay(Node);
+    InitDelay(Node);
 
     //iterate over patterns
-    for(patIndex = 0; patIndex < Tpat; printf("\n"))
+    while((pattern = getNextPattern(&patFile)) != NULL)
     {
         printf("Applying Pattern: ");
-        printPattern(patIndex);
+        printPattern(pattern);
+        printf("\n");
 
         //topologoical traversal to apply pattern
-        for(tmpVal = 0, i = 0; i <= Tgat; i++, tmpVal = 0)
-        {
-            applyPattern(Node, i, &patIndex, &tmpVal);
+        applyPattern(Node, i, pattern);
 
-            //set mark
-            if((Node[i].Val == R1) || (Node[i].Val == F0))
-            {
-                Node[i].Mark = 1;
-
-            } else {
-                Node[i].Mark = 0;
-
-            }
-        }
+        free(pattern);
 
         storePaths(Node, &RobustPathSet);
         storeRPaths(Node, &RobustRpathSet);
@@ -639,204 +401,132 @@ void clearNodeZDDs(GATE *Node)
     }
 }
 
-void applyPattern(GATE *Node, int i, int *patIndex, int *tmpVal)
+void applyPattern(GATE *Node, int i, int *pattern)
 {
     LIST *tmpList = NULL;
+    int tmpVal = 0;
+    int patIndex;
 
-    switch(Node[i].Type) {
-        case INPT:
-            Node[i].Val = patterns[*patIndex];
-
-            *patIndex = *patIndex + 1;
-
-            break;
-        case AND:
-            for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-            {
-                if(tmpList == Node[i].Fin)
-                {
-                    *tmpVal = Node[tmpList->Id].Val;
-
-                    continue;
-                }
-
-                *tmpVal = robustSimAND[*tmpVal][Node[tmpList->Id].Val];
-            }
-
-            Node[i].Val = *tmpVal;
-
-            break;
-        case NAND:
-            for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-            {
-                if(tmpList == Node[i].Fin)
-                {
-                    *tmpVal = Node[tmpList->Id].Val;
-
-                    continue;
-                }
-
-                *tmpVal = robustSimAND[*tmpVal][Node[tmpList->Id].Val];
-
-            }
-
-            Node[i].Val = simNOT[*tmpVal];
-
-            break;
-        case OR:
-            for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-            {
-                if(tmpList == Node[i].Fin)
-                {
-                    *tmpVal = Node[tmpList->Id].Val;
-
-                    continue;
-                }
-
-                *tmpVal = robustSimOR[*tmpVal][Node[tmpList->Id].Val];
-
-            }
-
-            Node[i].Val = *tmpVal;
-
-            break;
-        case NOR:
-            for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-            {
-                if(tmpList == Node[i].Fin)
-                {
-                    *tmpVal = Node[tmpList->Id].Val;
-
-                    continue;
-                }
-
-                *tmpVal = robustSimOR[*tmpVal][Node[tmpList->Id].Val];
-
-            }
-
-            Node[i].Val = simNOT[*tmpVal];
-
-            break;
-        case XOR:
-            printf("XOR not supported");
-
-
-            break;
-        case XNOR:
-            printf("XNOR not supported");
-
-
-            break;
-        case BUFF:
-            tmpList = Node[i].Fin;
-
-            Node[i].Val = Node[tmpList->Id].Val;
-
-            break;
-        case NOT:
-            tmpList = Node[i].Fin;
-
-            Node[i].Val = simNOT[Node[tmpList->Id].Val];
-
-            break;
-        case FROM:
-            tmpList = Node[i].Fin;
-
-            Node[i].Val = Node[tmpList->Id].Val;
-
-            break;
-        default:
-            //printf("Hit Default at i: %d ", i);
-            //printf("Type: %d\n", graph[i].typ);
-            break;
-    }
-}
-
-void printInputVector(char * input)
-{
-    int i;
-
-    for(i = 0; i < Npi; i++)
+    for(i = 1, patIndex = 0; i <= Tgat; i++)
     {
-        printf("%c", input[i]);
-    }
+        switch(Node[i].Type) {
+            case INPT:
+                Node[i].Val = pattern[patIndex];
 
-    printf("\n");
-}
+                patIndex++;
 
-void printPattern(int patIndex)
-{
-    int i;
-
-    for(i = patIndex; i < patIndex+Npi; i++)
-    {
-        printf("%d", patterns[i]);
-    }
-
-    printf("\n");
-}
-
-void freePathSet()
-{
-    int i, j;
-
-    for(i = 0; i < Npo; i++)
-    {
-        for(j = 0; j < pathSet[i].numLongestPath; j++)
-        {
-            if(pathSet[i].longestPath[j].Path != NULL)
-                FreeList(&pathSet[i].longestPath[j].Path);
-        }
-        for(j = 0; j < pathSet[i].numSecondLongestPath; j++)
-        {
-            if(pathSet[i].secondLongestPath[j].Path != NULL)
-                FreeList(&pathSet[i].secondLongestPath[j].Path);
-        }
-
-        free(pathSet[i].longestPath);
-        free(pathSet[i].secondLongestPath);
-    }
-    free(pathSet);
-
-}
-
-void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
-{
-    PATH_COUNT *tl=NULL;
-    PATH_COUNT *nl=NULL;
-
-    if ((tl=(PATH_COUNT *) malloc(sizeof(PATH_COUNT)))==NULL){
-        printf("PATH_COUNT: Out of memory\n");
-        exit(1);
-    } else {
-        tl->Next = NULL;
-        tl->Delay = delay;
-        tl->Count = count;
-
-        if(*Cur==NULL)
-        {
-            *Cur=tl;
-            return;
-        }
-
-        nl=*Cur;
-
-        while(nl!=NULL)
-        {
-            if(nl->Count==count && nl->Delay == delay)
-            {
                 break;
-            }
-            if(nl->Next==NULL)
-            {
-                nl->Next=tl;
-            }
+            case AND:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpVal = Node[tmpList->Id].Val;
 
-            nl=nl->Next;
+                        continue;
+                    }
+
+                    tmpVal = robustSimAND[tmpVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = tmpVal;
+
+                break;
+            case NAND:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpVal = robustSimAND[tmpVal][Node[tmpList->Id].Val];
+
+                }
+
+                Node[i].Val = simNOT[tmpVal];
+
+                break;
+            case OR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpVal = robustSimOR[tmpVal][Node[tmpList->Id].Val];
+
+                }
+
+                Node[i].Val = tmpVal;
+
+                break;
+            case NOR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpVal = robustSimOR[tmpVal][Node[tmpList->Id].Val];
+
+                }
+
+                Node[i].Val = simNOT[tmpVal];
+
+                break;
+            case XOR:
+                printf("XOR not supported");
+
+
+                break;
+            case XNOR:
+                printf("XNOR not supported");
+
+
+                break;
+            case BUFF:
+                tmpList = Node[i].Fin;
+
+                Node[i].Val = Node[tmpList->Id].Val;
+
+                break;
+            case NOT:
+                tmpList = Node[i].Fin;
+
+                Node[i].Val = simNOT[Node[tmpList->Id].Val];
+
+                break;
+            case FROM:
+                tmpList = Node[i].Fin;
+
+                Node[i].Val = Node[tmpList->Id].Val;
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+
+        //set mark
+        if((Node[i].Val == R1) || (Node[i].Val == F0))
+        {
+            Node[i].Mark = 1;
+
+        } else {
+            Node[i].Mark = 0;
+
         }
     }
-
-    return;
 }
 
 int checkPathSensitivity(GATE *Node, LIST *path)
@@ -851,4 +541,3 @@ int checkPathSensitivity(GATE *Node, LIST *path)
 
     return 1;
 }
-/****************************************************************************************************************************/

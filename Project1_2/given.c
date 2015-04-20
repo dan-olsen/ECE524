@@ -5,97 +5,121 @@ If the "Cur" is Null, it creates a single element List using "X"
 ***************************************************************************************************/
 void InsertEle(LIST **Cur,int X)
 {
-	LIST *tl = (LIST *) malloc(sizeof(LIST));
-	LIST *nl = NULL;
+    LIST *tl = (LIST *) malloc(sizeof(LIST));
+    LIST *nl = NULL;
 
-	if (tl==NULL)
-	{
-	  printf("LIST: Out of memory\n");
-	  exit(1);
-	} else {
-		tl->Id=X;  tl->Next=NULL;
+    if (tl==NULL)
+    {
+        printf("LIST: Out of memory\n");
+        exit(1);
 
-		if(*Cur==NULL){
-			*Cur=tl;
-			return;
-		}
+    } else {
+        tl->Id=X;  tl->Next=NULL;
 
-		nl=*Cur;
+        if(*Cur==NULL)
+        {
+            *Cur=tl;
+            return;
+        }
 
-		while(nl!=NULL)
-		{
-			if(nl->Id==X)
-			{
-				break;
-			}
+        nl=*Cur;
 
-			if(nl->Next==NULL)
-			{
-				nl->Next=tl;
-			}
+        while(nl!=NULL)
+        {
+            if(nl->Id==X)
+            {
+                break;
+            }
 
-			nl=nl->Next;
-		}
-	 }
-	return;
+            if(nl->Next==NULL)
+            {
+                nl->Next=tl;
+            }
+
+            nl=nl->Next;
+        }
+    }
+
+    return;
 }//end of InsertEle
 /***************************************************************************************************
 Delete an element "X" from LIST "Cur",
 ***************************************************************************************************/
 void DeleteEle(LIST **Cur,int X)
 {
-LIST *fir = (*Cur);
-LIST *lst = NULL;
+    LIST *fir = (*Cur);
+    LIST *lst = NULL;
 
-if (fir==NULL) return;
-while((fir->Id!=X)&&(fir!= NULL)){
-  lst=fir;
-  fir=fir->Next; }
-if(fir!=NULL){
-   if(lst==NULL){  (*Cur)=(*Cur)->Next;       }
-   else{           lst->Next = fir->Next; }
-   free(fir); }
-else{
-   return; }
-return;
+    if (fir==NULL)
+        return;
+
+    while((fir->Id!=X)&&(fir!= NULL))
+    {
+        lst=fir;
+        fir=fir->Next;
+    }
+
+    if(fir!=NULL)
+    {
+        if(lst==NULL)
+        {
+            (*Cur)=(*Cur)->Next;
+
+        } else {
+            lst->Next = fir->Next;
+        }
+
+        free(fir);
+    } else {
+        return;
+    }
+
+    return;
 }//end of DeleteEle
 /***************************************************************************************************************************
 Return 1 if the element "x" is present in LIST "Cur"; Otherwise return  0
 *****************************************************************************************************************************/
 int FindEle(LIST *Cur,int X)
 {
-LIST *temp=NULL;
+    LIST *temp=NULL;
 
-temp=Cur;
-while(temp!=NULL){
-  if(temp->Id==X) return 1;
-  temp=temp->Next; }
-return 0;
+    temp=Cur;
+    while(temp!=NULL)
+    {
+        if(temp->Id==X) return 1;
+        temp=temp->Next;
+    }
+    return 0;
 }//end of FindEle
 /***************************************************************************************************
 Print the elements in LIST "Cur"
 ***************************************************************************************************/
 void PrintList(LIST *Cur)
 {
-LIST *tmp=Cur;
+    LIST *tmp=Cur;
 
-while(tmp!=NULL){
-  printf("%d  ", tmp->Id);
-  tmp = tmp->Next; }
-return;
+    while(tmp!=NULL)
+    {
+        printf("%d  ", tmp->Id);
+        tmp = tmp->Next;
+    }
+    return;
 }//end of PrintList
 /***************************************************************************************************
 Count the total number  of elements in LIST "Cur"
 ***************************************************************************************************/
 int CountList(LIST *Cur)
 {
-LIST *tmp=Cur;
-int size=0;
+    LIST *tmp=Cur;
+    int size=0;
 
-while(tmp!=NULL){
-  size++;
-  tmp = tmp->Next; }
-return size;
+    while(tmp!=NULL)
+    {
+        size++;
+        tmp = tmp->Next;
+    }
+
+    return size;
 }//end of PrintList
 /***************************************************************************************************
 Free all elements in  LIST "Cur"
@@ -113,9 +137,9 @@ void FreeList(LIST **Cur)
 
     while((*Cur) != NULL)
     {
-      tmp=tmp->Next;
-      free(*Cur);
-      (*Cur)=tmp;
+        tmp=tmp->Next;
+        free(*Cur);
+        (*Cur)=tmp;
     }
 
     (*Cur)=NULL;
@@ -129,10 +153,10 @@ void InitiGat(GATE *Node,int Num)
 {
     //Node[Num].Name=(char *) malloc(Mnam *sizeof(char));           //Dynamic memory allocation for an array
     bzero(Node[Num].Name,Mnam);                                   //Clearing the string
-    Node[Num].Type=Node[Num].Nfi=Node[Num].Nfo=Node[Num].Mark=0;
-    Node[Num].Val=6;
-    Node[Num].Fin=Node[Num].Fot=NULL;
-    Node[Num].TempRpath=Node[Num].TempFpath=NULL;
+    Node[Num].Type = Node[Num].Nfi=Node[Num].Nfo=Node[Num].Mark=0;
+    Node[Num].Val = 6;
+    Node[Num].Fin = Node[Num].Fot = NULL;
+    Node[Num].TempRpath = Node[Num].TempFpath = NULL;
     Node[Num].TempPath = NULL;
     Node[Num].NnT = NULL;
     Node[Num].RnT = NULL;
@@ -205,8 +229,8 @@ void CountPri(GATE *Node,int Tgat,int *Npi,int *Npo)
         }
     }
 
-    *Npi=j;
-    *Npo=k;
+    *Npi = j;
+    *Npo = k;
 
     return;
 }//end of CountPri
@@ -344,32 +368,33 @@ int ReadIsc(FILE *Isc,GATE *Node)
         bzero(line,strlen(line));
         fgets(line,Mlin,Isc);
     }//end while
+
     free(noty);  free(from);  free(str1);  free(str2);  free(name);  free(line);
 
-//Return the Maximum node of the Isc file
-return tot;
+    //Return the Maximum node of the Isc file
+    return tot;
 }//end of ReadIsc
 
 void FreePathCounts(PATH_COUNT **Cur)
 {
     PATH_COUNT *tmp=NULL;
 
-        if(*Cur==NULL)
-        {
-            return;
-        }
-
-        tmp=(*Cur);
-
-        while((*Cur) != NULL)
-        {
-          tmp=tmp->Next;
-          free(*Cur);
-          (*Cur)=tmp;
-        }
-
-        (*Cur)=NULL;
-
+    if(*Cur==NULL)
+    {
         return;
+    }
+
+    tmp = (*Cur);
+
+    while((*Cur) != NULL)
+    {
+        tmp = tmp->Next;
+        free(*Cur);
+        (*Cur) = tmp;
+    }
+
+    (*Cur) = NULL;
+
+    return;
 }
 /****************************************************************************************************************************/

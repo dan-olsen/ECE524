@@ -47,64 +47,66 @@ Constant Declarations
 #define NOR     8   // NOR
 #define XOR     9   // XOR
 #define XNOR    10  // XNOR
-/***************************************************************************************************************************
+/***************************************************************************************************
 Structure Declarations
-****************************************************************************************************************************/
+***************************************************************************************************/
 //1.Stucture declaration for LIST
 typedef struct LIST_type {
-   int  Id;           //Id for current element
-   struct LIST_type *Next; //Pointer to next element (if there is no element,it will be NULL)
+    //Id for current element
+    int  Id;
+    struct LIST_type *Next;    //Pointer to next element (if there is no element,it will be NULL)
+
 } LIST;
 
-typedef struct PATH_COUNT_type
-{
+typedef struct PATH_COUNT_type {
     int Delay, Count;
-    struct PATH_COUNT_type *Next; //Pointer to next element (if there is no element,it will be NULL)
+    struct PATH_COUNT_type *Next;    //Pointer to next element (if there is no element,it will be NULL)
+
 } PATH_COUNT;
 
 //2.Stucture declaration for GATE
-typedef struct GATE_type
-{
-    char Name[Mnam];                            //Name of the gate
-    int Type, Nfi, Nfo, Mark, Val, Delay;             //Type, No of fanins, No of fanouts, Marker,Value
-    LIST *Fin,*Fot;                        //Fanin members, Fanout members
-    DdNode *TempRpath, *TempFpath;                  //ZDDS of Rising & Falling Path
+typedef struct GATE_type {
+    char Name[Mnam];                        //Name of the gate
+    int Type, Nfi, Nfo, Mark, Val, Delay;   //Type, No of fanins, No of fanouts, Marker,Value
+    LIST *Fin,*Fot;                         //Fanin members, Fanout members
+    DdNode *TempRpath, *TempFpath;          //ZDDS of Rising & Falling Path
     DdNode *TempPath;
     DdNode *NnT, *RnT, *SnT, *PnT;
     PATH_COUNT *PathCount;
+
 } GATE;
-/***************************************************************************************************************************
+/***************************************************************************************************
 Cudd Package Declarations
-****************************************************************************************************************************/
+***************************************************************************************************/
 DdManager *manager;          //Manager for Cudd Package
 static int view_number = 0;  //Global Variable used by Manager
 DdNode *onez;                //Global Variable used by Manager
-/***************************************************************************************************************************
+/***************************************************************************************************
 Functions in declared in input.c
-****************************************************************************************************************************/
-/***************************************************************************************************************************
+***************************************************************************************************/
+/***************************************************************************************************
 LIST Structure Functions
-****************************************************************************************************************************/
+***************************************************************************************************/
 void InsertEle(LIST **, int);
 void DeleteEle(LIST **, int);
 int FindEle(LIST *, int );
 void PrintList(LIST *);
 int CountList(LIST *);
 void FreeList(LIST **);
-/***************************************************************************************************************************
+/***************************************************************************************************
  GATE Structure Functions
-****************************************************************************************************************************/
+***************************************************************************************************/
 void InitiGat(GATE *, int);
 void PrintGats(GATE *, int);
 void CountPri(GATE *, int, int *, int *);
 void ClearGat(GATE *, int);
-/***************************************************************************************************************************
+void FreePathCounts(PATH_COUNT **);
+
+/***************************************************************************************************
 Functions for reading .isc file
-****************************************************************************************************************************/
+***************************************************************************************************/
 int AssignType(char *);
 int ReadIsc(FILE *, GATE *);
 
-void FreePathCounts(PATH_COUNT **);
-
 #endif /* GIVEN_H_ */
-/****************************************************************************************************************************/
+/**************************************************************************************************/
