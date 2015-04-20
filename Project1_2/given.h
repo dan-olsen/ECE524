@@ -54,21 +54,21 @@ Structure Declarations
 typedef struct LIST_type {
     //Id for current element
     int  Id;
-    struct LIST_type *Next;    //Pointer to next element (if there is no element,it will be NULL)
+    struct LIST_type *Next;    //Pointer to next element (if there is no element, it will be NULL)
 
 } LIST;
 
 typedef struct PATH_COUNT_type {
     int Delay, Count;
-    struct PATH_COUNT_type *Next;    //Pointer to next element (if there is no element,it will be NULL)
+    struct PATH_COUNT_type *Next;    //Pointer to next element (if there is no element, it will be NULL)
 
 } PATH_COUNT;
 
 //2.Stucture declaration for GATE
 typedef struct GATE_type {
     char Name[Mnam];                        //Name of the gate
-    int Type, Nfi, Nfo, Mark, Val, Delay;   //Type, No of fanins, No of fanouts, Marker,Value
-    LIST *Fin,*Fot;                         //Fanin members, Fanout members
+    int Type, Nfi, Nfo, Mark, Val, Delay;   //Type, No of fanins, No of fanouts, Marker, Value
+    LIST *Fin, *Fot;                         //Fanin members, Fanout members
     DdNode *TempRpath, *TempFpath;          //ZDDS of Rising & Falling Path
     DdNode *TempPath;
     DdNode *NnT, *RnT, *SnT, *PnT;

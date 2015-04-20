@@ -20,7 +20,7 @@ typedef struct PATH_SET_type {
 
 } PATH_SET;
 
-//Tot no of PIs,Pos,Maxid,Tot no of patterns in.vec,.fau
+//Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
 int Npi, Npo, Tgat;
 PATH_SET *pathSet;
 stackT pathStack;

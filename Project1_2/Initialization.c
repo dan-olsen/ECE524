@@ -202,10 +202,10 @@ void FreeInputOutputArrays()
 
 void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
 {
-    PATH_COUNT *tl=NULL;
-    PATH_COUNT *nl=NULL;
+    PATH_COUNT *tl= NULL;
+    PATH_COUNT *nl= NULL;
 
-    if ((tl=(PATH_COUNT *) malloc(sizeof(PATH_COUNT)))==NULL){
+    if ((tl =(PATH_COUNT *) malloc(sizeof(PATH_COUNT))) == NULL){
         printf("PATH_COUNT: Out of memory\n");
         exit(1);
     } else {
@@ -213,26 +213,26 @@ void InsertPathCount(PATH_COUNT **Cur, int delay, int count)
         tl->Delay = delay;
         tl->Count = count;
 
-        if(*Cur==NULL)
+        if(*Cur == NULL)
         {
-            *Cur=tl;
+            *Cur = tl;
             return;
         }
 
-        nl=*Cur;
+        nl = *Cur;
 
-        while(nl!=NULL)
+        while(nl!= NULL)
         {
-            if(nl->Count==count && nl->Delay == delay)
+            if(nl->Count == count && nl->Delay == delay)
             {
                 break;
             }
-            if(nl->Next==NULL)
+            if(nl->Next == NULL)
             {
-                nl->Next=tl;
+                nl->Next = tl;
             }
 
-            nl=nl->Next;
+            nl = nl->Next;
         }
     }
 

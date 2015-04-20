@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     Node = (GATE *) malloc(Mnod * sizeof(GATE));
 
     //File pointer to open .isc file
-    Isc = fopen(argv[1],"r");
+    Isc = fopen(argv[1], "r");
 
     if(Isc == NULL)
     {
@@ -52,26 +52,26 @@ int main(int argc, char **argv)
     }
 
     //Read .isc file and return index of last node
-    Tgat = ReadIsc(Isc,Node);
+    Tgat = ReadIsc(Isc, Node);
 
     //Close file pointer for .isc file
     fclose(Isc);
 
     //Print the information of each active gate in Node structure after reading .isc file
-    //PrintGats(Node,Tgat);
+    //PrintGats(Node, Tgat);
 
     //Count the No of Pis and Pos
-    CountPri(Node,Tgat,&Npi,&Npo);
+    CountPri(Node, Tgat, &Npi, &Npo);
 
     //Print the no of primary inputs and outputs
-    printf("\n\nNpi: %d Npo: %d\n\n",Npi,Npo);
+    printf("\n\nNpi: %d Npo: %d\n\n", Npi, Npo);
     /***************************************************************************************************/
 
     //File pointer to open .pattern file
-    Pat = fopen(argv[2],"r");
+    Pat = fopen(argv[2], "r");
 
     //File pointer to open .result file
-    //Res = fopen(argv[3],"w");
+    //Res = fopen(argv[3], "w");
 
     patternSim(Node, Pat);
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     Cudd_Quit(manager);
 
     //Clear memeory for all members of Node
-    ClearGat(Node,Tgat);
+    ClearGat(Node, Tgat);
 
     free(Node);
     FreeInputOutputArrays();

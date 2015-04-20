@@ -3,40 +3,40 @@
 Insert an element "X" at end of LIST "Cur", if "X" is not already in "Cur".
 If the "Cur" is Null, it creates a single element List using "X"
 ***************************************************************************************************/
-void InsertEle(LIST **Cur,int X)
+void InsertEle(LIST **Cur, int X)
 {
     LIST *tl = (LIST *) malloc(sizeof(LIST));
     LIST *nl = NULL;
 
-    if (tl==NULL)
+    if (tl == NULL)
     {
         printf("LIST: Out of memory\n");
         exit(1);
 
     } else {
-        tl->Id=X;  tl->Next=NULL;
+        tl->Id = X;  tl->Next = NULL;
 
-        if(*Cur==NULL)
+        if(*Cur == NULL)
         {
-            *Cur=tl;
+            *Cur = tl;
             return;
         }
 
-        nl=*Cur;
+        nl = *Cur;
 
-        while(nl!=NULL)
+        while(nl != NULL)
         {
-            if(nl->Id==X)
+            if(nl->Id == X)
             {
                 break;
             }
 
-            if(nl->Next==NULL)
+            if(nl->Next == NULL)
             {
-                nl->Next=tl;
+                nl->Next = tl;
             }
 
-            nl=nl->Next;
+            nl = nl->Next;
         }
     }
 
@@ -45,25 +45,25 @@ void InsertEle(LIST **Cur,int X)
 /***************************************************************************************************
 Delete an element "X" from LIST "Cur",
 ***************************************************************************************************/
-void DeleteEle(LIST **Cur,int X)
+void DeleteEle(LIST **Cur, int X)
 {
     LIST *fir = (*Cur);
     LIST *lst = NULL;
 
-    if (fir==NULL)
+    if (fir == NULL)
         return;
 
-    while((fir->Id!=X)&&(fir!= NULL))
+    while((fir->Id != X) && (fir != NULL))
     {
-        lst=fir;
-        fir=fir->Next;
+        lst = fir;
+        fir = fir->Next;
     }
 
-    if(fir!=NULL)
+    if(fir != NULL)
     {
-        if(lst==NULL)
+        if(lst == NULL)
         {
-            (*Cur)=(*Cur)->Next;
+            (*Cur) = (*Cur)->Next;
 
         } else {
             lst->Next = fir->Next;
@@ -79,15 +79,17 @@ void DeleteEle(LIST **Cur,int X)
 /***************************************************************************************************************************
 Return 1 if the element "x" is present in LIST "Cur"; Otherwise return  0
 *****************************************************************************************************************************/
-int FindEle(LIST *Cur,int X)
+int FindEle(LIST *Cur, int X)
 {
-    LIST *temp=NULL;
+    LIST *temp = NULL;
 
-    temp=Cur;
-    while(temp!=NULL)
+    temp = Cur;
+    while(temp != NULL)
     {
-        if(temp->Id==X) return 1;
-        temp=temp->Next;
+        if(temp->Id == X)
+            return 1;
+
+        temp = temp->Next;
     }
     return 0;
 }//end of FindEle
@@ -96,9 +98,9 @@ Print the elements in LIST "Cur"
 ***************************************************************************************************/
 void PrintList(LIST *Cur)
 {
-    LIST *tmp=Cur;
+    LIST *tmp = Cur;
 
-    while(tmp!=NULL)
+    while(tmp != NULL)
     {
         printf("%d  ", tmp->Id);
         tmp = tmp->Next;
@@ -110,10 +112,10 @@ Count the total number  of elements in LIST "Cur"
 ***************************************************************************************************/
 int CountList(LIST *Cur)
 {
-    LIST *tmp=Cur;
-    int size=0;
+    LIST *tmp = Cur;
+    int size = 0;
 
-    while(tmp!=NULL)
+    while(tmp != NULL)
     {
         size++;
         tmp = tmp->Next;
@@ -126,34 +128,34 @@ Free all elements in  LIST "Cur"
 ***************************************************************************************************/
 void FreeList(LIST **Cur)
 {
-    LIST *tmp=NULL;
+    LIST *tmp = NULL;
 
-    if(*Cur==NULL)
+    if(*Cur == NULL)
     {
         return;
     }
 
-    tmp=(*Cur);
+    tmp = (*Cur);
 
     while((*Cur) != NULL)
     {
-        tmp=tmp->Next;
+        tmp = tmp->Next;
         free(*Cur);
-        (*Cur)=tmp;
+        (*Cur) = tmp;
     }
 
-    (*Cur)=NULL;
+    (*Cur) = NULL;
 
     return;
 }//end of FreeList
 /***************************************************************************************************
 Initialize the paricular member of GATE structure
 ***************************************************************************************************/
-void InitiGat(GATE *Node,int Num)
+void InitiGat(GATE *Node, int Num)
 {
-    //Node[Num].Name=(char *) malloc(Mnam *sizeof(char));           //Dynamic memory allocation for an array
-    bzero(Node[Num].Name,Mnam);                                   //Clearing the string
-    Node[Num].Type = Node[Num].Nfi=Node[Num].Nfo=Node[Num].Mark=0;
+    //Node[Num].Name = (char *) malloc(Mnam *sizeof(char));           //Dynamic memory allocation for an array
+    bzero(Node[Num].Name, Mnam);                                   //Clearing the string
+    Node[Num].Type = Node[Num].Nfi = Node[Num].Nfo = Node[Num].Mark = 0;
     Node[Num].Val = 6;
     Node[Num].Fin = Node[Num].Fot = NULL;
     Node[Num].TempRpath = Node[Num].TempFpath = NULL;
@@ -169,17 +171,17 @@ void InitiGat(GATE *Node,int Num)
 /***************************************************************************************************
 Print all contents(attribute) of all active member of GATE structure(DdNodes are not printed)
 ***************************************************************************************************/
-void PrintGats(GATE *Node,int Tgat)
+void PrintGats(GATE *Node, int Tgat)
 {
     int i;
 
     printf("\nId\tName\tType\t#In\t#Out\tMark\tValue\t\tFanin\t\tFanout");
 
-    for(i=1;i<=Tgat;i++)
+    for(i = 1;i <= Tgat; i++)
     {
-        if(Node[i].Type!=0)
+        if(Node[i].Type != 0)
         {
-            printf("\n%d\t%s\t%d\t%d\t%d\t%d\t%d\t\t",i,Node[i].Name,Node[i].Type,Node[i].Nfi,Node[i].Nfo,Node[i].Mark,Node[i].Val);
+            printf("\n%d\t%s\t%d\t%d\t%d\t%d\t%d\t\t", i, Node[i].Name, Node[i].Type, Node[i].Nfi, Node[i].Nfo, Node[i].Mark, Node[i].Val);
             PrintList(Node[i].Fin);  printf("\t\t");
             PrintList(Node[i].Fot);
         }
@@ -190,14 +192,14 @@ void PrintGats(GATE *Node,int Tgat)
 /***************************************************************************************************
 Free the memory of all contents of all members of GATE structure(DdNodes are already cleared)
 ***************************************************************************************************/
-void ClearGat(GATE *Node,int Tgat)
+void ClearGat(GATE *Node, int Tgat)
 {
     int i;
 
     for(i = 1; i <= Tgat; i++)
     {
         //free(Node[i].Name);
-        Node[i].Type=Node[i].Nfi=Node[i].Nfo=Node[i].Mark=Node[i].Val=0;
+        Node[i].Type = Node[i].Nfi = Node[i].Nfo = Node[i].Mark = Node[i].Val = 0;
         FreeList(&Node[i].Fin);
         FreeList(&Node[i].Fot);
         FreePathCounts(&Node[i].PathCount);
@@ -208,21 +210,21 @@ void ClearGat(GATE *Node,int Tgat)
 /***************************************************************************************************
 Count the Total Number of Primary inputs and outputs
 ***************************************************************************************************/
-void CountPri(GATE *Node,int Tgat,int *Npi,int *Npo)
+void CountPri(GATE *Node, int Tgat, int *Npi, int *Npo)
 {
-    int i,j,k;
+    int i, j, k;
 
-    i=j=k=0;
+    i = j = k = 0;
 
-    for(i=1;i<=Tgat;i++)
+    for(i = 1; i <= Tgat; i++)
     {
-        if(Node[i].Type!=0)
+        if(Node[i].Type != 0)
         {
-            if(Node[i].Nfi==0)
+            if(Node[i].Nfi == 0)
             {
                 j++;
             }
-            if(Node[i].Nfo==0)
+            if(Node[i].Nfo == 0)
             {
                 k++;
             }
@@ -239,25 +241,25 @@ Convert (char *) type read to (int)
 ***************************************************************************************************/
 int AssignType(char *Gtyp)
 {
-    if((strcmp(Gtyp,"inpt")==0) || (strcmp(Gtyp,"INPT")==0))
+    if((strcmp(Gtyp, "inpt") == 0) || (strcmp(Gtyp, "INPT") == 0))
         return INPT;
-    else if ((strcmp(Gtyp,"from")==0) || (strcmp(Gtyp,"FROM")==0))
+    else if ((strcmp(Gtyp, "from") == 0) || (strcmp(Gtyp, "FROM") == 0))
         return FROM;
-    else if ((strcmp(Gtyp,"buff")==0) || (strcmp(Gtyp,"BUFF")==0))
+    else if ((strcmp(Gtyp, "buff") == 0) || (strcmp(Gtyp, "BUFF") == 0))
         return BUFF;
-    else if ((strcmp(Gtyp,"not")==0)  || (strcmp(Gtyp,"NOT")==0))
+    else if ((strcmp(Gtyp, "not") == 0)  || (strcmp(Gtyp, "NOT") == 0))
         return NOT;
-    else if ((strcmp(Gtyp,"and")==0)  || (strcmp(Gtyp,"AND")==0))
+    else if ((strcmp(Gtyp, "and") == 0)  || (strcmp(Gtyp, "AND") == 0))
         return AND;
-    else if ((strcmp(Gtyp,"nand")==0) || (strcmp(Gtyp,"NAND")==0))
+    else if ((strcmp(Gtyp, "nand") == 0) || (strcmp(Gtyp, "NAND") == 0))
         return NAND;
-    else if ((strcmp(Gtyp,"or")==0)   || (strcmp(Gtyp,"OR")==0))
+    else if ((strcmp(Gtyp, "or") == 0)   || (strcmp(Gtyp, "OR") == 0))
         return OR;
-    else if ((strcmp(Gtyp,"nor")==0)  || (strcmp(Gtyp,"NOR")==0))
+    else if ((strcmp(Gtyp, "nor") == 0)  || (strcmp(Gtyp, "NOR") == 0))
         return NOR;
-    else if ((strcmp(Gtyp,"xor")==0)  || (strcmp(Gtyp,"XOR")==0))
+    else if ((strcmp(Gtyp, "xor") == 0)  || (strcmp(Gtyp, "XOR") == 0))
         return XOR;
-    else if ((strcmp(Gtyp,"xnor")==0) || (strcmp(Gtyp,"XNOR")==0))
+    else if ((strcmp(Gtyp, "xnor") == 0) || (strcmp(Gtyp, "XNOR") == 0))
         return XNOR;
     else
         return 0;
@@ -266,57 +268,57 @@ int AssignType(char *Gtyp)
 /***************************************************************************************************
  Function to read the Bench Mark(.isc files)
 ***************************************************************************************************/
-int ReadIsc(FILE *Isc,GATE *Node)
+int ReadIsc(FILE *Isc, GATE *Node)
 {
     char *noty, *from, *str1, *str2, *name, *line = NULL;
-    int  i,id,fid,fin,fot,tot=0;
+    int  i, id, fid, fin, fot, tot = 0;
     //Dynamic memory allocation for temporary strings
-    noty=(char *) malloc(Mlin * sizeof(char));
-    from=(char *) malloc(Mlin * sizeof(char));
-    str1=(char *) malloc(Mlin * sizeof(char));
-    str2=(char *) malloc(Mlin * sizeof(char));
-    name=(char *) malloc(Mlin * sizeof(char));
-    line=(char *) malloc(Mlin * sizeof(char));
+    noty = (char *) malloc(Mlin * sizeof(char));
+    from = (char *) malloc(Mlin * sizeof(char));
+    str1 = (char *) malloc(Mlin * sizeof(char));
+    str2 = (char *) malloc(Mlin * sizeof(char));
+    name = (char *) malloc(Mlin * sizeof(char));
+    line = (char *) malloc(Mlin * sizeof(char));
     //Intialize all Gates in Node structure
-    for(i=0;i<Mnod;i++)
+    for(i = 0; i < Mnod; i++)
     {
-        InitiGat(Node,i);
+        InitiGat(Node, i);
     }
 
     //Skip the comment lines
     do
-      fgets(line,Mlin,Isc);
+      fgets(line, Mlin, Isc);
     while(line[0] == '*');
 
     //Read line by line
     while(!feof(Isc)){
 
         //Initialize temporary strings
-        bzero(noty,strlen(noty));    bzero(from,strlen(from));
-        bzero(str1,strlen(str1));    bzero(str2,strlen(str2));
-        bzero(name,strlen(name));
+        bzero(noty, strlen(noty));    bzero(from, strlen(from));
+        bzero(str1, strlen(str1));    bzero(str2, strlen(str2));
+        bzero(name, strlen(name));
 
         //Break line into data
-        sscanf(line, "%d %s %s %s %s",&id,name,noty,str1,str2);
+        sscanf(line, "%d %s %s %s %s", &id, name, noty, str1, str2);
 
         //Update the tot using id
-        if(id>tot)
+        if(id > tot)
         {
-            tot=id;
+            tot = id;
         }
 
         //Fill in the name and type of a Gate
-        strcpy(Node[id].Name,name);
-        Node[id].Type=AssignType(noty);
+        strcpy(Node[id].Name, name);
+        Node[id].Type = AssignType(noty);
 
         //Fill in fanin and fanout numbersof a Gate
-        if(Node[id].Type!=FROM)
+        if(Node[id].Type != FROM)
         {
-            fot=atoi(str1);
-            fin=atoi(str2);
+            fot = atoi(str1);
+            fin = atoi(str2);
         } else {
-            fin=fot=1;
-            strcpy(from,str1);
+            fin = fot = 1;
+            strcpy(from, str1);
         }
 
         Node[id].Nfo = fot;
@@ -328,18 +330,18 @@ int ReadIsc(FILE *Isc,GATE *Node)
             case FROM  :
                 for(i = tot; i > 0; i--)
                 {
-                    if(Node[i].Type!=0)
+                    if(Node[i].Type != 0)
                     {
-                        if(strcmp(Node[i].Name,from)==0)
+                        if(strcmp(Node[i].Name, from) == 0)
                         {
-                            fid=i;
+                            fid = i;
                             break;
                         }
                     }
                 }
 
-                InsertEle(&Node[id].Fin,fid);
-                InsertEle(&Node[fid].Fot,id);
+                InsertEle(&Node[id].Fin, fid);
+                InsertEle(&Node[fid].Fot, id);
                 break;
             case BUFF  :
             case NOT   :
@@ -352,24 +354,29 @@ int ReadIsc(FILE *Isc,GATE *Node)
                 for(i = 1; i <= fin; i++)
                 {
                     fscanf(Isc, "%d", &fid);
-                    InsertEle(&Node[id].Fin,fid);
-                    InsertEle(&Node[fid].Fot,id);
+                    InsertEle(&Node[id].Fin, fid);
+                    InsertEle(&Node[fid].Fot, id);
                 }
 
-                fscanf(Isc,"\n");
+                fscanf(Isc, "\n");
                 break;
             default:
-                printf("ReadIsc: Error in input file (Node %d)\n",id);
+                printf("ReadIsc: Error in input file (Node %d)\n", id);
                 exit(1);
                 break;
         }//end case
 
         //Clear the contents in the string "line" and get the next line in the file
-        bzero(line,strlen(line));
-        fgets(line,Mlin,Isc);
+        bzero(line, strlen(line));
+        fgets(line, Mlin, Isc);
     }//end while
 
-    free(noty);  free(from);  free(str1);  free(str2);  free(name);  free(line);
+    free(noty);
+    free(from);
+    free(str1);
+    free(str2);
+    free(name);
+    free(line);
 
     //Return the Maximum node of the Isc file
     return tot;
@@ -377,9 +384,9 @@ int ReadIsc(FILE *Isc,GATE *Node)
 
 void FreePathCounts(PATH_COUNT **Cur)
 {
-    PATH_COUNT *tmp=NULL;
+    PATH_COUNT *tmp = NULL;
 
-    if(*Cur==NULL)
+    if(*Cur == NULL)
     {
         return;
     }
