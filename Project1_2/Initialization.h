@@ -20,21 +20,19 @@ typedef struct PATH_SET_type {
 
 } PATH_SET;
 
-//Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
-int Npi, Npo, Tgat;
 PATH_SET *pathSet;
 stackT pathStack;
 int *primaryInputs;
 int *primaryOutputs;
 
-void InitDelay(GATE *Node);
-void InitInputOuputArrays(GATE *Node);
+void InitDelay(GATE *Node, int Npi, int Npo, int Tgat);
+void InitInputOuputArrays(GATE *Node, int Npi, int Npo, int Tgat);
 
 void FreeInputOutputArrays();
 
 void InsertPathCount(PATH_COUNT **Cur, int delay, int count);
 void BuildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int currPathDelay, int *PathIndex, int numPaths);
 
-void freePathSet();
+void FreePathSet(int Npo);
 
 #endif // INITIALIZATION_H

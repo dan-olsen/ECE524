@@ -10,26 +10,17 @@ Command Instructions
 ***************************************************************************************************/
 int main(int argc, char **argv)
 {
+    int Npi, Npo, Tgat;                             //Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
+    FILE *Isc = NULL, *Pat = NULL, *Res = NULL;     //File pointers used for .isc, .pattern, and .res files
+    clock_t Start, End;                             //Clock variables to calculate the Cputime
+    double Cpu;                                     //Total cpu time
+    GATE *Node = NULL;                              //Structure to store the ckt given in .isc file
+
     if(argc < 4)
     {
         fprintf(stderr, "Wrong number of arguments.\n");
         exit(1);  /* Exit, returning error code. */
     }
-
-    //File pointers used for .isc, .pattern, and .res files
-    FILE *Isc = NULL, *Pat = NULL, *Res = NULL;
-
-    //Clock variables to calculate the Cputime
-    //clock_t Start, End;
-
-    //Total cpu time
-    //double Cpu;
-
-     //Structure to store the ckt given in .isc file
-    GATE *Node = NULL;
-
-    //DdNode *GoodPaths = NULL;
-    //DdNode *SuspectSet = NULL;
 
     //Intializing CUDD package manger
     manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);
@@ -73,7 +64,7 @@ int main(int argc, char **argv)
     //File pointer to open .result file
     //Res = fopen(argv[3], "w");
 
-    patternSim(Node, Pat);
+    patternSim(Node, Pat, Npi, Npo, Tgat);
 
     fclose(Pat);
     //fclose(Res);

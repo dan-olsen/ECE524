@@ -1,7 +1,7 @@
 #include "Print.h"
 #include "Initialization.h"
 
-void printInputVector(char * input)
+void printInputVector(char * input, int Npi)
 {
     int i;
 
@@ -13,7 +13,7 @@ void printInputVector(char * input)
     printf("\n");
 }
 
-void printPattern(int *pattern)
+void printPattern(int *pattern, int Npi)
 {
     int i;
 

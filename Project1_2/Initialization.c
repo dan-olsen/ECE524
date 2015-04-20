@@ -1,13 +1,13 @@
 #include "Initialization.h"
 
-void InitDelay(GATE *Node)
+void InitDelay(GATE *Node, int Npi, int Npo, int Tgat)
 {
     int i, mark = 0, k;
     LIST *tmpList = NULL;
     int tmpDelay;
     PATH_COUNT *pathIter = NULL, *currPath = NULL;
 
-    InitInputOuputArrays(Node);
+    InitInputOuputArrays(Node, Npi, Npo, Tgat);
 
     pathStack.contents = NULL;
 
@@ -168,7 +168,7 @@ void InitDelay(GATE *Node)
     printf("\n");
 }
 
-void InitInputOuputArrays(GATE *Node)
+void InitInputOuputArrays(GATE *Node, int Npi, int Npo, int Tgat)
 {
     int i, j, k;
 
@@ -296,7 +296,7 @@ void BuildNLongestPath(GATE *Node, int n, int NodeIndex, int PathSetIndex, int c
     }
 }
 
-void freePathSet()
+void FreePathSet(int Npo)
 {
     int i, j;
 

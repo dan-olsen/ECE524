@@ -22,11 +22,11 @@
 #define X1 4
 #define X0 5
 
-int *getNextPattern(FILE **Pat);
-void patternSim(GATE *Node, FILE *patFile);
-void applyPattern(GATE *Node, int i, int *pattern);
+int *getNextPattern(FILE **Pat, int Npi);
+void patternSim(GATE *Node, FILE *patFile, int Npi, int Npo, int Tgat);
+void applyPattern(GATE *Node, int i, int *pattern, int Tgat);
 
-void storePaths(GATE *Node, DdNode **PathSet);
+void storePaths(GATE *Node, DdNode **PathSet, int Tgat);
 void storeRPaths(GATE *Node, DdNode **RPathSet);
 void storeFPaths(GATE *Node, DdNode **FPathSet);
 
@@ -36,11 +36,9 @@ void storeRnT(GATE *Node, DdNode **PathSet);
 void ListToZdd(LIST *pathList, DdNode **PathSet);
 
 void clearPathZDDs(DdNode **PathSet);
-void clearNodeZDDs(GATE *Node);
+void clearNodeZDDs(GATE *Node, int Tgat);
 
 int checkPathSensitivity(GATE *Node, LIST *path);
 DdNode* createZDD(LIST *pathList);
-
-
 
 #endif /* USER_H_ */

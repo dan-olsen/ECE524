@@ -31,7 +31,7 @@ const int nonRobustSimAND [6][6]    =   {{S0, S0, S0, S0, S0, S0},
 
 const int simNOT [6]                =   {S1, F0, R1, S0, X0, X1};
 
-int* getNextPattern(FILE **patFile)
+int* getNextPattern(FILE **patFile, int Npi)
 {
     int patIndex;
     char vector1 [Mpi];
@@ -51,8 +51,8 @@ int* getNextPattern(FILE **patFile)
 
         if((readCount2 != -1) && (readCount1 != -1) && (readCount1 == readCount2))
         {
-            printInputVector(vector1);
-            printInputVector(vector2);
+            printInputVector(vector1, Npi);
+            printInputVector(vector2, Npi);
 
             for(patIndex = 0; patIndex < Npi; patIndex++)
             {
@@ -83,7 +83,7 @@ int* getNextPattern(FILE **patFile)
             }
 
             printf("Resulting Pattern: ");
-            printPattern(pattern);
+            printPattern(pattern, Npi);
             printf("\n");
 
         } else {
@@ -100,7 +100,7 @@ int* getNextPattern(FILE **patFile)
     return pattern;
 }
 
-void patternSim(GATE *Node, FILE *patFile)
+void patternSim(GATE *Node, FILE *patFile, int Npi, int Npo, int Tgat)
 {
     int i, j;
     int *pattern = NULL;
@@ -109,21 +109,21 @@ void patternSim(GATE *Node, FILE *patFile)
     DdNode *GoodPaths = NULL;
     DdNode *tmpNode = NULL;
 
-    InitDelay(Node);
+    InitDelay(Node, Npi, Npo, Tgat);
 
     //iterate over patterns
-    while((pattern = getNextPattern(&patFile)) != NULL)
+    while((pattern = getNextPattern(&patFile, Npi)) != NULL)
     {
         printf("Applying Pattern: ");
-        printPattern(pattern);
+        printPattern(pattern, Npi);
         printf("\n");
 
         //topologoical traversal to apply pattern
-        applyPattern(Node, i, pattern);
+        applyPattern(Node, i, pattern, Tgat);
 
         free(pattern);
 
-        storePaths(Node, &RobustPathSet);
+        storePaths(Node, &RobustPathSet, Tgat);
         storeRPaths(Node, &RobustRpathSet);
         storeFPaths(Node, &RobustFpathSet);
 
@@ -202,7 +202,7 @@ void ListToZdd(LIST *pathList, DdNode **PathSet)
     }
 }
 
-void storePaths(GATE *Node, DdNode **PathSet)
+void storePaths(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i, j;
     LIST *tmpList = NULL;
@@ -309,7 +309,7 @@ void storePaths(GATE *Node, DdNode **PathSet)
         }
     }
 
-    clearNodeZDDs(Node);
+    clearNodeZDDs(Node, Tgat);
 }
 
 void storeRPaths(GATE *Node, DdNode **RPathSet)
@@ -352,7 +352,7 @@ void clearPathZDDs(DdNode **PathSet)
     }
 }
 
-void clearNodeZDDs(GATE *Node)
+void clearNodeZDDs(GATE *Node, int Tgat)
 {
     int i;
 
@@ -401,7 +401,7 @@ void clearNodeZDDs(GATE *Node)
     }
 }
 
-void applyPattern(GATE *Node, int i, int *pattern)
+void applyPattern(GATE *Node, int i, int *pattern, int Tgat)
 {
     LIST *tmpList = NULL;
     int tmpVal = 0;
