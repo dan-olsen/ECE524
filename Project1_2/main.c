@@ -30,6 +30,8 @@ int main(int argc, char **argv)
         exit(1);  /* Exit, returning error code. */
     }
 
+    printf("Start Timing Diagnosis\n");
+
     manager = Cudd_Init(0, 0, CUDD_UNIQUE_SLOTS, CUDD_CACHE_SLOTS, 0);      //Intializing CUDD package manger
     onez = Cudd_ReadZddOne(manager, ( (2 * Mnod ) + 5 ));
 
@@ -50,7 +52,7 @@ int main(int argc, char **argv)
 
     //PrintGats(Node, Tgat);                        //Print the information of each active gate in Node structure after reading .isc file
     CountPri(Node, Tgat, &Npi, &Npo);               //Count the No of Pis and Pos
-    printf("\n\nNpi: %d Npo: %d\n\n", Npi, Npo);    //Print the no of primary inputs and outputs
+    printf("\nNpi: %d Npo: %d\n", Npi, Npo);    //Print the no of primary inputs and outputs
 
     /***************************************************************************************************/
 
