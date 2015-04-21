@@ -155,7 +155,6 @@ void storeLSPaths(GATE *Node, int Npo, DdNode **GoodPaths, DdNode **SuspectSet)
     }
 }
 
-
 void storeNnT(GATE *Node, DdNode **PathSet)
 {
 

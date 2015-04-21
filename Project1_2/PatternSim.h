@@ -23,7 +23,8 @@
 #define X0 5
 
 int *getNextPattern(FILE **Pat, int Npi);
-void applyPattern(GATE *Node, int *pattern, int Tgat);
+void applyPatternRobust(GATE *Node, int *pattern, int Tgat);
+void applyPatternNonRobust(GATE *Node, int *pattern, int Tgat);
 void printPattern(int *pattern, int Npi);
 
 #endif /* USER_H_ */

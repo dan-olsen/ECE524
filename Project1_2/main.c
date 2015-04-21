@@ -11,7 +11,7 @@ Command Instructions
 ***************************************************************************************************/
 int main(int argc, char **argv)
 {
-    int Npi, Npo, Tgat;                                         //Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
+    int Npi, Npo, Tgat, i;                                         //Tot no of PIs, Pos, Maxid, Tot no of patterns in.vec, .fau
     FILE *iscFile = NULL, *patFile = NULL, *resFile = NULL;     //File pointers used for .isc, .pattern, and .res files
     clock_t Start, End;                                         //Clock variables to calculate the Cputime
     double Cpu;                                                 //Total cpu time
@@ -22,6 +22,7 @@ int main(int argc, char **argv)
     DdNode *SuspectSet = NULL;
     DdNode *GoodPaths = NULL;
     DdNode *tmpNode = NULL;
+    DdNode *NonRobustPathSet = NULL, *NonRobustRpathSet = NULL, *NonRobustFpathSet = NULL;
 
     if(argc < 4)
     {
@@ -63,22 +64,42 @@ int main(int argc, char **argv)
     {
         printf("Applying Pattern: ");
         printPattern(pattern, Npi);
-        printf("\n");
 
         //topologoical traversal to apply pattern
-        applyPattern(Node, pattern, Tgat);
+        applyPatternRobust(Node, pattern, Tgat);
+
+        for(i = 0; i < Npo; i++)
+        {
+            printf("Robust Output at %d = %d\n", primaryOutputs[i], Node[primaryOutputs[i]].Val);
+        }
+
+        storeSensitizedPaths(Node, &RobustPathSet, Tgat);
+        //storeSensitizedRPaths(Node, &RobustRpathSet);
+        //storeSensitizedFPaths(Node, &RobustFpathSet);
+
+        storeLSPaths(Node, Npo, &GoodPaths, &SuspectSet);
+
+        applyPatternNonRobust(Node, pattern, Tgat);
+
+        for(i = 0; i < Npo; i++)
+        {
+            printf("Non-Robust Output at %d = %d\n", primaryOutputs[i], Node[primaryOutputs[i]].Val);
+        }
+
+        storeSensitizedPaths(Node, &NonRobustPathSet, Tgat);
+        //storeSensitizedRPaths(Node, &NonRobustRpathSet);
+        //storeSensitizedFPaths(Node, &NonRobustFpathSet);
 
         free(pattern);
 
-        storeSensitizedPaths(Node, &RobustPathSet, Tgat);
-        storeSensitizedRPaths(Node, &RobustRpathSet);
-        storeSensitizedFPaths(Node, &RobustFpathSet);
-
-        storeLSPaths(Node, Npo, &GoodPaths, &SuspectSet);
+        printf("\n");
     }
 
     if(RobustPathSet != NULL)
         printf("Robust Path ZDD Count: %d\n", Cudd_zddCount(manager, RobustPathSet));
+
+    if(NonRobustPathSet != NULL)
+        printf("Non-Robust Path ZDD Count: %d\n", Cudd_zddCount(manager, NonRobustPathSet));
 
     if(GoodPaths != NULL)
          printf("Good Path ZDD Count: %d\n", Cudd_zddCount(manager, GoodPaths));
@@ -96,6 +117,11 @@ int main(int argc, char **argv)
     clearPathZDDs(&RobustRpathSet);
     clearPathZDDs(&RobustFpathSet);
     clearPathZDDs(&RobustPathSet);
+
+    clearPathZDDs(&NonRobustRpathSet);
+    clearPathZDDs(&NonRobustFpathSet);
+    clearPathZDDs(&NonRobustPathSet);
+
     clearPathZDDs(&GoodPaths);
     clearPathZDDs(&SuspectSet);
 
