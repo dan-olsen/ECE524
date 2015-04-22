@@ -8,6 +8,7 @@ void initDelay(GATE *Node, int Npi, int Npo, int Tgat)
     LIST *tmpList = NULL;
     int tmpDelay;
     PATH_COUNT *pathIter = NULL, *currPath = NULL;
+    //PATH_COUNT *tmpPath = NULL;
 
     initInputOuputArrays(Node, Npi, Npo, Tgat);
 
@@ -65,11 +66,16 @@ void initDelay(GATE *Node, int Npi, int Npo, int Tgat)
                                 mark = 0;
 
                             } else {
-                                insertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
-
+                                if((Node[i].Delay == pathIter->Delay + 1) || (Node[i].Delay == pathIter->Delay + 2))
+                                {
+                                    insertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
+                                }
                             }
                         } else {
-                            insertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
+                            if((Node[i].Delay == pathIter->Delay + 1) || (Node[i].Delay == pathIter->Delay + 2))
+                            {
+                                insertPathCount(&Node[i].PathCount, pathIter->Delay + 1, pathIter->Count);
+                            }
 
                         }
                     }
@@ -95,7 +101,17 @@ void initDelay(GATE *Node, int Npi, int Npo, int Tgat)
                 break;
         }
     }
+    /*
+    for(i = 0; i < Npo; i++)
+    {
+        for(tmpPath = Node[primaryOutputs[i]].PathCount; tmpPath != NULL; tmpPath = tmpPath->Next)
+        {
+            printf("At %d Count = %d, Delay = %d\n", primaryOutputs[i], tmpPath->Count, tmpPath->Delay);
+        }
+    }
 
+    fflush(stdout);
+    */
     pathSet = (PATH_SET*) malloc(sizeof(PATH_SET) * Npo);
 
     for(i = 0; i < Npo; i++)

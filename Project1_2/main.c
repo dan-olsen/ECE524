@@ -70,11 +70,6 @@ int main(int argc, char **argv)
         //topologoical traversal to apply pattern
         applyPatternRobust(Node, pattern, Tgat);
 
-        /*for(i = 0; i < Npo; i++)
-        {
-            printf("Robust Output at %d = %d\n", primaryOutputs[i], Node[primaryOutputs[i]].Val);
-        }*/
-
         storeSensitizedPaths(Node, &RobustPathSet, Tgat);
         //storeSensitizedRPaths(Node, &RobustRpathSet);
         //storeSensitizedFPaths(Node, &RobustFpathSet);
@@ -82,11 +77,6 @@ int main(int argc, char **argv)
         storeLSPaths(Node, Npo, &GoodPaths, &SuspectSet);
 
         applyPatternNonRobust(Node, pattern, Tgat);
-
-        /*for(i = 0; i < Npo; i++)
-        {
-            printf("Non-Robust Output at %d = %d\n", primaryOutputs[i], Node[primaryOutputs[i]].Val);
-        }*/
 
         storeSensitizedPaths(Node, &NonRobustPathSet, Tgat);
         //storeSensitizedRPaths(Node, &NonRobustRpathSet);
