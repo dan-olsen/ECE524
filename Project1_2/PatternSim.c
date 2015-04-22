@@ -1,35 +1,35 @@
 #include "given.h"
 #include "PatternSim.h"
 
-const int robustSimOR [6][6]        =   {{S0, R1, F0, S1, X1, X0},
-                                         {R1, X1, X1, S1, X1, X1},
-                                         {F0, X1, F0, S1, X1, F0},
-                                         {S1, S1, S1, S1, S1, S1},
-                                         {X1, X1, X1, S1, X1, X1},
-                                         {X0, X1, F0, S1, X1, X0}};
+int robustSimOR [6][6]      =   {{S0, R1, F0, S1, X1, X0},
+                                 {R1, X1, X1, S1, X1, X1},
+                                 {F0, X1, F0, S1, X1, F0},
+                                 {S1, S1, S1, S1, S1, S1},
+                                 {X1, X1, X1, S1, X1, X1},
+                                 {X0, X1, F0, S1, X1, X0}};
 
-const int nonRobustSimOR [6][6]     =   {{S0, R1, F0, S1, X1, X0},
-                                         {R1, X1, R1, S1, X1, R1},
-                                         {F0, R1, F0, S1, X1, F0},
-                                         {S1, S1, S1, S1, S1, S1},
-                                         {X1, X1, X1, S1, X1, X1},
-                                         {X0, R1, F0, S1, X1, X0}};
+int nonRobustSimOR [6][6]   =   {{S0, R1, F0, S1, X1, X0},
+                                 {R1, X1, R1, S1, X1, R1},
+                                 {F0, R1, F0, S1, X1, F0},
+                                 {S1, S1, S1, S1, S1, S1},
+                                 {X1, X1, X1, S1, X1, X1},
+                                 {X0, R1, F0, S1, X1, X0}};
 
-const int robustSimAND [6][6]       =   {{S0, S0, S0, S0, S0, S0},
-                                         {S0, R1, X0, R1, R1, X0},
-                                         {S0, X0, X0, F0, X0, X0},
-                                         {S0, R1, F0, S1, X1, X0},
-                                         {S0, R1, X0, X1, X1, X0},
-                                         {S0, X0, X0, X0, X0, X0}};
+int robustSimAND [6][6]     =   {{S0, S0, S0, S0, S0, S0},
+                                 {S0, R1, X0, R1, R1, X0},
+                                 {S0, X0, X0, F0, X0, X0},
+                                 {S0, R1, F0, S1, X1, X0},
+                                 {S0, R1, X0, X1, X1, X0},
+                                 {S0, X0, X0, X0, X0, X0}};
 
-const int nonRobustSimAND [6][6]    =   {{S0, S0, S0, S0, S0, S0},
-                                         {S0, R1, F0, R1, R1, X0},
-                                         {S0, F0, X0, F0, F0, X0},
-                                         {S0, R1, F0, S1, X1, X0},
-                                         {S0, R1, F0, X1, X1, X0},
-                                         {S0, X0, X0, X0, X0, X0}};
+int nonRobustSimAND [6][6]  =   {{S0, S0, S0, S0, S0, S0},
+                                 {S0, R1, F0, R1, R1, X0},
+                                 {S0, F0, X0, F0, F0, X0},
+                                 {S0, R1, F0, S1, X1, X0},
+                                 {S0, R1, F0, X1, X1, X0},
+                                 {S0, X0, X0, X0, X0, X0}};
 
-const int simNOT [6]                =   {S1, F0, R1, S0, X0, X1};
+const int simNOT [6]        =   {S1, F0, R1, S0, X0, X1};
 
 int* getNextPattern(FILE **patFile, int Npi)
 {

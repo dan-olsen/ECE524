@@ -155,15 +155,61 @@ void storeLSPaths(GATE *Node, int Npo, DdNode **GoodPaths, DdNode **SuspectSet)
     }
 }
 
-void storeNnT(GATE *Node, DdNode **PathSet)
+void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
+    int i;
 
+    for(i = 1; i < Tgat; i++)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+            case AND:
+            case NAND:
+            case OR:
+            case NOR:
+            case XOR:
+            case XNOR:
+            case FROM:
+            case NOT:
+            case BUFF:
+                Node[i].NnT = Cudd_zddSubset1(manager, *PathSet, i);
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+    }
 }
 
 
-void storeRnT(GATE *Node, DdNode **PathSet)
+void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
+    int i;
 
+    for(i = 1; i < Tgat; i++)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+            case AND:
+            case NAND:
+            case OR:
+            case NOR:
+            case XOR:
+            case XNOR:
+            case FROM:
+            case NOT:
+            case BUFF:
+                Node[i].RnT = Cudd_zddSubset1(manager, *PathSet, i);
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+    }
 }
 
 void listToZdd(LIST *pathList, DdNode **PathSet)

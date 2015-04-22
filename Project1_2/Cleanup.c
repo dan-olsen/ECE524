@@ -57,3 +57,69 @@ void clearNodeZDDs(GATE *Node, int Tgat)
         }
     }
 }
+
+
+void clearNodeRnT(GATE *Node, int Tgat)
+{
+    int i;
+
+    for(i = 0; i <= Tgat; i++)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+            case AND:
+            case NAND:
+            case OR:
+            case NOR:
+            case XOR:
+            case XNOR:
+            case FROM:
+            case NOT:
+            case BUFF:
+                if(Node[i].RnT != NULL)
+                {
+                    Cudd_RecursiveDerefZdd(manager, Node[i].RnT);
+                    Node[i].RnT = NULL;
+                }
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+    }
+}
+
+
+void clearNodeNnT(GATE *Node, int Tgat)
+{
+    int i;
+
+    for(i = 0; i <= Tgat; i++)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+            case AND:
+            case NAND:
+            case OR:
+            case NOR:
+            case XOR:
+            case XNOR:
+            case FROM:
+            case NOT:
+            case BUFF:
+                if(Node[i].NnT != NULL)
+                {
+                    Cudd_RecursiveDerefZdd(manager, Node[i].NnT);
+                    Node[i].NnT = NULL;
+                }
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+    }
+}

@@ -19,10 +19,10 @@ int main(int argc, char **argv)
 
     int *pattern = NULL;
     DdNode *RobustRpathSet = NULL, *RobustFpathSet = NULL, *RobustPathSet = NULL;
+    DdNode *NonRobustPathSet = NULL, *NonRobustRpathSet = NULL, *NonRobustFpathSet = NULL;
     DdNode *SuspectSet = NULL;
     DdNode *GoodPaths = NULL;
     DdNode *tmpNode = NULL;
-    DdNode *NonRobustPathSet = NULL, *NonRobustRpathSet = NULL, *NonRobustFpathSet = NULL;
 
     if(argc < 4)
     {
@@ -70,10 +70,10 @@ int main(int argc, char **argv)
         //topologoical traversal to apply pattern
         applyPatternRobust(Node, pattern, Tgat);
 
-        for(i = 0; i < Npo; i++)
+        /*for(i = 0; i < Npo; i++)
         {
             printf("Robust Output at %d = %d\n", primaryOutputs[i], Node[primaryOutputs[i]].Val);
-        }
+        }*/
 
         storeSensitizedPaths(Node, &RobustPathSet, Tgat);
         //storeSensitizedRPaths(Node, &RobustRpathSet);
@@ -83,10 +83,10 @@ int main(int argc, char **argv)
 
         applyPatternNonRobust(Node, pattern, Tgat);
 
-        for(i = 0; i < Npo; i++)
+        /*for(i = 0; i < Npo; i++)
         {
             printf("Non-Robust Output at %d = %d\n", primaryOutputs[i], Node[primaryOutputs[i]].Val);
-        }
+        }*/
 
         storeSensitizedPaths(Node, &NonRobustPathSet, Tgat);
         //storeSensitizedRPaths(Node, &NonRobustRpathSet);
@@ -97,6 +97,9 @@ int main(int argc, char **argv)
         printf("\n");
     }
 
+    storeRnT(Node, &RobustPathSet, Tgat);
+    storeNnT(Node, &NonRobustPathSet, Tgat);
+
     if(RobustPathSet != NULL)
         printf("Robust Path ZDD Count: %d\n", Cudd_zddCount(manager, RobustPathSet));
 
@@ -104,17 +107,18 @@ int main(int argc, char **argv)
         printf("Non-Robust Path ZDD Count: %d\n", Cudd_zddCount(manager, NonRobustPathSet));
 
     if(GoodPaths != NULL)
-         printf("Good Path ZDD Count: %d\n", Cudd_zddCount(manager, GoodPaths));
+        printf("Good Path ZDD Count: %d\n", Cudd_zddCount(manager, GoodPaths));
 
-     if(SuspectSet != NULL) {
-         tmpNode = Cudd_zddDiff(manager, SuspectSet, GoodPaths);
-         Cudd_Ref(tmpNode);
-         Cudd_RecursiveDerefZdd(manager, SuspectSet);
+    if(SuspectSet != NULL)
+    {
+        tmpNode = Cudd_zddDiff(manager, SuspectSet, GoodPaths);
+        Cudd_Ref(tmpNode);
+        Cudd_RecursiveDerefZdd(manager, SuspectSet);
 
-         SuspectSet = tmpNode;
+        SuspectSet = tmpNode;
 
-         printf("Suspect Set ZDD Count: %d\n", Cudd_zddCount(manager, SuspectSet));
-     }
+        printf("Suspect Set ZDD Count: %d\n", Cudd_zddCount(manager, SuspectSet));
+    }
 
     clearPathZDDs(&RobustRpathSet);
     clearPathZDDs(&RobustFpathSet);
@@ -126,6 +130,9 @@ int main(int argc, char **argv)
 
     clearPathZDDs(&GoodPaths);
     clearPathZDDs(&SuspectSet);
+
+    clearNodeRnT(Node, Tgat);
+    clearNodeNnT(Node, Tgat);
 
     fclose(patFile);
     //fclose(Res);
