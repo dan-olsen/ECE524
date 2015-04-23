@@ -111,7 +111,7 @@ void initDelay(GATE *Node, int Npi, int Npo, int Tgat)
     }
 
     fflush(stdout);
-    */
+	*/
     pathSet = (PATH_SET*) malloc(sizeof(PATH_SET) * Npo);
 
     for(i = 0; i < Npo; i++)

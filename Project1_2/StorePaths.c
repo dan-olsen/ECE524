@@ -168,6 +168,7 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
                 Node[i].NnT = Cudd_zddSubset1(manager, *PathSet, i);
                 Cudd_Ref(Node[i].NnT);
 
+                break;
             case AND:
             case NAND:
             case OR:
