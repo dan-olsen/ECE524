@@ -158,11 +158,16 @@ void storeLSPaths(GATE *Node, int Npo, DdNode **GoodPaths, DdNode **SuspectSet)
 void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i;
+    LIST *tmpList = NULL;
+    DdNode *tmpNode = NULL, *tmpNode2 = NULL;
 
-    for(i = 1; i < Tgat; i++)
+    for(i = 0; i <= Tgat; i++)
     {
         switch(Node[i].Type) {
             case INPT:
+                Node[i].NnT = Cudd_zddSubset1(manager, *PathSet, i);
+                Cudd_Ref(Node[i].NnT);
+
             case AND:
             case NAND:
             case OR:
@@ -172,7 +177,31 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                Node[i].NnT = Cudd_zddSubset1(manager, *PathSet, i);
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(Node[i].NnT == NULL)
+                    {
+                        Node[i].NnT = Node[tmpList->Id].NnT;
+                        Cudd_Ref(Node[i].NnT);
+
+                    } else {
+                        tmpNode = Node[tmpList->Id].NnT;
+                        Cudd_Ref(tmpNode);
+                    }
+
+                    if(tmpNode != NULL)
+                    {
+                        tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].NnT);
+                        Cudd_Ref(tmpNode2);
+
+                        Cudd_RecursiveDerefZdd(manager, tmpNode);
+                        tmpNode = NULL;
+
+                        Cudd_RecursiveDerefZdd(manager, Node[i].NnT);
+
+                        Node[i].NnT = tmpNode2;
+                    }
+                }
 
                 break;
             default:
@@ -183,12 +212,11 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
     }
 }
 
-
 void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i;
 
-    for(i = 1; i < Tgat; i++)
+    for(i = 1; i <= Tgat; i++)
     {
         switch(Node[i].Type) {
             case INPT:
@@ -202,6 +230,7 @@ void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
             case NOT:
             case BUFF:
                 Node[i].RnT = Cudd_zddSubset1(manager, *PathSet, i);
+                Cudd_Ref(Node[i].RnT);
 
                 break;
             default:

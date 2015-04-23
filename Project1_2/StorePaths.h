@@ -4,6 +4,7 @@
 #include "given.h"
 #include "PathSet.h"
 #include "Cleanup.h"
+#include "Initialization.h"
 
 void storeSensitizedPaths(GATE *Node, DdNode **PathSet, int Tgat);
 void storeSensitizedRPaths(GATE *Node, DdNode **RPathSet);
