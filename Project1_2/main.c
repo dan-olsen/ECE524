@@ -65,8 +65,8 @@ int main(int argc, char **argv)
     //iterate over patterns
     while((pattern = getNextPattern(&patFile, Npi)) != NULL)
     {
-        //printf("Applying Pattern: ");
-        //printPattern(pattern, Npi);
+        printf("Applying Pattern: ");
+        printPattern(pattern, Npi);
 
         //topologoical traversal to apply pattern
         applyPatternRobust(Node, pattern, Tgat);
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
         free(pattern);
 
-        //printf("\n");
+        printf("\n");
     }
 
     //storeRnT(Node, &RobustPathSet, Tgat);
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 
     }
 
-    /*if(NonRobustPathSet != NULL)
+    if(NonRobustPathSet != NULL)
     {
     	ZddCount = Cudd_zddCount(manager, NonRobustPathSet);
 
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
         printf("Non-Robust Path ZDD Count: 0\n");
         fprintf(resFile, "Non-Robust Path ZDD Count: 0\n");
 
-    }*/
+    }
 
     if(GoodPaths != NULL)
     {
