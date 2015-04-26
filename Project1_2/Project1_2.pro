@@ -18,7 +18,8 @@ HEADERS += \
     Cleanup.h \
     StorePaths.h \
     PathSet.h \
-    PatternSim.h
+    PatternSim.h \
+    Transitions.h
 
 
 unix:!macx: LIBS += -L$$PWD/../../../../../opt/cudd-2.5.1/cudd/ -lcudd

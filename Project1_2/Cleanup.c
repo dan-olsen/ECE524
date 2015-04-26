@@ -26,26 +26,22 @@ void clearNodeZDDs(GATE *Node, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                if(Node[i].Mark == 1)
+                if(Node[i].TempRpath != NULL)
                 {
-                    //ff("Recursive Deref %d\n", i);
-                    if(Node[i].TempRpath != NULL)
-                    {
-                        Cudd_RecursiveDerefZdd(manager, Node[i].TempRpath);
-                        Node[i].TempRpath = NULL;
-                    }
+                    Cudd_RecursiveDerefZdd(manager, Node[i].TempRpath);
+                    Node[i].TempRpath = NULL;
+                }
 
-                    if(Node[i].TempFpath != NULL)
-                    {
-                        Cudd_RecursiveDerefZdd(manager, Node[i].TempFpath);
-                        Node[i].TempFpath = NULL;
-                    }
+                if(Node[i].TempFpath != NULL)
+                {
+                    Cudd_RecursiveDerefZdd(manager, Node[i].TempFpath);
+                    Node[i].TempFpath = NULL;
+                }
 
-                    if(Node[i].TempPath != NULL)
-                    {
-                        Cudd_RecursiveDerefZdd(manager, Node[i].TempPath);
-                        Node[i].TempPath = NULL;
-                    }
+                if(Node[i].TempPath != NULL)
+                {
+                    Cudd_RecursiveDerefZdd(manager, Node[i].TempPath);
+                    Node[i].TempPath = NULL;
                 }
 
                 break;
