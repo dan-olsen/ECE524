@@ -379,7 +379,7 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                /*(for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
                 {
                     if(Node[i].NnT == NULL)
                     {
@@ -403,7 +403,10 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
 
                         Node[i].NnT = tmpNode2;
                     }
-                }
+                }*/
+
+                Node[i].NnT = Cudd_zddSubset1(manager, *PathSet, i);
+                Cudd_Ref(Node[i].NnT);
 
                 break;
             default:
@@ -433,6 +436,34 @@ void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
             case BUFF:
                 Node[i].RnT = Cudd_zddSubset1(manager, *PathSet, i);
                 Cudd_Ref(Node[i].RnT);
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+    }
+}
+
+void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
+{
+    int i;
+
+    for(i = 1; i <= Tgat; i++)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+            case AND:
+            case NAND:
+            case OR:
+            case NOR:
+            case XOR:
+            case XNOR:
+            case FROM:
+            case NOT:
+            case BUFF:
+
 
                 break;
             default:

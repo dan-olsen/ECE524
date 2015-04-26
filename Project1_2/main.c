@@ -92,12 +92,6 @@ int main(int argc, char **argv)
     storeRnT(Node, &RobustPathSet, Tgat);
     storeNnT(Node, &NonRobustPathSet, Tgat);
 
-    ZddCount = getZddCount(&RobustRpathSet);
-    printf("Robust RPath ZDD Count: %d\n", ZddCount);
-
-    ZddCount = getZddCount(&RobustFpathSet);
-    printf("Robust FPath ZDD Count: %d\n", ZddCount);
-    /*
     for(i = 0; i <= Tgat; i++)
     {
     	if(Node[i].NnT != NULL)
@@ -106,7 +100,7 @@ int main(int argc, char **argv)
 
     		printf("NnT Zdd Count at %d = %d\n", i, ZddCount);
     	}
-    }*/
+    }
 
     printResults(&resFile, &RobustPathSet, &NonRobustPathSet, &GoodPaths, &SuspectSet);
 
