@@ -119,3 +119,35 @@ void clearNodeNnT(GATE *Node, int Tgat)
         }
     }
 }
+
+void clearNodePnT(GATE *Node, int Tgat)
+{
+    int i;
+
+    for(i = 0; i <= Tgat; i++)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+            case AND:
+            case NAND:
+            case OR:
+            case NOR:
+            case XOR:
+            case XNOR:
+            case FROM:
+            case NOT:
+            case BUFF:
+                if(Node[i].PnT != NULL)
+                {
+                    Cudd_RecursiveDerefZdd(manager, Node[i].PnT);
+                    Node[i].PnT = NULL;
+                }
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+    }
+}

@@ -166,6 +166,7 @@ void InitiGat(GATE *Node, int Num)
     Node[Num].PnT = NULL;
     Node[Num].Delay = 0;
     Node[Num].PathCount = NULL;
+    Node[Num].ValidateMark = 0;
     return;
 }//end of InitiGat
 /***************************************************************************************************

@@ -1,6 +1,8 @@
 #include "StorePaths.h"
 
-void storeSensitizedPaths(GATE *Node, DdNode **PathSet, int Npo, int Tgat)
+void setValidateMark(GATE* Node, int i);
+
+void extractPDFs(GATE *Node, DdNode **PathSet, int Npo, int Tgat)
 {
     int i, j;
     LIST *tmpList = NULL;
@@ -107,7 +109,7 @@ void storeSensitizedPaths(GATE *Node, DdNode **PathSet, int Npo, int Tgat)
     clearNodeZDDs(Node, Tgat);
 }
 
-void storeSensitizedRPaths(GATE *Node, DdNode **RPathSet, int Npo, int Tgat)
+void extractRPDFs(GATE *Node, DdNode **RPathSet, int Npo, int Tgat)
 {
     int i, j;
     LIST *tmpList = NULL;
@@ -214,7 +216,7 @@ void storeSensitizedRPaths(GATE *Node, DdNode **RPathSet, int Npo, int Tgat)
     clearNodeZDDs(Node, Tgat);
 }
 
-void storeSensitizedFPaths(GATE *Node, DdNode **FPathSet, int Npo, int Tgat)
+void extractFPDFs(GATE *Node, DdNode **FPathSet, int Npo, int Tgat)
 {
     int i, j;
     LIST *tmpList = NULL;
@@ -359,8 +361,6 @@ void storeLSPaths(GATE *Node, int Npo, DdNode **GoodPaths, DdNode **SuspectSet)
 void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i;
-    LIST *tmpList = NULL;
-    DdNode *tmpNode = NULL, *tmpNode2 = NULL;
 
     for(i = 0; i <= Tgat; i++)
     {
@@ -379,32 +379,6 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                /*(for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
-                {
-                    if(Node[i].NnT == NULL)
-                    {
-                        Node[i].NnT = Node[tmpList->Id].NnT;
-                        Cudd_Ref(Node[i].NnT);
-
-                    } else {
-                        tmpNode = Node[tmpList->Id].NnT;
-                        Cudd_Ref(tmpNode);
-                    }
-
-                    if(tmpNode != NULL)
-                    {
-                        tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].NnT);
-                        Cudd_Ref(tmpNode2);
-
-                        Cudd_RecursiveDerefZdd(manager, tmpNode);
-                        tmpNode = NULL;
-
-                        Cudd_RecursiveDerefZdd(manager, Node[i].NnT);
-
-                        Node[i].NnT = tmpNode2;
-                    }
-                }*/
-
                 Node[i].NnT = Cudd_zddSubset1(manager, *PathSet, i);
                 Cudd_Ref(Node[i].NnT);
 
@@ -449,11 +423,17 @@ void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
 void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i;
+    LIST *tmpList = NULL;
+    DdNode *tmpNode = NULL, *tmpNode2 = NULL;
 
     for(i = 1; i <= Tgat; i++)
     {
         switch(Node[i].Type) {
             case INPT:
+            	Node[i].PnT = Cudd_zddSubset1(manager, *PathSet, i);
+				Cudd_Ref(Node[i].PnT);
+
+				break;
             case AND:
             case NAND:
             case OR:
@@ -463,7 +443,33 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
+            	for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+				{
+					if(Node[i].PnT == NULL)
+					{
+						Node[i].PnT = Node[tmpList->Id].PnT;
+						Cudd_Ref(Node[i].PnT);
 
+					} else {
+						tmpNode = Node[tmpList->Id].PnT;
+						Cudd_Ref(tmpNode);
+					}
+
+					if(tmpNode != NULL)
+					{
+						tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].PnT);
+						Cudd_Ref(tmpNode2);
+
+						Cudd_RecursiveDerefZdd(manager, tmpNode);
+						tmpNode = NULL;
+
+						Cudd_RecursiveDerefZdd(manager, Node[i].PnT);
+
+						Node[i].PnT = tmpNode2;
+					}
+				}
+
+            	setValidateMark(Node, i);
 
                 break;
             default:
@@ -471,6 +477,30 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
                 //printf("Type: %d\n", graph[i].typ);
                 break;
         }
+    }
+}
+
+void extractVNR(GATE *Node, DdNode **PathSet, int Npo)
+{
+	int i;
+	DdNode *tmpNode = NULL;
+
+    for(i = 1; i < Npo; i++)
+    {
+    	if(*PathSet == NULL)
+		{
+			*PathSet = Node[primaryOutputs[i]].PnT;
+			Cudd_Ref(*PathSet);
+
+		} else {
+			tmpNode = Cudd_zddUnion(manager, *PathSet, Node[primaryOutputs[i]].PnT);
+			Cudd_Ref(tmpNode);
+			Cudd_RecursiveDerefZdd(manager, *PathSet);
+			Cudd_RecursiveDerefZdd(manager, Node[primaryOutputs[i]].PnT);
+			Node[primaryOutputs[i]].PnT = NULL;
+
+			*PathSet = tmpNode;
+		}
     }
 }
 
@@ -537,4 +567,28 @@ void containedIn(DdNode **P, DdNode **Q)
 void eliminate(DdNode **P, DdNode **Q)
 {
 
+}
+
+void setValidateMark(GATE* Node, int i)
+{
+    LIST *tmpList = NULL;
+    int RMark = 0, FMark = 0;
+
+	for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+	{
+		if(Node[tmpList->Id].Val == R1)
+		{
+			RMark = 1;
+		}
+
+		if(Node[tmpList->Id].Val == F0)
+		{
+			FMark = 1;
+		}
+	}
+
+	if(RMark == 1 && FMark == 1)
+	{
+		Node[i].ValidateMark = 1;
+	}
 }
