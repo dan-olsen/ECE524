@@ -559,9 +559,12 @@ int checkPathSensitivity(GATE *Node, LIST *path)
     return 1;
 }
 
-void containedIn(DdNode **P, DdNode **Q)
+void containment(DdNode **P, DdNode **Q)
 {
-
+    if(*Q == NULL)
+    {
+        return NULL;
+    }
 }
 
 void eliminate(DdNode **P, DdNode **Q)
