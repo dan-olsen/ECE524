@@ -445,7 +445,6 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-
             	for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
 				{
 					if(Node[i].PnT == NULL)
@@ -575,12 +574,44 @@ int checkPathSensitivity(GATE *Node, LIST *path)
     return 1;
 }
 
-void containment(DdNode **P, DdNode **Q)
+DdNode *containment(DdManager *zdd, DdNode *P, DdNode *Q)
 {
-    if(*Q == NULL)
+    DdNode *R = NULL;
+    DdNode *P1 = NULL, *P0 = NULL;
+    DdNode *Q1 = NULL, *Q0 = NULL;
+    DdNode *tmpNode = NULL;
+    int x = 0;
+
+    if(Q == DD_ONE(zdd))
+        return P;
+
+    if(P == DD_ZERO(zdd) || P == DD_ONE(zdd))
+        return DD_ZERO(zdd);
+
+    if(P == Q)
+        return DD_ONE(zdd);
+
+    R = cuddCacheLookup2Zdd(zdd, containment, P, Q);
+    if(R != NULL)
+        return R;
+
+    x = Q->index;
+
+    cuddZddGetCofactors2(zdd, P, x, &P1, &P0);
+    cuddZddGetCofactors2(zdd, Q, x, &Q1, &Q0);
+
+    if(Q1 != NULL)
+        R = containment(zdd, P1, Q1);
+
+    if(Q0 != NULL)
     {
-        return NULL;
+        tmpNode = containment(zdd, P1, Q1);
+
+        //R =
     }
+
+    cuddCacheInsert2(zdd, containment, P, Q, R);
+    return R;
 }
 
 void eliminate(DdNode **P, DdNode **Q)

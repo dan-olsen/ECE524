@@ -23,7 +23,7 @@ void listToZdd(LIST *pathList, DdNode **PathSet);
 DdNode* createZDD(LIST *pathList);
 int checkPathSensitivity(GATE *Node, LIST *path);
 
-void containment(DdNode **P, DdNode **Q);
+DdNode *containment(DdManager *zdd, DdNode *P, DdNode *Q);
 void eliminate(DdNode **P, DdNode **Q);
 
 #endif // STOREPATHS_H

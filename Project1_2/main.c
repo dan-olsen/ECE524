@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 
         extractPDFs(Node, &NonRobustPathSet, Npo, Tgat);
 
-        storeNnT(Node, &NonRobustPathSet, Tgat);
+        //storeNnT(Node, &NonRobustPathSet, Tgat);
         storePnT(Node, &RobustPathSet, Tgat);
 
         //extractVNR(Node, &ValidatedNonRobustPathSet, Npo);
