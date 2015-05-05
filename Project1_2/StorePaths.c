@@ -430,7 +430,10 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
     {
         switch(Node[i].Type) {
             case INPT:
-            	Node[i].PnT = Cudd_zddSubset1(manager, *PathSet, i);
+                //Node[i].PnT = *PathSet;
+
+                Node[i].PnT = Cudd_zddSubset1(manager, *PathSet, i);
+                //Node[i].PnT = Cudd_zddChange(manager, *PathSet, i);
 				Cudd_Ref(Node[i].PnT);
 
 				break;
@@ -447,11 +450,11 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
 				{
 					if(Node[i].PnT == NULL)
 					{
-						Node[i].PnT = Node[tmpList->Id].PnT;
+                        Node[i].PnT = Cudd_zddChange(manager, Node[tmpList->Id].PnT, i);
 						Cudd_Ref(Node[i].PnT);
 
 					} else {
-						tmpNode = Node[tmpList->Id].PnT;
+                        tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].PnT, i);
 						Cudd_Ref(tmpNode);
 					}
 
