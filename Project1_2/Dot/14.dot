@@ -1,0 +1,65 @@
+digraph "ZDD" {
+size = "7.5,10"
+center = true;
+edge [dir = none];
+{ node [shape = plaintext];
+  edge [style = invis];
+  "CONST NODES" [style = invis];
+" 3 " -> " 6 " -> " 9 " -> " 11 " -> " 16 " -> " 20 " -> " 21 " -> " 22 " -> " 23 " -> "CONST NODES"; 
+}
+{ rank = same; node [shape = box]; edge [style = invis];
+"F0"; }
+{ rank = same; " 3 ";
+"0x368";
+}
+{ rank = same; " 6 ";
+"0x367";
+}
+{ rank = same; " 9 ";
+"0x366";
+}
+{ rank = same; " 11 ";
+"0x365";
+}
+{ rank = same; " 16 ";
+"0x30a";
+}
+{ rank = same; " 20 ";
+"0x309";
+}
+{ rank = same; " 21 ";
+"0x303";
+}
+{ rank = same; " 22 ";
+"0x2b2";
+}
+{ rank = same; " 23 ";
+"0x302";
+}
+{ rank = same; "CONST NODES";
+{ node [shape = box]; "0x288";
+"0x287";
+}
+}
+"F0" -> "0x368" [style = solid];
+"0x368" -> "0x366";
+"0x368" -> "0x367" [style = dashed];
+"0x367" -> "0x365";
+"0x367" -> "0x288" [style = dashed];
+"0x366" -> "0x365";
+"0x366" -> "0x288" [style = dashed];
+"0x365" -> "0x30a";
+"0x365" -> "0x288" [style = dashed];
+"0x30a" -> "0x309";
+"0x30a" -> "0x288" [style = dashed];
+"0x309" -> "0x2b2";
+"0x309" -> "0x303" [style = dashed];
+"0x303" -> "0x302";
+"0x303" -> "0x288" [style = dashed];
+"0x2b2" -> "0x287";
+"0x2b2" -> "0x288" [style = dashed];
+"0x302" -> "0x287";
+"0x302" -> "0x288" [style = dashed];
+"0x288" [label = "0"];
+"0x287" [label = "1"];
+}

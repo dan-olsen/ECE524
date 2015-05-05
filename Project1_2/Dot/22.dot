@@ -1,0 +1,75 @@
+digraph "ZDD" {
+size = "7.5,10"
+center = true;
+edge [dir = none];
+{ node [shape = plaintext];
+  edge [style = invis];
+  "CONST NODES" [style = invis];
+" 1 " -> " 2 " -> " 3 " -> " 6 " -> " 8 " -> " 9 " -> " 10 " -> " 11 " -> " 14 " -> " 16 " -> " 20 " -> "CONST NODES"; 
+}
+{ rank = same; node [shape = box]; edge [style = invis];
+"F0"; }
+{ rank = same; " 1 ";
+"0x399";
+}
+{ rank = same; " 2 ";
+"0x398";
+}
+{ rank = same; " 3 ";
+"0x397";
+}
+{ rank = same; " 6 ";
+"0x2d4";
+}
+{ rank = same; " 8 ";
+"0x396";
+}
+{ rank = same; " 9 ";
+"0x2c8";
+}
+{ rank = same; " 10 ";
+"0x299";
+}
+{ rank = same; " 11 ";
+"0x2c7";
+}
+{ rank = same; " 14 ";
+"0x2c6";
+}
+{ rank = same; " 16 ";
+"0x2c5";
+}
+{ rank = same; " 20 ";
+"0x2c4";
+}
+{ rank = same; "CONST NODES";
+{ node [shape = box]; "0x288";
+"0x287";
+}
+}
+"F0" -> "0x399" [style = solid];
+"0x399" -> "0x299";
+"0x399" -> "0x398" [style = dashed];
+"0x398" -> "0x2c5";
+"0x398" -> "0x397" [style = dashed];
+"0x397" -> "0x396";
+"0x397" -> "0x2d4" [style = dashed];
+"0x2d4" -> "0x2c7";
+"0x2d4" -> "0x288" [style = dashed];
+"0x396" -> "0x299";
+"0x396" -> "0x2c8" [style = dashed];
+"0x2c8" -> "0x2c7";
+"0x2c8" -> "0x288" [style = dashed];
+"0x299" -> "0x287";
+"0x299" -> "0x288" [style = dashed];
+"0x2c7" -> "0x2c6";
+"0x2c7" -> "0x288" [style = dashed];
+"0x2c6" -> "0x2c5";
+"0x2c6" -> "0x288" [style = dashed];
+"0x2c5" -> "0x2c4";
+"0x2c5" -> "0x288" [style = dashed];
+"0x2c4" -> "0x287";
+"0x2c4" -> "0x288" [style = dashed];
+"0x288" [label = "0"];
+"0x287" [label = "1"];
+}

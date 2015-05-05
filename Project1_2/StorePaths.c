@@ -394,6 +394,9 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
 void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i;
+    DdNode *tmpNode = NULL;
+    DdNode *tmpNode2 = NULL;
+
 
     for(i = 1; i <= Tgat; i++)
     {
@@ -408,8 +411,16 @@ void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                Node[i].RnT = Cudd_zddSubset1(manager, *PathSet, i);
+                tmpNode = Cudd_zddSubset1(manager, *PathSet, 2*i+1);
+                Cudd_Ref(tmpNode);
+                tmpNode2 = Cudd_zddSubset1(manager, *PathSet, 2*i);
+                Cudd_Ref(tmpNode2);
+
+                Node[i].RnT = Cudd_zddUnion(manager, tmpNode, tmpNode2);
                 Cudd_Ref(Node[i].RnT);
+				Cudd_RecursiveDerefZdd(manager, tmpNode);
+				Cudd_RecursiveDerefZdd(manager, tmpNode2);
+
 
                 break;
             default:
@@ -579,7 +590,7 @@ DdNode *containment(DdManager *zdd, DdNode *P, DdNode *Q)
     DdNode *R = NULL;
     DdNode *P1 = NULL, *P0 = NULL;
     DdNode *Q1 = NULL, *Q0 = NULL;
-    DdNode *tmpNode = NULL;
+    DdNode *tmpNode = NULL, *tmpNode2 = NULL;
     int x = 0;
 
     if(Q == DD_ONE(zdd))
@@ -592,25 +603,99 @@ DdNode *containment(DdManager *zdd, DdNode *P, DdNode *Q)
         return DD_ONE(zdd);
 
     R = cuddCacheLookup2Zdd(zdd, containment, P, Q);
+
     if(R != NULL)
         return R;
 
-    x = Q->index;
+	if ( cuddIsConstant( Q ) )
+		x = Q->index;
+	else
+		x = zdd->permZ[Q->index];
 
     cuddZddGetCofactors2(zdd, P, x, &P1, &P0);
+
+    if (P1 == NULL)
+		return NULL;
+
+    //cuddRef(P1);
+
+    if (P0 == NULL)
+    {
+    	Cudd_RecursiveDerefZdd(zdd, P1);
+		return NULL;
+    }
+
+    //cuddRef(P0);
+
     cuddZddGetCofactors2(zdd, Q, x, &Q1, &Q0);
 
     if(Q1 != NULL)
+    {
+    	//cuddRef(Q1);
+
         R = containment(zdd, P1, Q1);
+
+		if (R == NULL)
+	    {
+	    	Cudd_RecursiveDerefZdd(zdd, Q1);
+	    	Cudd_RecursiveDerefZdd(zdd, P1);
+	    	Cudd_RecursiveDerefZdd(zdd, P0);
+
+			return NULL;
+	    }
+
+		cuddRef(R);
+		//cuddDeref(P1);
+		//cuddDeref(Q1);
+    }
 
     if(Q0 != NULL)
     {
+    	//cuddRef(Q0);
+
         tmpNode = containment(zdd, P1, Q1);
 
-        //R =
+		if (tmpNode == NULL)
+		{
+	    	Cudd_RecursiveDerefZdd(zdd, Q1);
+	    	Cudd_RecursiveDerefZdd(zdd, P1);
+	    	Cudd_RecursiveDerefZdd(zdd, P0);
+	    	Cudd_RecursiveDerefZdd(zdd, Q0);
+
+			return NULL;
+		}
+
+		cuddRef(tmpNode);
+		//cuddDeref(P1);
+        //cuddDeref(Q1);
+
+        tmpNode2 = cuddZddUnion(zdd, R, tmpNode);
+
+		if (tmpNode2 == NULL)
+		{
+	    	Cudd_RecursiveDerefZdd(zdd, Q1);
+	    	Cudd_RecursiveDerefZdd(zdd, P1);
+	    	Cudd_RecursiveDerefZdd(zdd, P0);
+	    	Cudd_RecursiveDerefZdd(zdd, Q0);
+			Cudd_RecursiveDerefZdd(zdd, tmpNode);
+
+			return NULL;
+		}
+
+		cuddRef(tmpNode2);
+		cuddDeref(R);
+		cuddDeref(tmpNode);
+
+        R = tmpNode2;
     }
 
+    tmpNode = cuddZddDiff(zdd, P, Q);
+    cuddRef(tmpNode);
+    cuddDeref(P);
+    cuddDeref(Q);
+
     cuddCacheInsert2(zdd, containment, P, Q, R);
+
     return R;
 }
 

@@ -126,9 +126,9 @@ int main(int argc, char **argv)
 
                 printf("PnT Zdd Count at %d = %d\n", i, ZddCount);
 
-                Cudd_zddPrintDebug(manager, Node[i].PnT, 0, 3);
+                Cudd_zddPrintDebug(manager, Node[i].PnT, 1, 3);
 
-                sprintf(fname, "%d.dot", i);
+                sprintf(fname, "./Dot/%d.dot", i);
 
                 dot = fopen(fname, "w");
 
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
             }
         }
 
-        dot = fopen("NonRobust.dot", "w");
+        dot = fopen("./Dot/NonRobust.dot", "w");
 
         Cudd_zddDumpDot(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
 
@@ -161,14 +161,12 @@ int main(int argc, char **argv)
     		ZddCount = Cudd_zddCount(manager, Node[i].RnT);
 
     		printf("RnT Zdd Count at %d = %d\n", i, ZddCount);
-            /*
-            Cudd_zddPrintDebug(manager, Node[i].RnT, 0, 3);
 
-            sprintf(fname, "%d.dot", i);
+            Cudd_zddPrintDebug(manager, Node[i].RnT, 0, 3);
+            /*
+            sprintf(fname, "./Dot/%d.dot", i);
 
             dot = fopen(fname, "w");
-
-            //fprintf(dot, "Hello\n");
 
             Cudd_zddDumpDot(manager, 1, &(Node[i].RnT), NULL, NULL, dot);
 
@@ -191,13 +189,13 @@ int main(int argc, char **argv)
     	}
     }
 
-    dot = fopen("Robust.dot", "w");
+    dot = fopen("./Dot/Robust.dot", "w");
 
     Cudd_zddDumpDot(manager, 1, &(RobustPathSet), NULL, NULL, dot);
 
     fclose(dot);
 
-    //dot = fopen("NonRobust.dot", "w");
+    //dot = fopen("./Dot/NonRobust.dot", "w");
 
     //(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
 

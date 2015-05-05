@@ -1,0 +1,105 @@
+digraph "ZDD" {
+size = "7.5,10"
+center = true;
+edge [dir = none];
+{ node [shape = plaintext];
+  edge [style = invis];
+  "CONST NODES" [style = invis];
+" 1 " -> " 2 " -> " 3 " -> " 6 " -> " 7 " -> " 8 " -> " 9 " -> " 10 " -> " 11 " -> " 14 " -> " 15 " -> " 16 " -> " 19 " -> " 20 " -> " 21 " -> " 22 " -> " 23 " -> "CONST NODES"; 
+}
+{ rank = same; node [shape = box]; edge [style = invis];
+"F0"; }
+{ rank = same; " 1 ";
+"0x33b";
+}
+{ rank = same; " 2 ";
+"0x338";
+}
+{ rank = same; " 3 ";
+"0x337";
+}
+{ rank = same; " 6 ";
+"0x336";
+}
+{ rank = same; " 7 ";
+"0x335";
+}
+{ rank = same; " 8 ";
+"0x327";
+}
+{ rank = same; " 9 ";
+"0x326";
+}
+{ rank = same; " 10 ";
+"0x2b3";
+}
+{ rank = same; " 11 ";
+"0x325";
+}
+{ rank = same; " 14 ";
+"0x324";
+}
+{ rank = same; " 15 ";
+"0x320";
+}
+{ rank = same; " 16 ";
+"0x30a";
+}
+{ rank = same; " 19 ";
+"0x31f";
+}
+{ rank = same; " 20 ";
+"0x309";
+}
+{ rank = same; " 21 ";
+"0x303";
+}
+{ rank = same; " 22 ";
+"0x2b2";
+}
+{ rank = same; " 23 ";
+"0x302";
+}
+{ rank = same; "CONST NODES";
+{ node [shape = box]; "0x288";
+"0x287";
+}
+}
+"F0" -> "0x33b" [style = solid];
+"0x33b" -> "0x2b3";
+"0x33b" -> "0x338" [style = dashed];
+"0x338" -> "0x30a";
+"0x338" -> "0x337" [style = dashed];
+"0x337" -> "0x327";
+"0x337" -> "0x336" [style = dashed];
+"0x336" -> "0x325";
+"0x336" -> "0x335" [style = dashed];
+"0x335" -> "0x31f";
+"0x335" -> "0x288" [style = dashed];
+"0x327" -> "0x2b3";
+"0x327" -> "0x326" [style = dashed];
+"0x326" -> "0x325";
+"0x326" -> "0x288" [style = dashed];
+"0x2b3" -> "0x2b2";
+"0x2b3" -> "0x288" [style = dashed];
+"0x325" -> "0x324";
+"0x325" -> "0x288" [style = dashed];
+"0x324" -> "0x30a";
+"0x324" -> "0x320" [style = dashed];
+"0x320" -> "0x31f";
+"0x320" -> "0x288" [style = dashed];
+"0x30a" -> "0x309";
+"0x30a" -> "0x288" [style = dashed];
+"0x31f" -> "0x302";
+"0x31f" -> "0x288" [style = dashed];
+"0x309" -> "0x2b2";
+"0x309" -> "0x303" [style = dashed];
+"0x303" -> "0x302";
+"0x303" -> "0x288" [style = dashed];
+"0x2b2" -> "0x287";
+"0x2b2" -> "0x288" [style = dashed];
+"0x302" -> "0x287";
+"0x302" -> "0x288" [style = dashed];
+"0x288" [label = "0"];
+"0x287" [label = "1"];
+}
