@@ -430,10 +430,9 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
     {
         switch(Node[i].Type) {
             case INPT:
-                //Node[i].PnT = *PathSet;
+                Node[i].PnT = *PathSet;
 
-                Node[i].PnT = Cudd_zddSubset1(manager, *PathSet, i);
-                //Node[i].PnT = Cudd_zddChange(manager, *PathSet, i);
+                //Node[i].PnT = Cudd_zddSubset1(manager, *PathSet, i);
 				Cudd_Ref(Node[i].PnT);
 
 				break;
@@ -446,6 +445,7 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
+
             	for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
 				{
 					if(Node[i].PnT == NULL)
@@ -471,6 +471,19 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
 						Node[i].PnT = tmpNode2;
 					}
 				}
+
+                tmpNode = Cudd_zddSubset1(manager, *PathSet, i);
+                Cudd_Ref(tmpNode);
+
+                tmpNode2 = Cudd_zddIntersect(manager, tmpNode, Node[i].PnT);
+                Cudd_Ref(tmpNode2);
+
+                Cudd_RecursiveDerefZdd(manager, tmpNode);
+                tmpNode = NULL;
+
+                Cudd_RecursiveDerefZdd(manager, Node[i].PnT);
+
+                Node[i].PnT = tmpNode2;
 
             	setValidateMark(Node, i);
 
