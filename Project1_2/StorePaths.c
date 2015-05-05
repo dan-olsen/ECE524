@@ -474,7 +474,7 @@ void storePnT(GATE *Node, DdNode **PathSet, int Tgat)
                 tmpNode = Cudd_zddSubset1(manager, *PathSet, i);
                 Cudd_Ref(tmpNode);
 
-                tmpNode2 = Cudd_zddIntersect(manager, tmpNode, Node[i].PnT);
+                tmpNode2 = Cudd_zddDiff(manager, tmpNode, Node[i].PnT);
                 Cudd_Ref(tmpNode2);
 
                 Cudd_RecursiveDerefZdd(manager, tmpNode);
