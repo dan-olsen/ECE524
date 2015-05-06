@@ -31,7 +31,7 @@ typedef struct struct_node {
 	int alap;
 	int Fasap;
 	
-} node;
+} Node;
 
 /***************************************************************************************************************************
 Function Declarations 
@@ -46,96 +46,94 @@ int isdelim(char);
 void main(int argc,char **argv) 
 {
 	FILE *infile, *resfile;
-	node graph[100];
+	Node graph[100];
 
-	int i=0, counter, Mnode, Mnode_id=0;
-	int mult_count=0, alu_count=0, oper_count=0;
-	int Nasap, Fasap, C=1, min_asap, flag, sameasap =1;
+	int i = 0, counter, Mnode, Mnode_id = 0;
+	int mult_count = 0, alu_count = 0, oper_count = 0;
+	int Nasap, Fasap, C = 1, min_asap, flag, sameasap = 1;
 
 	char line[100], buf[100];
 
 	infile = fopen(argv[1], "r");
 
-	while(fgets(buf, MAX_LINE, infile)!='\0')
+	while(fgets(buf, MAX_LINE, infile) != '\0')
   	{
-		prog=buf;
-		counter=0;
-		do
-		{
+		prog = buf;
+        counter = 0;
+
+        for(counter = 0; counter < 4; )
+        {
 			get_token();
-			switch(tok_type)
-			{
+            switch(tok_type) {
 				case NUMBER:
-					if (counter==0)
-					{
-						graph[i].nd_num= atoi(token);
+                    switch(counter) {
+                        case 0:
+                            graph[i].nd_num = atoi(token);
 
-						if (Mnode_id < graph[i].nd_num)
-							Mnode_id = graph[i].nd_num;
-					}
+                            if (Mnode_id < graph[i].nd_num)
+                                Mnode_id = graph[i].nd_num;
 
-					if (counter ==1)
-					{
-						graph[i].refe = atoi(token);
-					}
+                            break;
+                        case 1:
+                            graph[i].refe = atoi(token);
 
-					if (counter == 2)
-					{
-						graph[i].asap = atoi(token);
-						if (i==0)
-							min_asap = graph[i].asap;
-						else if(graph[i].asap < min_asap)
-							min_asap = graph[i].asap;
-					}
+                            break;
+                        case 2:
+                            graph[i].asap = atoi(token);
 
-					if (counter==3)
-					{
-						graph[i].alap = atoi(token);
-					}
+                            if (i == 0)
+                                min_asap = graph[i].asap;
+                            else if(graph[i].asap < min_asap)
+                                min_asap = graph[i].asap;
+
+                            break;
+                        case 3:
+                            graph[i].alap = atoi(token);
+
+                            break;
+                        default:
+
+                            break;
+                    }
+
 					counter++;
 				
 					break;
 				case VARIABLE:
-					if (counter < 2)
+                    if(counter < 2)
 					{
-						if(! strcmp(token, "source"))
-						{
-							graph[i].oper=0;
-						}
+                        if(!strcmp(token, "source"))
+                            graph[i].oper = 0;
 
-						if(! strcmp (token, "sink"))
-						{
-							graph[i].oper=3;
-						}
+                        if(!strcmp(token, "sink"))
+                            graph[i].oper = 3;
 					}
 				
 					break;
 				case DELIMITER:
-					if (counter > 0 && counter < 2)	
+                    if(counter > 0 && counter < 2)
 					{	
-						if (strchr("*", *token))
+                        if(strchr("*", *token))
 						{
-							graph[i].oper=1;
+                            graph[i].oper = 1;
 							mult_count++;
 						}
 
-						if (strchr("+-/%^=()<>",*token))
+                        if(strchr("+-/%^=()<>", *token))
 						{
-							graph[i].oper=2;
+                            graph[i].oper = 2;
 							alu_count++;
 						}
 					}
 				
 					break;
 				default:
-					break;
+                    break;
 			}
 		}
 
-		while (counter < 4);
-		Mnode=i;
+        Mnode = i;
 		i++;
-	
 	} 
 
 	resfile = fopen ("equations.lp", "w");
@@ -161,27 +159,30 @@ void get_token(void)
 	tok_type = 0;
 	temp = token;
 	*temp = '\0';
-	//printf("here");
-	if(!*prog)
+
+    if(!*prog)
 		return; /* at end of expression */
 
 	while(isspace(*prog))
 		++prog; /* skip over the white space */
 
-	if(strchr("<+-*/%^=()", *prog) ){
-	  tok_type = DELIMITER;
-	  /* advance to the next char */
-	  *temp++ = *prog++;  
+    if(strchr("<+-*/%^=()", *prog))
+    {
+        tok_type = DELIMITER;
+        /* advance to the next char */
+        *temp++ = *prog++;
 	
-	} else if( isalpha(*prog) ){
-	  while((!isdelim(*prog))&&(!isspace(*prog))  )
-		*temp++ = *prog++;
-		tok_type = VARIABLE;
+    } else if(isalpha(*prog)) {
+        while((!isdelim(*prog)) && (!isspace(*prog)))
+            *temp++ = *prog++;
 
-	} else if( isdigit(*prog) ) {
-	  while( (!isdelim(*prog))&&(!isspace(*prog)) )
-		*temp++ = *prog++;
-		tok_type = NUMBER;
+        tok_type = VARIABLE;
+
+    } else if(isdigit(*prog)) {
+        while((!isdelim(*prog)) && (!isspace(*prog)))
+            *temp++ = *prog++;
+
+        tok_type = NUMBER;
 
 	}
 
@@ -193,7 +194,7 @@ void get_token(void)
 ****************************************************************************************************************************/
 int isdelim(char c)
 {
-	if( strchr("<+-/*%^=()", c) || c==9 || c==0 || c=='\r' )
+    if(strchr("<+-/*%^=()", c) || c == 9 || c == 0 || c == '\r')
 		return 1;
 	else
 		return 0;
