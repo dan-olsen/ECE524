@@ -26,7 +26,8 @@ int main(int argc, char **argv)
     DdNode *ValidatedNonRobustPathSet = NULL;
     DdNode *SuspectSet = NULL;
     DdNode *GoodPaths = NULL;
-    char fname[20];
+    DdNode *tmpNode = NULL;
+    char fname[50];
     FILE *dot = NULL;
 
     Start = clock();
@@ -88,6 +89,13 @@ int main(int argc, char **argv)
         //printf("\n");
     }
 
+    if(GoodPaths != NULL)
+    {
+        ZddCount = Cudd_zddCount(manager, GoodPaths);
+
+        printf("GoodPaths Zdd Count = %d\n", ZddCount);
+    }
+
     storeRnT(Node, &RobustPathSet, Tgat);
 
     rewind(patFile);
@@ -104,10 +112,10 @@ int main(int argc, char **argv)
         extractPDFs(Node, &NonRobustPathSet, Npo, Tgat);
 
         //storeNnT(Node, &NonRobustPathSet, Tgat);
-        storePnT(Node, &RobustPathSet, Tgat);
+        //storePnT(Node, &RobustPathSet, Tgat);
 
         //extractVNR(Node, &ValidatedNonRobustPathSet, Npo);
-
+        /*
         for(i = 0; i <= Tgat; i++)
         {
             if(Node[i].NnT != NULL)
@@ -128,22 +136,22 @@ int main(int argc, char **argv)
 
                 Cudd_zddPrintDebug(manager, Node[i].PnT, 1, 3);
 
-                sprintf(fname, "./Dot/%d.dot", i);
+                //sprintf(fname, "../Project1_2/Dot/%d.dot", i);
 
-                dot = fopen(fname, "w");
+                //dot = fopen(fname, "w");
 
-                Cudd_zddDumpDot(manager, 1, &(Node[i].PnT), NULL, NULL, dot);
+                //Cudd_zddDumpDot(manager, 1, &(Node[i].PnT), NULL, NULL, dot);
 
-                fclose(dot);
+                //fclose(dot);
             }
         }
 
-        dot = fopen("./Dot/NonRobust.dot", "w");
+        //dot = fopen("../Project1_2/Dot/NonRobust.dot", "w");
 
-        Cudd_zddDumpDot(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
+        //Cudd_zddDumpDot(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
 
-        fclose(dot);
-
+        //fclose(dot);
+        */
         clearNodeNnT(Node, Tgat);
         clearNodePnT(Node, Tgat);
 
@@ -153,7 +161,7 @@ int main(int argc, char **argv)
 
         //printf("\n");
     }
-
+    /*
     for(i = 0; i <= Tgat; i++)
     {
     	if(Node[i].RnT != NULL)
@@ -163,15 +171,15 @@ int main(int argc, char **argv)
     		printf("RnT Zdd Count at %d = %d\n", i, ZddCount);
 
             Cudd_zddPrintDebug(manager, Node[i].RnT, 0, 3);
-            /*
-            sprintf(fname, "./Dot/%d.dot", i);
 
-            dot = fopen(fname, "w");
+            //sprintf(fname, "../Project1_2/Dot/%d.dot", i);
 
-            Cudd_zddDumpDot(manager, 1, &(Node[i].RnT), NULL, NULL, dot);
+            //dot = fopen(fname, "w");
 
-            fclose(dot);
-            */
+            //Cudd_zddDumpDot(manager, 1, &(Node[i].RnT), NULL, NULL, dot);
+
+            //fclose(dot);
+
     	}
 
     	if(Node[i].NnT != NULL)
@@ -188,18 +196,25 @@ int main(int argc, char **argv)
     		printf("PnT Zdd Count at %d = %d\n", i, ZddCount);
     	}
     }
+    */
+    //dot = fopen("../Project1_2/Dot/Robust.dot", "w");
 
-    dot = fopen("./Dot/Robust.dot", "w");
+    //Cudd_zddDumpDot(manager, 1, &(RobustPathSet), NULL, NULL, dot);
 
-    Cudd_zddDumpDot(manager, 1, &(RobustPathSet), NULL, NULL, dot);
-
-    fclose(dot);
+    //fclose(dot);
 
     //dot = fopen("./Dot/NonRobust.dot", "w");
 
     //(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
 
     //fclose(dot);
+
+    if(GoodPaths != NULL)
+    {
+        ZddCount = Cudd_zddCount(manager, GoodPaths);
+
+        printf("GoodPaths Zdd Count = %d\n", ZddCount);
+    }
 
     printResults(&resFile, &RobustPathSet, &NonRobustPathSet, &ValidatedNonRobustPathSet, &GoodPaths, &SuspectSet);
 

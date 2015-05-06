@@ -5,46 +5,14 @@ edge [dir = none];
 { node [shape = plaintext];
   edge [style = invis];
   "CONST NODES" [style = invis];
-" 3 " -> " 6 " -> " 9 " -> " 11 " -> " 19 " -> " 23 " -> "CONST NODES"; 
+"CONST NODES"; 
 }
 { rank = same; node [shape = box]; edge [style = invis];
 "F0"; }
-{ rank = same; " 3 ";
-"0x364";
-}
-{ rank = same; " 6 ";
-"0x363";
-}
-{ rank = same; " 9 ";
-"0x362";
-}
-{ rank = same; " 11 ";
-"0x361";
-}
-{ rank = same; " 19 ";
-"0x31f";
-}
-{ rank = same; " 23 ";
-"0x302";
-}
 { rank = same; "CONST NODES";
-{ node [shape = box]; "0x288";
-"0x287";
+{ node [shape = box]; "(nil)";
 }
 }
-"F0" -> "0x364" [style = solid];
-"0x364" -> "0x362";
-"0x364" -> "0x363" [style = dashed];
-"0x363" -> "0x361";
-"0x363" -> "0x288" [style = dashed];
-"0x362" -> "0x361";
-"0x362" -> "0x288" [style = dashed];
-"0x361" -> "0x31f";
-"0x361" -> "0x288" [style = dashed];
-"0x31f" -> "0x302";
-"0x31f" -> "0x288" [style = dashed];
-"0x302" -> "0x287";
-"0x302" -> "0x288" [style = dashed];
-"0x288" [label = "0"];
-"0x287" [label = "1"];
+"F0" -> "(nil)" [style = solid];
+"(nil)" [label = "0"];
 }

@@ -394,26 +394,98 @@ void storeNnT(GATE *Node, DdNode **PathSet, int Tgat)
 void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
 {
     int i;
+    int ZddCount = 0;
     DdNode *tmpNode = NULL;
     DdNode *tmpNode2 = NULL;
-
+    DdNode *tmpNode3 = NULL;
+    LIST *tmpList = NULL;
 
     for(i = 1; i <= Tgat; i++)
     {
         switch(Node[i].Type) {
             case INPT:
+                tmpNode = Cudd_zddSubset1(manager, *PathSet, 2*i+1);
+                Cudd_Ref(tmpNode);
+
+                ZddCount = Cudd_zddCount(manager, tmpNode);
+
+                printf("Temp RnT Zdd Count at i = %d 2*%d+1(%d) = %d\n", i, i, 2*i+1, ZddCount);
+                Cudd_zddPrintDebug(manager, tmpNode, 0, 3);
+
+                tmpNode2 = Cudd_zddSubset1(manager, *PathSet, 2*i);
+                Cudd_Ref(tmpNode2);
+
+                ZddCount = Cudd_zddCount(manager, tmpNode2);
+
+                printf("Temp RnT Zdd Count at i = %d 2*%d(%d) = %d\n", i, i, 2*i, ZddCount);
+                Cudd_zddPrintDebug(manager, tmpNode2, 0, 3);
+
+                Node[i].RnT = Cudd_zddUnion(manager, tmpNode, tmpNode2);
+                Cudd_Ref(Node[i].RnT);
+                Cudd_RecursiveDerefZdd(manager, tmpNode);
+                Cudd_RecursiveDerefZdd(manager, tmpNode2);
+
+                ZddCount = Cudd_zddCount(manager,  Node[i].RnT);
+
+                printf("RnT at i = %d Zdd Count = %d\n", i, ZddCount);
+                Cudd_zddPrintDebug(manager,  Node[i].RnT, 0, 3);
+
+                break;
             case AND:
             case NAND:
             case OR:
             case NOR:
             case XOR:
             case XNOR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    tmpNode = Cudd_zddSubset1(manager, Node[tmpList->Id].RnT, 2*i+1);
+                    Cudd_Ref(tmpNode);
+
+                    tmpNode2 = Cudd_zddSubset1(manager, Node[tmpList->Id].RnT, 2*i);
+                    Cudd_Ref(tmpNode2);
+
+                    if(Node[i].RnT == NULL)
+                    {
+                        Node[i].RnT = Cudd_zddUnion(manager, tmpNode, tmpNode2);
+                        Cudd_Ref(Node[i].RnT);
+                        Cudd_RecursiveDerefZdd(manager, tmpNode);
+                        Cudd_RecursiveDerefZdd(manager, tmpNode2);
+
+                    } else {
+                        tmpNode3 = Cudd_zddUnion(manager, tmpNode, tmpNode2);
+                        Cudd_Ref(tmpNode3);
+                        Cudd_RecursiveDerefZdd(manager, tmpNode);
+                        Cudd_RecursiveDerefZdd(manager, tmpNode2);
+
+                    }
+
+                    if(tmpNode3 != NULL)
+                    {
+                        tmpNode2 = Cudd_zddUnion(manager, tmpNode3, Node[i].RnT);
+                        Cudd_Ref(tmpNode2);
+                        Cudd_RecursiveDerefZdd(manager, Node[i].RnT);
+                        Cudd_RecursiveDerefZdd(manager, tmpNode3);
+                        tmpNode3 = NULL;
+
+                        Node[i].RnT = tmpNode2;
+                    }
+                }
+
+                ZddCount = Cudd_zddCount(manager,  Node[i].RnT);
+
+                printf("RnT at i = %d Zdd Count = %d\n", i, ZddCount);
+                Cudd_zddPrintDebug(manager,  Node[i].RnT, 0, 3);
+
+                break;
             case FROM:
             case NOT:
             case BUFF:
-                tmpNode = Cudd_zddSubset1(manager, *PathSet, 2*i+1);
+                tmpList = Node[i].Fin;
+
+                tmpNode = Cudd_zddSubset1(manager, Node[tmpList->Id].RnT, 2*i+1);
                 Cudd_Ref(tmpNode);
-                tmpNode2 = Cudd_zddSubset1(manager, *PathSet, 2*i);
+                tmpNode2 = Cudd_zddSubset1(manager, Node[tmpList->Id].RnT, 2*i);
                 Cudd_Ref(tmpNode2);
 
                 Node[i].RnT = Cudd_zddUnion(manager, tmpNode, tmpNode2);
@@ -421,6 +493,10 @@ void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
 				Cudd_RecursiveDerefZdd(manager, tmpNode);
 				Cudd_RecursiveDerefZdd(manager, tmpNode2);
 
+                ZddCount = Cudd_zddCount(manager,  Node[i].RnT);
+
+                printf("RnT at i = %d Zdd Count = %d\n", i, ZddCount);
+                Cudd_zddPrintDebug(manager,  Node[i].RnT, 0, 3);
 
                 break;
             default:

@@ -21,7 +21,6 @@ HEADERS += \
     PatternSim.h \
     Transitions.h
 
-
 unix:!macx: LIBS += -L$$PWD/../../../../../opt/cudd-2.5.1/cudd/ -lcudd
 
 INCLUDEPATH += $$PWD/../../../../../opt/cudd-2.5.1/cudd

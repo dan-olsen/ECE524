@@ -21,3 +21,5 @@ dot -Tpng ./20.dot -o ./20.png
 dot -Tpng ./21.dot -o ./21.png
 dot -Tpng ./22.dot -o ./22.png
 dot -Tpng ./23.dot -o ./23.png
+dot -Tpng ./Robust.dot -o ./Robust.png
+dot -Tpng ./NonRobust.dot -o ./NonRobust.png
