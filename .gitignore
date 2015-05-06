@@ -31,3 +31,7 @@
 # Eclipse
 .project
 .cproject
+
+# Qt Creator
+*.pro.user
+build-*-Desktop_Qt_5_4_1_GCC_64bit-Debug
