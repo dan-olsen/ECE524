@@ -16,56 +16,58 @@ Constant Declarations
 #define NUMBER 		3
 #define MAX_LINE	100
 
+/***************************************************************************************************************************
+Structure Declarations
+****************************************************************************************************************************/
+typedef struct struct_node {
+    char nd_num;
+    int refe;
+    int oper;
+    int asap;
+    int Nasap;
+    int alap;
+    int Fasap;
+
+} Node;
+
+Node graph[100];
 char token[80];
 char tok_type;
 char *prog;
-/***************************************************************************************************************************
-Structure Declarations 
-****************************************************************************************************************************/
-typedef struct struct_node {
-	char nd_num;
-	int refe;
-	int oper;
-	int asap;
-	int Nasap;
-	int alap;
-	int Fasap;
-	
-} Node;
 
 /***************************************************************************************************************************
 Function Declarations 
 ****************************************************************************************************************************/
 void get_token(void);
 int isdelim(char);
+void TimeConstraints(FILE *resfile, int Mnode);
 
 /***************************************************************************************************************************
   Main Function
 ****************************************************************************************************************************/
 
-void main(int argc,char **argv) 
+void main(int argc,char **argv)
 {
 	FILE *infile, *resfile;
-	Node graph[100];
 
-	int i = 0, counter, Mnode, Mnode_id = 0;
-	int mult_count = 0, alu_count = 0, oper_count = 0;
-	int Nasap, Fasap, C = 1, min_asap, flag, sameasap = 1;
+    int i = 0, counter, Mnode, Mnode_id = 0;
+    int mult_count = 0, alu_count = 0, oper_count = 0;
+    int Nasap, Fasap, C = 1, min_asap, flag, sameasap = 1;
 
-	char line[100], buf[100];
+    char line[100], buf[100];
 
 	infile = fopen(argv[1], "r");
 
-	while(fgets(buf, MAX_LINE, infile) != '\0')
-  	{
-		prog = buf;
+    while(fgets(buf, MAX_LINE, infile) != '\0')
+    {
+        prog = buf;
         counter = 0;
 
         for(counter = 0; counter < 4; )
         {
-			get_token();
+            get_token();
             switch(tok_type) {
-				case NUMBER:
+                case NUMBER:
                     switch(counter) {
                         case 0:
                             graph[i].nd_num = atoi(token);
@@ -96,45 +98,45 @@ void main(int argc,char **argv)
                             break;
                     }
 
-					counter++;
-				
-					break;
-				case VARIABLE:
+                    counter++;
+
+                    break;
+                case VARIABLE:
                     if(counter < 2)
-					{
+                    {
                         if(!strcmp(token, "source"))
                             graph[i].oper = 0;
 
                         if(!strcmp(token, "sink"))
                             graph[i].oper = 3;
-					}
-				
-					break;
-				case DELIMITER:
+                    }
+
+                    break;
+                case DELIMITER:
                     if(counter > 0 && counter < 2)
-					{	
+                    {
                         if(strchr("*", *token))
-						{
+                        {
                             graph[i].oper = 1;
-							mult_count++;
-						}
+                            mult_count++;
+                        }
 
                         if(strchr("+-/%^=()<>", *token))
-						{
+                        {
                             graph[i].oper = 2;
-							alu_count++;
-						}
-					}
-				
-					break;
-				default:
+                            alu_count++;
+                        }
+                    }
+
                     break;
-			}
-		}
+                default:
+                    break;
+            }
+        }
 
         Mnode = i;
-		i++;
-	} 
+        i++;
+    }
 
 	resfile = fopen ("equations.lp", "w");
 
@@ -143,10 +145,10 @@ void main(int argc,char **argv)
 	// 3. Use lp solver to solve the inequalities and store the output of lpsolver in file.
 		  //lpsover command: lp_solve "ilpfile" 
 	// 4. The two functions(get_token,isdelim) can be used for reading the benchmark files(.asapalap). 
-		  //Using these two functions in your implementation is optional. 
+          //Using these two functions in your implementation is optional.
 
 	fclose(infile);
-	fclose(resfile);
+    fclose(resfile);
 }//end of main
 /***************************************************************************************************************************
  Read a group of characters together return as a single string refered as token
@@ -199,4 +201,18 @@ int isdelim(char c)
 	else
 		return 0;
 }//end
+
+void TimeConstraints(FILE *resfile, int Mnode)
+{
+    int i;
+
+    for(i = 0; i < Mnode; i++)
+    {
+        if(graph[i].alap == graph[i].asap)
+        {
+            fprintf(resfile, "c%d: X%d%d = 1;", c, i, graph[i].asap);
+        }
+    }
+}
+
 /***************************************************************************************************************************/
