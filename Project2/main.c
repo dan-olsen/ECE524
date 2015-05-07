@@ -160,22 +160,22 @@ int main(int argc,char **argv)
     printf("min: a1 + a2;\n");
     fprintf(resfile, "min: a1 + a2;\n");
 
-	TimeConstraints(resfile, &C, 2, Mnode);
+    TimeConstraints(resfile, &C, min_asap, Mnode);
 
     printf("\n");
     fprintf(resfile, "\n");
 
-    MultOperations(resfile, &C, 2, Mnode);
+    MultOperations(resfile, &C, min_asap, Mnode);
 
     printf("\n");
     fprintf(resfile, "\n");
 
-    AluOperations(resfile, &C, 2, Mnode);
+    AluOperations(resfile, &C, min_asap, Mnode);
 
     printf("\n");
     fprintf(resfile, "\n");
 
-    MultipleTimeFrames(resfile, 2, Mnode);
+    MultipleTimeFrames(resfile, min_asap, Mnode);
 
 	fclose(infile);
     fclose(resfile);
@@ -286,7 +286,7 @@ void MultOperations(FILE *resFile, int *c, int min_asap, int Mnode)
 		}
 	}
 
-	for(j = 1; j <= Mmult; j++, (*c)++, Mmult_at_time_frame = 0)
+    for(j = 1; j <= Mmult; j++, Mmult_at_time_frame = 0)
 	{
 		for(i = 0; i < Mnode; i++)
 		{
@@ -328,6 +328,8 @@ void MultOperations(FILE *resFile, int *c, int min_asap, int Mnode)
 		printf("- a1 <= 0;\n");
 
 		fprintf(resFile, "- a1 <= 0;\n");
+
+        (*c)++;
 	}
 }
 
@@ -343,7 +345,7 @@ void AluOperations(FILE *resFile, int *c, int min_asap, int Mnode)
 		}
 	}
 
-	for(j = 1; j <= Malu; j++, (*c)++, Malu_at_time_frame = 0)
+    for(j = 1; j <= Malu; j++, Malu_at_time_frame = 0)
 	{
 		for(i = 0; i < Mnode; i++)
 		{
@@ -385,6 +387,8 @@ void AluOperations(FILE *resFile, int *c, int min_asap, int Mnode)
 		printf("- a2 <= 0;\n");
 
 		fprintf(resFile, "- a2 <= 0;\n");
+
+         (*c)++;
 	}
 }
 
