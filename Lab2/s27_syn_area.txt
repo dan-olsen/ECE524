@@ -1,0 +1,29 @@
+ 
+****************************************
+Report : area
+Design : s27
+Version: F-2011.09-SP4
+Date   : Thu May  7 18:37:36 2015
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    saed90nm_max (File: /synopsys/GPDK/SAED_EDK90nm/Digital_Standard_Cell_Library/synopsys/models/saed90nm_max.db)
+
+Number of ports:                            6
+Number of nets:                            17
+Number of cells:                           12
+Number of combinational cells:              9
+Number of sequential cells:                 0
+Number of macros:                           0
+Number of buf/inv:                          2
+Number of references:                       8
+
+Combinational area:         59.904001
+Noncombinational area:      74.649599
+Net Interconnect area:       4.016482  
+
+Total cell area:           134.553600
+Total area:                138.570083
+1

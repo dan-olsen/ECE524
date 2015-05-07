@@ -1,0 +1,298 @@
+****************************************
+Report : timing
+	-path_type full
+	-delay_type min_max
+	-max_paths 20
+	-justify
+Design : s27
+Version: E-2010.12
+Date   : Thu May  7 18:38:32 2015
+****************************************
+
+
+  A True path:
+
+  Startpoint: G2 (input port clocked by CK)
+  Endpoint: DFF_2/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: min
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  input external delay                     0.10       0.35 r
+  G2 (in)                                  0.07       0.42 r
+  U23/QN (NOR2X0)                          0.13       0.55 f
+  DFF_2/D (dff_1)                          0.00       0.55 f
+  DFF_2/Q_reg/D (DFFX1)                    0.04       0.59 f
+  data arrival time                                   0.59
+
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  clock uncertainty                        0.20       0.45
+  DFF_2/Q_reg/CLK (DFFX1)                             0.45 r
+  library hold time                        0.02       0.47
+  data required time                                  0.47
+  ---------------------------------------------------------------
+  data required time                                  0.47
+  data arrival time                                  -0.59
+  ---------------------------------------------------------------
+  slack (MET)                                         0.12
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_2/Q_reg/Q (DFFX1)                1 
+  G2 (in)                              r 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+  A True path:
+
+  Startpoint: G3 (input port clocked by CK)
+  Endpoint: DFF_1/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: min
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  input external delay                     0.10       0.35 f
+  G3 (in)                                  0.06       0.41 f
+  U20/QN (NOR2X0)                          0.09       0.50 r
+  U17/QN (NOR3X0)                          0.13       0.63 f
+  DFF_1/D (dff_2)                          0.00       0.63 f
+  DFF_1/Q_reg/D (DFFX1)                    0.05       0.68 f
+  data arrival time                                   0.68
+
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  clock uncertainty                        0.20       0.45
+  DFF_1/Q_reg/CLK (DFFX1)                             0.45 r
+  library hold time                        0.02       0.47
+  data required time                                  0.47
+  ---------------------------------------------------------------
+  data required time                                  0.47
+  data arrival time                                  -0.68
+  ---------------------------------------------------------------
+  slack (MET)                                         0.20
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                0 
+  DFF_1/Q_reg/Q (DFFX1)                0 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G1 (in)                              0 
+  G3 (in)                              f 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+  A True path:
+
+  Startpoint: G0 (input port clocked by CK)
+  Endpoint: DFF_0/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: min
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  input external delay                     0.10       0.35 f
+  G0 (in)                                  0.12       0.47 f
+  U16/Q (AND2X1)                           0.17       0.64 f
+  DFF_0/D (dff_0)                          0.00       0.64 f
+  DFF_0/Q_reg/D (DFFX1)                    0.04       0.68 f
+  data arrival time                                   0.68
+
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  clock uncertainty                        0.20       0.45
+  DFF_0/Q_reg/CLK (DFFX1)                             0.45 r
+  library hold time                        0.02       0.47
+  data required time                                  0.47
+  ---------------------------------------------------------------
+  data required time                                  0.47
+  data arrival time                                  -0.68
+  ---------------------------------------------------------------
+  slack (MET)                                         0.21
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                1 
+  G0 (in)                              f 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+
+  A True path:
+
+  Startpoint: G0 (input port clocked by CK)
+  Endpoint: DFF_0/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  input external delay                     0.40       0.65 r
+  G0 (in)                                  0.17       0.82 r
+  U21/QN (NOR2X0)                          0.18       1.00 f
+  U20/QN (NOR2X0)                          0.12       1.12 r
+  U17/QN (NOR3X0)                          0.17       1.29 f
+  U19/ZN (INVX0)                           0.37       1.67 r
+  U16/Q (AND2X1)                           0.18       1.85 r
+  DFF_0/D (dff_0)                          0.00       1.85 r
+  DFF_0/Q_reg/D (DFFX1)                    0.06       1.91 r
+  data arrival time                                   1.91
+
+  clock CK (rise edge)                     4.90       4.90
+  clock network delay (ideal)              0.25       5.15
+  clock uncertainty                       -0.30       4.85
+  DFF_0/Q_reg/CLK (DFFX1)                             4.85 r
+  library setup time                      -0.05       4.80
+  data required time                                  4.80
+  ---------------------------------------------------------------
+  data required time                                  4.80
+  data arrival time                                  -1.91
+  ---------------------------------------------------------------
+  slack (MET)                                         2.89
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                0 
+  DFF_1/Q_reg/Q (DFFX1)                1 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G0 (in)                              r 
+  G1 (in)                              0 
+  G3 (in)                              0 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+  A True path:
+
+  Startpoint: G0 (input port clocked by CK)
+  Endpoint: DFF_1/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  input external delay                     0.40       0.65 r
+  G0 (in)                                  0.17       0.82 r
+  U21/QN (NOR2X0)                          0.18       1.00 f
+  U20/QN (NOR2X0)                          0.12       1.12 r
+  U17/QN (NOR3X0)                          0.17       1.29 f
+  DFF_1/D (dff_2)                          0.00       1.29 f
+  DFF_1/Q_reg/D (DFFX1)                    0.07       1.36 f
+  data arrival time                                   1.36
+
+  clock CK (rise edge)                     4.90       4.90
+  clock network delay (ideal)              0.25       5.15
+  clock uncertainty                       -0.30       4.85
+  DFF_1/Q_reg/CLK (DFFX1)                             4.85 r
+  library setup time                      -0.02       4.83
+  data required time                                  4.83
+  ---------------------------------------------------------------
+  data required time                                  4.83
+  data arrival time                                  -1.36
+  ---------------------------------------------------------------
+  slack (MET)                                         3.46
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                0 
+  DFF_1/Q_reg/Q (DFFX1)                1 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G0 (in)                              r 
+  G1 (in)                              0 
+  G3 (in)                              0 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+  A True path:
+
+  Startpoint: G1 (input port clocked by CK)
+  Endpoint: DFF_2/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  input external delay                     0.40       0.65 r
+  G1 (in)                                  0.13       0.78 r
+  U24/QN (NOR2X0)                          0.17       0.95 f
+  U23/QN (NOR2X0)                          0.10       1.05 r
+  DFF_2/D (dff_1)                          0.00       1.05 r
+  DFF_2/Q_reg/D (DFFX1)                    0.06       1.11 r
+  data arrival time                                   1.11
+
+  clock CK (rise edge)                     4.90       4.90
+  clock network delay (ideal)              0.25       5.15
+  clock uncertainty                       -0.30       4.85
+  DFF_2/Q_reg/CLK (DFFX1)                             4.85 r
+  library setup time                      -0.07       4.78
+  data required time                                  4.78
+  ---------------------------------------------------------------
+  data required time                                  4.78
+  data arrival time                                  -1.11
+  ---------------------------------------------------------------
+  slack (MET)                                         3.66
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G1 (in)                              r 
+  G2 (in)                              0 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+1
