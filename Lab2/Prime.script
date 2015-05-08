@@ -1,0 +1,32 @@
+set search_path "/synopsys/GPDK/SAED_EDK90nm/Digital_Standard_Cell_Library/synopsys/models"
+set link_library " * saed90nm_typ.db saed90nm_min.db saed90nm_max.db"
+set target_library "saed90nm_max.db"
+read_verilog /ugrad/dolsen/Git/ECE524/Lab2/s27_syn.v
+current_design s27
+set_wire_load_model -name 8000 -library saed90nm_max
+set load 100
+set intran 4
+set drivcell "INVX0"  
+create_clock -period 4.9 -waveform {0 2.45} {CK}
+set_input_delay 0.1 -min -clock CK [remove_from_collection [all_inputs] [get_port CK] ]
+set_input_delay 0.4 -max -clock CK [remove_from_collection [all_inputs] [get_port CK] ]
+set_output_delay 0.1 -min -clock CK [all_outputs]
+set_output_delay 0.4 -max -clock CK [all_outputs]
+set timing_slew_propagation_mode worst_slew
+set timing_report_unconstrained_paths true
+set power_enable_analysis true
+set_clock_transition 0.3 [get_clocks CK]
+set_clock_latency 0.25 [get_clocks CK]
+set_clock_uncertainty -setup 0.3 [get_clocks CK]
+set_clock_uncertainty -hold 0.2 [get_clocks CK]
+set_driving_cell -lib_cell $drivcell -input_transition_rise $intran -input_transition_fall $intran [remove_from_collection [all_inputs] [get_port CK] ]
+set_load $load [all_outputs]
+check_timing
+update_timing
+report_constraint > constr.rpt
+report_timing -justify -transition_time -delay min_max -capacitance -nets -input_pins -from [all_registers -clock_pins] -to [all_registers -data_pins] > tran.rpt
+report_timing -justify -from [all_inputs] -max_paths 20 -to [all_registers -data_pins] -delay_type min_max > timingid.rpt
+report_timing -justify -from [all_register -clock_pins] -max_paths 20 -to [all_registers -data_pins] -delay_type min_max > timingqd.rpt
+report_timing -justify -from [all_registers -clock_pins] -max_paths 20 -to [all_outputs] -delay_type min_max > timingqo.rpt
+report_timing -justify -from [all_inputs] -to [all_outputs] -max_paths 20 -delay_type min_max > timingio.rpt
+

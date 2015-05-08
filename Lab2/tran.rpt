@@ -1,0 +1,141 @@
+****************************************
+Report : timing
+	-path_type full
+	-delay_type min_max
+	-input_pins
+	-nets
+	-max_paths 1
+	-justify
+	-transition_time
+	-capacitance
+Design : s27
+Version: E-2010.12
+Date   : Thu May  7 18:38:32 2015
+****************************************
+
+
+  A True path:
+
+  Startpoint: DFF_0/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: DFF_1/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: min
+
+  Point                       Fanout    Cap      Trans       Incr       Path
+  -----------------------------------------------------------------------------
+  clock CK (rise edge)                            0.30       0.00       0.00
+  clock network delay (ideal)                                0.25       0.25
+  DFF_0/Q_reg/CLK (DFFX1)                         0.30       0.00       0.25 r
+  DFF_0/Q_reg/Q (DFFX1)                           0.03       0.19       0.44 r
+  DFF_0/Q (net)                  1     2.78 
+  DFF_0/Q (dff_0)                                 0.00       0.00       0.44 r
+  G5 (net) 
+  U17/IN1 (NOR3X0)                                0.03       0.07       0.51 r
+  U17/QN (NOR3X0)                                 0.05       0.04       0.55 f
+  G11 (net)                      2     3.41 
+  DFF_1/D (dff_2)                                 0.00       0.00       0.55 f
+  DFF_1/D (net) 
+  DFF_1/Q_reg/D (DFFX1)                           0.05       0.05       0.60 f
+  data arrival time                                                     0.60
+
+  clock CK (rise edge)                            0.30       0.00       0.00
+  clock network delay (ideal)                                0.25       0.25
+  clock uncertainty                                          0.20       0.45
+  DFF_1/Q_reg/CLK (DFFX1)                                               0.45 r
+  library hold time                                          0.02       0.47
+  data required time                                                    0.47
+  -----------------------------------------------------------------------------
+  data required time                                                    0.47
+  data arrival time                                                    -0.60
+  -----------------------------------------------------------------------------
+  slack (MET)                                                           0.13
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                r 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G1 (in)                              0 
+  G3 (in)                              1 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+
+  A True path:
+
+  Startpoint: DFF_1/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: DFF_0/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Point                       Fanout    Cap      Trans       Incr       Path
+  -----------------------------------------------------------------------------
+  clock CK (rise edge)                            0.30       0.00       0.00
+  clock network delay (ideal)                                0.25       0.25
+  DFF_1/Q_reg/CLK (DFFX1)                         0.30       0.00       0.25 r
+  DFF_1/Q_reg/Q (DFFX1)                           0.03       0.21       0.46 f
+  DFF_1/Q (net)                  1     2.17 
+  DFF_1/Q (dff_2)                                 0.00       0.00       0.46 f
+  G6 (net) 
+  U22/INP (INVX0)                                 0.03       0.05       0.51 f
+  U22/ZN (INVX0)                                  0.05       0.03       0.54 r
+  n13 (net)                      2     5.44 
+  U21/IN2 (NOR2X0)                                0.05       0.07       0.62 r
+  U21/QN (NOR2X0)                                 0.20       0.04       0.66 f
+  n17 (net)                      1     2.90 
+  U20/IN1 (NOR2X0)                                0.20       0.07       0.73 f
+  U20/QN (NOR2X0)                                 0.19       0.05       0.78 r
+  n16 (net)                      1     3.29 
+  U17/IN3 (NOR3X0)                                0.19       0.08       0.86 r
+  U17/QN (NOR3X0)                                 0.12       0.10       0.95 f
+  G11 (net)                      2     4.61 
+  U19/INP (INVX0)                                 0.12       0.06       1.01 f
+  U19/ZN (INVX0)                                  0.63       0.32       1.33 r
+  G17 (net)                      2   101.89 
+  U16/IN1 (AND2X1)                                0.63       0.05       1.38 r
+  U16/Q (AND2X1)                                  0.06       0.12       1.50 r
+  G10 (net)                      1     2.49 
+  DFF_0/D (dff_0)                                 0.00       0.00       1.50 r
+  DFF_0/D (net) 
+  DFF_0/Q_reg/D (DFFX1)                           0.06       0.06       1.56 r
+  data arrival time                                                     1.56
+
+  clock CK (rise edge)                            0.30       4.90       4.90
+  clock network delay (ideal)                                0.25       5.15
+  clock uncertainty                                         -0.30       4.85
+  DFF_0/Q_reg/CLK (DFFX1)                                               4.85 r
+  library setup time                                        -0.05       4.80
+  data required time                                                    4.80
+  -----------------------------------------------------------------------------
+  data required time                                                    4.80
+  data arrival time                                                    -1.56
+  -----------------------------------------------------------------------------
+  slack (MET)                                                           3.23
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                0 
+  DFF_1/Q_reg/Q (DFFX1)                f 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G0 (in)                              1 
+  G1 (in)                              0 
+  G3 (in)                              0 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+1

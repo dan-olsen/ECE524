@@ -1,0 +1,111 @@
+****************************************
+Report : timing
+	-path_type full
+	-delay_type min_max
+	-max_paths 20
+	-justify
+Design : s27
+Version: E-2010.12
+Date   : Thu May  7 18:38:32 2015
+****************************************
+
+
+  A True path:
+
+  Startpoint: DFF_0/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: G17 (output port clocked by CK)
+  Path Group: CK
+  Path Type: min
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  DFF_0/Q_reg/CLK (DFFX1)                  0.00       0.25 r
+  DFF_0/Q_reg/Q (DFFX1)                    0.19       0.44 r
+  DFF_0/Q (dff_0)                          0.00       0.44 r
+  U17/QN (NOR3X0)                          0.11       0.55 f
+  U19/ZN (INVX0)                           0.34       0.89 r
+  G17 (out)                                2.75       3.64 r
+  data arrival time                                   3.64
+
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  clock uncertainty                        0.20       0.45
+  output external delay                   -0.10       0.35
+  data required time                                  0.35
+  ---------------------------------------------------------------
+  data required time                                  0.35
+  data arrival time                                  -3.64
+  ---------------------------------------------------------------
+  slack (MET)                                         3.29
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                r 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G1 (in)                              0 
+  G3 (in)                              1 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+
+  A True path:
+
+  Startpoint: DFF_1/Q_reg
+               (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: G17 (output port clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Point                                    Incr       Path
+  ---------------------------------------------------------------
+  clock CK (rise edge)                     0.00       0.00
+  clock network delay (ideal)              0.25       0.25
+  DFF_1/Q_reg/CLK (DFFX1)                  0.00       0.25 r
+  DFF_1/Q_reg/Q (DFFX1)                    0.21       0.46 f
+  DFF_1/Q (dff_2)                          0.00       0.46 f
+  U22/ZN (INVX0)                           0.08       0.54 r
+  U21/QN (NOR2X0)                          0.11       0.66 f
+  U20/QN (NOR2X0)                          0.12       0.78 r
+  U17/QN (NOR3X0)                          0.17       0.95 f
+  U19/ZN (INVX0)                           0.37       1.33 r
+  G17 (out)                                2.75       4.08 r
+  data arrival time                                   4.08
+
+  clock CK (rise edge)                     4.90       4.90
+  clock network delay (ideal)              0.25       5.15
+  clock uncertainty                       -0.30       4.85
+  output external delay                   -0.40       4.45
+  data required time                                  4.45
+  ---------------------------------------------------------------
+  data required time                                  4.45
+  data arrival time                                  -4.08
+  ---------------------------------------------------------------
+  slack (MET)                                         0.37
+
+
+  True-delay Input Vector
+  -------------------------------------------
+  DFF_0/Q_reg/Q (DFFX1)                0 
+  DFF_1/Q_reg/Q (DFFX1)                f 
+  DFF_2/Q_reg/Q (DFFX1)                0 
+  G0 (in)                              0 
+  G1 (in)                              0 
+  G3 (in)                              0 
+  -------------------------------------------
+
+
+  True-delay conclusions:
+  ---------------------------------
+  1. Reported path is true.
+  ---------------------------------
+
+1
