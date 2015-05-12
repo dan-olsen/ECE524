@@ -8,8 +8,7 @@
 #include "Transitions.h"
 
 void extractPDFs(GATE *Node, DdNode **PathSet, int Npo, int Tgat);
-void extractRPDFs(GATE *Node, DdNode **RPathSet, int Npo, int Tgat);
-void extractFPDFs(GATE *Node, DdNode **FPathSet, int Npo, int Tgat);
+void extractRFPDFs(GATE *Node, DdNode **RPathSet, DdNode **FPathSet, int Npo, int Tgat);
 
 void storeLSPaths(GATE *Node, int Npo, DdNode **GoodPaths, DdNode **SuspectSet);
 
