@@ -140,7 +140,7 @@ void extractRFPDFs(GATE *Node, DdNode **RPathSet, DdNode **FPathSet, int Npo, in
             case NOR:
             case XOR:
             case XNOR:
-                if(Node[i].Mark == 1)
+                /*if(Node[i].Mark == 1)
                 {
                     for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
                     {
@@ -199,6 +199,63 @@ void extractRFPDFs(GATE *Node, DdNode **RPathSet, DdNode **FPathSet, int Npo, in
                         	}
                         }
                     }
+                }*/
+
+                if(Node[i].Mark == 1)
+                {
+                    for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                    {
+                        if(Node[tmpList->Id].Val == R1 && Node[tmpList->Id].TempRpath != NULL)
+                        {
+                            tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].TempRpath, 2*i);
+                            Cudd_Ref(tmpNode);
+
+                        } else if(Node[tmpList->Id].Val == F0 && Node[tmpList->Id].TempFpath != NULL) {
+                            tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].TempFpath, 2*i+1);
+                            Cudd_Ref(tmpNode);
+
+                        }
+                        if(tmpNode != NULL)
+                        {
+                            if(Node[i].Val == R1)
+                            {
+                                if(Node[i].TempRpath == NULL)
+                                {
+                                    Node[i].TempRpath = tmpNode;
+                                    tmpNode = NULL;
+
+                                } else {
+                                    tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].TempRpath);
+                                    Cudd_Ref(tmpNode2);
+
+                                    Cudd_RecursiveDerefZdd(manager, tmpNode);
+                                    tmpNode = NULL;
+                                    Cudd_RecursiveDerefZdd(manager, Node[i].TempRpath);
+                                    Node[i].TempRpath = NULL;
+
+                                    Node[i].TempRpath = tmpNode2;
+                                }
+                            } else if(Node[i].Val == F0)
+                            {
+                                if(Node[i].TempFpath == NULL)
+                                {
+                                    Node[i].TempFpath = tmpNode;
+                                    tmpNode = NULL;
+
+                                } else {
+                                    tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].TempFpath);
+                                    Cudd_Ref(tmpNode2);
+
+                                    Cudd_RecursiveDerefZdd(manager, tmpNode);
+                                    tmpNode = NULL;
+                                    Cudd_RecursiveDerefZdd(manager, Node[i].TempFpath);
+                                    Node[i].TempFpath = NULL;
+
+                                    Node[i].TempFpath = tmpNode2;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 break;
@@ -209,13 +266,56 @@ void extractRFPDFs(GATE *Node, DdNode **RPathSet, DdNode **FPathSet, int Npo, in
 
                 if(Node[i].Mark == 1)
                 {
-                    if(Node[tmpList->Id].Mark == 1 && Node[tmpList->Id].TempPath != NULL)
+                    if(Node[tmpList->Id].Val == R1 && Node[tmpList->Id].TempRpath != NULL)
                     {
-                        Node[i].TempPath = Cudd_zddChange(manager, Node[tmpList->Id].TempPath, i);
-                        Cudd_Ref(Node[i].TempPath);
+                        tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].TempRpath, 2*i);
+                        Cudd_Ref(tmpNode);
 
-                        //printf("Robust ZDD Count at %d: %d\n", i, Cudd_zddCount(manager, Node[i].RobustPath));
-                        //fflush(stdout);
+                    } else if(Node[tmpList->Id].Val == F0 && Node[tmpList->Id].TempFpath != NULL) {
+                        tmpNode = Cudd_zddChange(manager, Node[tmpList->Id].TempFpath, 2*i+1);
+                        Cudd_Ref(tmpNode);
+
+                    }
+
+                    if(tmpNode != NULL)
+                    {
+                        if(Node[i].Val == R1)
+                        {
+                            if(Node[i].TempRpath == NULL)
+                            {
+                                Node[i].TempRpath = tmpNode;
+                                tmpNode = NULL;
+
+                            } else {
+                                tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].TempRpath);
+                                Cudd_Ref(tmpNode2);
+
+                                Cudd_RecursiveDerefZdd(manager, tmpNode);
+                                tmpNode = NULL;
+                                Cudd_RecursiveDerefZdd(manager, Node[i].TempRpath);
+                                Node[i].TempRpath = NULL;
+
+                                Node[i].TempRpath = tmpNode2;
+                            }
+                        } else if(Node[i].Val == F0)
+                        {
+                            if(Node[i].TempFpath == NULL)
+                            {
+                                Node[i].TempFpath = tmpNode;
+                                tmpNode = NULL;
+
+                            } else {
+                                tmpNode2 = Cudd_zddUnion(manager, tmpNode, Node[i].TempFpath);
+                                Cudd_Ref(tmpNode2);
+
+                                Cudd_RecursiveDerefZdd(manager, tmpNode);
+                                tmpNode = NULL;
+                                Cudd_RecursiveDerefZdd(manager, Node[i].TempFpath);
+                                Node[i].TempFpath = NULL;
+
+                                Node[i].TempFpath = tmpNode2;
+                            }
+                        }
                     }
                 }
 
@@ -225,10 +325,8 @@ void extractRFPDFs(GATE *Node, DdNode **RPathSet, DdNode **FPathSet, int Npo, in
                 //printf("Type: %d\n", graph[i].typ);
                 break;
         }
-
     }
 
-    clearNodeZDDs(Node, Tgat);
     for(j = 0; j < Npo; j++)
     {
         if(Node[primaryOutputs[j]].Val == R1 && Node[primaryOutputs[j]].TempRpath != NULL)
