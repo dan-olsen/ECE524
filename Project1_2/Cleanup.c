@@ -88,7 +88,7 @@ void clearNodeRnT(GATE *Node, int Tgat)
 }
 
 
-void clearNodeNnT(GATE *Node, int Tgat)
+void clearNodeNnt(GATE *Node, int Tgat)
 {
     int i;
 
@@ -105,10 +105,10 @@ void clearNodeNnT(GATE *Node, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                if(Node[i].NnT != NULL)
+                if(Node[i].Nnt != NULL)
                 {
-                    Cudd_RecursiveDerefZdd(manager, Node[i].NnT);
-                    Node[i].NnT = NULL;
+                    Cudd_RecursiveDerefZdd(manager, Node[i].Nnt);
+                    Node[i].Nnt = NULL;
                 }
 
                 break;
@@ -120,7 +120,7 @@ void clearNodeNnT(GATE *Node, int Tgat)
     }
 }
 
-void clearNodePnT(GATE *Node, int Tgat)
+void clearNodePnt(GATE *Node, int Tgat)
 {
     int i;
 
@@ -137,10 +137,10 @@ void clearNodePnT(GATE *Node, int Tgat)
             case FROM:
             case NOT:
             case BUFF:
-                if(Node[i].PnT != NULL)
+                if(Node[i].Pnt != NULL)
                 {
-                    Cudd_RecursiveDerefZdd(manager, Node[i].PnT);
-                    Node[i].PnT = NULL;
+                    Cudd_RecursiveDerefZdd(manager, Node[i].Pnt);
+                    Node[i].Pnt = NULL;
                 }
 
                 break;

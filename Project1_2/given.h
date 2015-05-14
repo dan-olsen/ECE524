@@ -67,13 +67,14 @@ typedef struct PATH_COUNT_type {
 //2.Stucture declaration for GATE
 typedef struct GATE_type {
     char Name[Mnam];                        //Name of the gate
-    int Type, Nfi, Nfo, Mark, Val, Delay;   //Type, No of fanins, No of fanouts, Marker, Value
+    int Type, Nfi, Nfo, Mark, TempVal, Delay;   //Type, No of fanins, No of fanouts, Marker, Value
     LIST *Fin, *Fot;                         //Fanin members, Fanout members
     DdNode *TempRpath, *TempFpath;          //ZDDS of Rising & Falling Path
     DdNode *TempPath;
-    DdNode *NnT, *RnT, *SnT, *PnT;
-    int ValidateMark;
+    DdNode *Nnt, *RnT, *Snt, *Pnt;
+    int CosensitizationMark;
     PATH_COUNT *PathCount;
+    int RobustVal, NonRobustVal, FuncVal;
 
 } GATE;
 /***************************************************************************************************

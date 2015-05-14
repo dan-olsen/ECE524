@@ -156,17 +156,19 @@ void InitiGat(GATE *Node, int Num)
     //Node[Num].Name = (char *) malloc(Mnam *sizeof(char));           //Dynamic memory allocation for an array
     bzero(Node[Num].Name, Mnam);                                   //Clearing the string
     Node[Num].Type = Node[Num].Nfi = Node[Num].Nfo = Node[Num].Mark = 0;
-    Node[Num].Val = 6;
+    Node[Num].TempVal = 6;
     Node[Num].Fin = Node[Num].Fot = NULL;
     Node[Num].TempRpath = Node[Num].TempFpath = NULL;
     Node[Num].TempPath = NULL;
-    Node[Num].NnT = NULL;
+    Node[Num].Nnt = NULL;
     Node[Num].RnT = NULL;
-    Node[Num].SnT = NULL;
-    Node[Num].PnT = NULL;
+    Node[Num].Snt = NULL;
+    Node[Num].Pnt = NULL;
     Node[Num].Delay = 0;
     Node[Num].PathCount = NULL;
-    Node[Num].ValidateMark = 0;
+    Node[Num].CosensitizationMark = 0;
+    Node[Num].RobustVal = Node[Num].NonRobustVal =  Node[Num].FuncVal = 0;
+
     return;
 }//end of InitiGat
 /***************************************************************************************************
@@ -182,7 +184,7 @@ void PrintGats(GATE *Node, int Tgat)
     {
         if(Node[i].Type != 0)
         {
-            printf("\n%d\t%s\t%d\t%d\t%d\t%d\t%d\t\t", i, Node[i].Name, Node[i].Type, Node[i].Nfi, Node[i].Nfo, Node[i].Mark, Node[i].Val);
+            printf("\n%d\t%s\t%d\t%d\t%d\t%d\t%d\t\t", i, Node[i].Name, Node[i].Type, Node[i].Nfi, Node[i].Nfo, Node[i].Mark, Node[i].TempVal);
             PrintList(Node[i].Fin);  printf("\t\t");
             PrintList(Node[i].Fot);
         }
@@ -200,7 +202,7 @@ void ClearGat(GATE *Node, int Tgat)
     for(i = 1; i <= Tgat; i++)
     {
         //free(Node[i].Name);
-        Node[i].Type = Node[i].Nfi = Node[i].Nfo = Node[i].Mark = Node[i].Val = 0;
+        Node[i].Type = Node[i].Nfi = Node[i].Nfo = Node[i].Mark = Node[i].TempVal = 0;
         FreeList(&Node[i].Fin);
         FreeList(&Node[i].Fot);
         FreePathCounts(&Node[i].PathCount);

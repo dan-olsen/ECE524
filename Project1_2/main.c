@@ -22,6 +22,7 @@ int main(int argc, char **argv)
     int ZddCount = 0;
     int *pattern = NULL;
     DdNode *RobustPathSet = NULL;
+    DdNode *PartialRobustPathSet = NULL;
     DdNode *NonRobustPathSet = NULL;
     DdNode *ValidatedNonRobustPathSet = NULL;
     DdNode *SuspectSet = NULL;
@@ -88,9 +89,6 @@ int main(int argc, char **argv)
         //printf("\n");
     }
 
-    //RobustPathSet = Cudd_zddUnion(manager, RobustRpathSet, RobustFpathSet);
-    //Cudd_Ref(RobustPathSet);
-
     storeRnT(Node, &RobustPathSet, Tgat);
 
     rewind(patFile);
@@ -98,24 +96,57 @@ int main(int argc, char **argv)
     //iterate over patterns
     while((pattern = getNextPattern(&patFile, Npi)) != NULL)
     {
-        //printf("Applying Pattern: ");
-        //printPattern(pattern, Npi);
+        printf("Applying Pattern: ");
+        printPattern(pattern, Npi);
+        printf("\n");
 
         //topologoical traversal to apply pattern
-        applyPatternNonRobust(Node, pattern, Tgat);
+        applyPatternRobust(Node, pattern, Tgat);
+        extractRFPDFs(Node, &PartialRobustPathSet, Npo, Tgat);
 
+        applyPatternNonRobust(Node, pattern, Tgat);
         extractRFPDFs(Node, &NonRobustPathSet, Npo, Tgat);
 
         for(i = 1; i <= Tgat; i++)
         {
             if(NonRobustPathSet != NULL)
             {
-                storeNnT(Node, i, &NonRobustPathSet);
+                storeNnt(Node, i, &NonRobustPathSet);
             }
 
-            storePnT(Node, i, &RobustPathSet);
+            storePnt(Node, i, &PartialRobustPathSet, Tgat);
 
-            //setValidateMark(Node, i);
+            //setCosensitizationMark(Node, i);
+
+            if(Node[i].RnT != NULL)
+            {
+                ZddCount = Cudd_zddCount(manager, Node[i].RnT);
+
+                printf("RnT Zdd Count at %d = %d\n", i, ZddCount);
+                Cudd_zddPrintDebug(manager, Node[i].RnT, 1, 3);
+
+            }
+
+            if(Node[i].Nnt != NULL)
+            {
+                ZddCount = Cudd_zddCount(manager, Node[i].Nnt);
+
+                printf("Nnt Zdd Count at %d = %d\n", i, ZddCount);
+                Cudd_zddPrintDebug(manager, Node[i].Nnt, 1, 3);
+
+            }
+
+            if(Node[i].Pnt != NULL)
+            {
+                ZddCount = Cudd_zddCount(manager, Node[i].Pnt);
+
+                printf("Pnt Zdd Count at %d = %d\n", i, ZddCount);
+
+                Cudd_zddPrintDebug(manager, Node[i].Pnt, 1, 3);
+
+            }
+
+            fflush(stdout);
 
             if(Node[i].Mark == 1)
             {
@@ -125,53 +156,20 @@ int main(int argc, char **argv)
 
         //extractVNR(Node, &ValidatedNonRobustPathSet, Npo);
 
-        for(i = 0; i <= Tgat; i++)
-        {
-            if(Node[i].NnT != NULL)
-            {
-                ZddCount = Cudd_zddCount(manager, Node[i].NnT);
-
-                printf("NnT Zdd Count at %d = %d\n", i, ZddCount);
-                Cudd_zddPrintDebug(manager, Node[i].NnT, 1, 3);
-
-                fflush(stdout);
-            }
-        }
-
-        for(i = 0; i <= Tgat; i++)
-        {
-            if(Node[i].PnT != NULL)
-            {
-                ZddCount = Cudd_zddCount(manager, Node[i].PnT);
-
-                printf("PnT Zdd Count at %d = %d\n", i, ZddCount);
-
-                Cudd_zddPrintDebug(manager, Node[i].PnT, 1, 3);
-
-                //sprintf(fname, "../Project1_2/Dot/%d.dot", i);
-
-                //dot = fopen(fname, "w");
-
-                //Cudd_zddDumpDot(manager, 1, &(Node[i].PnT), NULL, NULL, dot);
-
-                //fclose(dot);
-            }
-        }
-
         //dot = fopen("../Project1_2/Dot/NonRobust.dot", "w");
 
         //Cudd_zddDumpDot(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
 
         //fclose(dot);
 
-        clearNodeNnT(Node, Tgat);
-        clearNodePnT(Node, Tgat);
+        clearNodeNnt(Node, Tgat);
+        clearNodePnt(Node, Tgat);
 
         clearPathZDDs(&NonRobustPathSet);
+        clearPathZDDs(&PartialRobustPathSet);
 
         free(pattern);
 
-        //printf("\n");
     }
     /**
     ZddCount = getZddCount(&RobustPathSet);
@@ -190,27 +188,17 @@ int main(int argc, char **argv)
 
     //fclose(dot);
 
-    if(GoodPaths != NULL)
-    {
-        ZddCount = Cudd_zddCount(manager, GoodPaths);
-
-        printf("GoodPaths Zdd Count = %d\n", ZddCount);
-    }
-
     printResults(&resFile, &RobustPathSet, &NonRobustPathSet, &ValidatedNonRobustPathSet, &GoodPaths, &SuspectSet);
 
     clearPathZDDs(&RobustPathSet);
-
     clearPathZDDs(&NonRobustPathSet);
-
     clearPathZDDs(&ValidatedNonRobustPathSet);
-
     clearPathZDDs(&GoodPaths);
     clearPathZDDs(&SuspectSet);
 
     clearNodeRnT(Node, Tgat);
-    clearNodeNnT(Node, Tgat);
-    clearNodePnT(Node, Tgat);
+    clearNodeNnt(Node, Tgat);
+    clearNodePnt(Node, Tgat);
 
     fclose(patFile);
 
