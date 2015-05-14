@@ -15,6 +15,13 @@ int nonRobustSimOR [6][6]   =   {{S0, R1, F0, S1, X1, X0},
                                  {X1, X1, X1, S1, X1, X1},
                                  {X0, R1, F0, S1, X1, X0}};
 
+int functionalSimOR [6][6]  =  {{S0, R1, F0, S1, X1, X0},
+                                 {R1, R1, X1, S1, X1, X1},
+                                 {F0, X1, F0, S1, X1, F0},
+                                 {S1, S1, S1, S1, S1, S1},
+                                 {X1, X1, X1, S1, X1, X1},
+                                 {X0, X1, F0, S1, X1, X0}};
+
 int robustSimAND [6][6]     =   {{S0, S0, S0, S0, S0, S0},
                                  {S0, R1, X0, R1, R1, X0},
                                  {S0, X0, X0, F0, X0, X0},
@@ -28,6 +35,13 @@ int nonRobustSimAND [6][6]  =   {{S0, S0, S0, S0, S0, S0},
                                  {S0, R1, F0, S1, X1, X0},
                                  {S0, R1, F0, X1, X1, X0},
                                  {S0, X0, X0, X0, X0, X0}};
+
+int functionalSimAND [6][6]  =   {{S0, S0, S0, S0, S0, S0},
+                                  {S0, R1, X0, R1, R1, X0},
+                                  {S0, X0, F0, F0, X0, X0},
+                                  {S0, R1, F0, S1, X1, X0},
+                                  {S0, R1, X0, X1, X1, X0},
+                                  {S0, X0, X0, X0, X0, X0}};
 
 const int simNOT [6]        =   {S1, F0, R1, S0, X0, X1};
 
@@ -252,6 +266,157 @@ void applyPatternRobust(GATE *Node, int *pattern, int Tgat)
 }
 
 void applyPatternNonRobust(GATE *Node, int *pattern, int Tgat)
+{
+    LIST *tmpList = NULL;
+    int tmpRVal = 0, tmpRVal2 = 0, i;
+    int patIndex;
+
+    for(i = 1, patIndex = 0; i <= Tgat; i++, tmpRVal = 0, tmpRVal2 = 0)
+    {
+        switch(Node[i].Type) {
+            case INPT:
+                Node[i].Val = pattern[patIndex];
+
+                patIndex++;
+
+                break;
+            case AND:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpRVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpRVal = nonRobustSimAND[tmpRVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = tmpRVal;
+
+                break;
+            case NAND:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpRVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpRVal = nonRobustSimAND[tmpRVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = simNOT[tmpRVal];
+
+                break;
+            case OR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpRVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpRVal = nonRobustSimOR[tmpRVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = tmpRVal;
+
+                break;
+            case NOR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpRVal = Node[tmpList->Id].Val;
+
+                        continue;
+                    }
+
+                    tmpRVal = nonRobustSimOR[tmpRVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = simNOT[tmpRVal];
+
+                break;
+            case XOR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpRVal = Node[tmpList->Id].Val;
+                        tmpRVal2 = simNOT[Node[tmpList->Id].Val];
+
+                        continue;
+                    }
+
+                    tmpRVal2 = nonRobustSimOR[tmpRVal2][simNOT[Node[tmpList->Id].Val]];
+                    tmpRVal = nonRobustSimOR[tmpRVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = robustSimAND[tmpRVal][tmpRVal2];
+
+                break;
+            case XNOR:
+                for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+                {
+                    if(tmpList == Node[i].Fin)
+                    {
+                        tmpRVal = Node[tmpList->Id].Val;
+                        tmpRVal2 = simNOT[Node[tmpList->Id].Val];
+
+                        continue;
+                    }
+
+                    tmpRVal2 = nonRobustSimAND[tmpRVal2][simNOT[Node[tmpList->Id].Val]];
+                    tmpRVal = nonRobustSimAND[tmpRVal][Node[tmpList->Id].Val];
+                }
+
+                Node[i].Val = nonRobustSimOR[tmpRVal][tmpRVal2];
+
+                break;
+            case BUFF:
+                tmpList = Node[i].Fin;
+
+                Node[i].Val = Node[tmpList->Id].Val;
+
+                break;
+            case NOT:
+                tmpList = Node[i].Fin;
+
+                Node[i].Val = simNOT[Node[tmpList->Id].Val];
+
+                break;
+            case FROM:
+                tmpList = Node[i].Fin;
+
+                Node[i].Val = Node[tmpList->Id].Val;
+
+                break;
+            default:
+                //printf("Hit Default at i: %d ", i);
+                //printf("Type: %d\n", graph[i].typ);
+                break;
+        }
+
+        //set mark
+        if((Node[i].Val == R1) || (Node[i].Val == F0))
+        {
+            Node[i].Mark = 1;
+
+        } else {
+            Node[i].Mark = 0;
+
+        }
+    }
+}
+
+void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
 {
     LIST *tmpList = NULL;
     int tmpRVal = 0, tmpRVal2 = 0, i;

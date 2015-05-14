@@ -2,7 +2,7 @@
 #include "PatternSim.h"
 #include "StorePaths.h"
 
-void printResults(FILE **resFile, DdNode **RobustPathSet, DdNode **RobustRpathSet, DdNode **RobustFpathSet, DdNode **NonRobustPathSet, DdNode **ValidatedNonRobustPathSet, DdNode **GoodPaths, DdNode **SuspectSet);
+void printResults(FILE **resFile, DdNode **RobustPathSet, DdNode **NonRobustPathSet, DdNode **ValidatedNonRobustPathSet, DdNode **GoodPaths, DdNode **SuspectSet);
 int getZddCount(DdNode **PathSet);
 /***************************************************************************************************
 Command Instructions
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     GATE *Node = NULL;                                          //Structure to store the ckt given in .isc file
     int ZddCount = 0;
     int *pattern = NULL;
-    DdNode *RobustRpathSet = NULL, *RobustFpathSet = NULL, *RobustPathSet = NULL;
+    DdNode *RobustPathSet = NULL;
     DdNode *NonRobustPathSet = NULL;
     DdNode *ValidatedNonRobustPathSet = NULL;
     DdNode *SuspectSet = NULL;
@@ -79,8 +79,7 @@ int main(int argc, char **argv)
         applyPatternRobust(Node, pattern, Tgat);
 
         //extractPDFs(Node, &RobustPathSet, Npo, Tgat);
-        extractRFPDFs(Node, &RobustRpathSet, &RobustFpathSet, Npo, Tgat);
-        //extractFPDFs(Node, &RobustFpathSet, Npo, Tgat);
+        extractRFPDFs(Node, &RobustPathSet, Npo, Tgat);
 
         storeLSPaths(Node, Npo, &GoodPaths, &SuspectSet);
 
@@ -89,17 +88,10 @@ int main(int argc, char **argv)
         //printf("\n");
     }
 
-    if(GoodPaths != NULL)
-    {
-        ZddCount = Cudd_zddCount(manager, GoodPaths);
+    //RobustPathSet = Cudd_zddUnion(manager, RobustRpathSet, RobustFpathSet);
+    //Cudd_Ref(RobustPathSet);
 
-        printf("GoodPaths Zdd Count = %d\n", ZddCount);
-    }
-
-    //storeRnT(Node, &RobustPathSet, Tgat);
-
-    RobustPathSet = Cudd_zddUnion(manager, RobustRpathSet, RobustFpathSet);
-    Cudd_Ref(RobustPathSet);
+    storeRnT(Node, &RobustPathSet, Tgat);
 
     rewind(patFile);
 
@@ -112,13 +104,27 @@ int main(int argc, char **argv)
         //topologoical traversal to apply pattern
         applyPatternNonRobust(Node, pattern, Tgat);
 
-        //extractPDFs(Node, &NonRobustPathSet, Npo, Tgat);
+        extractRFPDFs(Node, &NonRobustPathSet, Npo, Tgat);
 
-        //storeNnT(Node, &NonRobustPathSet, Tgat);
-        //storePnT(Node, &RobustPathSet, Tgat);
+        for(i = 1; i <= Tgat; i++)
+        {
+            if(NonRobustPathSet != NULL)
+            {
+                storeNnT(Node, i, &NonRobustPathSet);
+            }
+
+            storePnT(Node, i, &RobustPathSet);
+
+            //setValidateMark(Node, i);
+
+            if(Node[i].Mark == 1)
+            {
+                //checkRobustlyTestedOffInput(Node, i, &RobustPathSet);
+            }
+        }
 
         //extractVNR(Node, &ValidatedNonRobustPathSet, Npo);
-        /*
+
         for(i = 0; i <= Tgat; i++)
         {
             if(Node[i].NnT != NULL)
@@ -126,6 +132,9 @@ int main(int argc, char **argv)
                 ZddCount = Cudd_zddCount(manager, Node[i].NnT);
 
                 printf("NnT Zdd Count at %d = %d\n", i, ZddCount);
+                Cudd_zddPrintDebug(manager, Node[i].NnT, 1, 3);
+
+                fflush(stdout);
             }
         }
 
@@ -154,7 +163,7 @@ int main(int argc, char **argv)
         //Cudd_zddDumpDot(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
 
         //fclose(dot);
-        */
+
         clearNodeNnT(Node, Tgat);
         clearNodePnT(Node, Tgat);
 
@@ -164,42 +173,7 @@ int main(int argc, char **argv)
 
         //printf("\n");
     }
-    /*
-    for(i = 0; i <= Tgat; i++)
-    {
-    	if(Node[i].RnT != NULL)
-    	{
-    		ZddCount = Cudd_zddCount(manager, Node[i].RnT);
-
-    		printf("RnT Zdd Count at %d = %d\n", i, ZddCount);
-
-            Cudd_zddPrintDebug(manager, Node[i].RnT, 0, 3);
-
-            //sprintf(fname, "../Project1_2/Dot/%d.dot", i);
-
-            //dot = fopen(fname, "w");
-
-            //Cudd_zddDumpDot(manager, 1, &(Node[i].RnT), NULL, NULL, dot);
-
-            //fclose(dot);
-
-    	}
-
-    	if(Node[i].NnT != NULL)
-    	{
-    		ZddCount = Cudd_zddCount(manager, Node[i].NnT);
-
-    		printf("NnT Zdd Count at %d = %d\n", i, ZddCount);
-    	}
-
-    	if(Node[i].PnT != NULL)
-    	{
-    		ZddCount = Cudd_zddCount(manager, Node[i].PnT);
-
-    		printf("PnT Zdd Count at %d = %d\n", i, ZddCount);
-    	}
-    }
-    */
+    /**
     ZddCount = getZddCount(&RobustPathSet);
     printf("Robust Path ZDD Count: %d\n", ZddCount);
     Cudd_zddPrintDebug(manager, RobustPathSet, 0, 3);
@@ -209,7 +183,7 @@ int main(int argc, char **argv)
     Cudd_zddDumpDot(manager, 1, &(RobustPathSet), NULL, NULL, dot);
 
     fclose(dot);
-
+*/
     //dot = fopen("./Dot/NonRobust.dot", "w");
 
     //(manager, 1, &(NonRobustPathSet), NULL, NULL, dot);
@@ -223,10 +197,8 @@ int main(int argc, char **argv)
         printf("GoodPaths Zdd Count = %d\n", ZddCount);
     }
 
-    printResults(&resFile, &RobustPathSet, &RobustRpathSet, &RobustFpathSet, &NonRobustPathSet, &ValidatedNonRobustPathSet, &GoodPaths, &SuspectSet);
+    printResults(&resFile, &RobustPathSet, &NonRobustPathSet, &ValidatedNonRobustPathSet, &GoodPaths, &SuspectSet);
 
-    clearPathZDDs(&RobustRpathSet);
-    clearPathZDDs(&RobustFpathSet);
     clearPathZDDs(&RobustPathSet);
 
     clearPathZDDs(&NonRobustPathSet);
@@ -264,7 +236,7 @@ int main(int argc, char **argv)
     return 0;
 }//end of main
 
-void printResults(FILE **resFile, DdNode **RobustPathSet, DdNode **RobustRpathSet, DdNode **RobustFpathSet, DdNode **NonRobustPathSet, DdNode **ValidatedNonRobustPathSet, DdNode **GoodPaths, DdNode **SuspectSet)
+void printResults(FILE **resFile, DdNode **RobustPathSet, DdNode **NonRobustPathSet, DdNode **ValidatedNonRobustPathSet, DdNode **GoodPaths, DdNode **SuspectSet)
 {
     int ZddCount = 0;
     DdNode *tmpNode = NULL;
@@ -272,14 +244,6 @@ void printResults(FILE **resFile, DdNode **RobustPathSet, DdNode **RobustRpathSe
     ZddCount = getZddCount(RobustPathSet);
     printf("Robust Path ZDD Count: %d\n", ZddCount);
     fprintf(*resFile, "Robust Path ZDD Count: %d\n", ZddCount);
-
-    ZddCount = getZddCount(RobustRpathSet);
-    printf("Robust R Path ZDD Count: %d\n", ZddCount);
-    fprintf(*resFile, "Robust R Path ZDD Count: %d\n", ZddCount);
-
-    ZddCount = getZddCount(RobustFpathSet);
-    printf("Robust F Path ZDD Count: %d\n", ZddCount);
-    fprintf(*resFile, "Robust F Path ZDD Count: %d\n", ZddCount);
 
     ZddCount = getZddCount(NonRobustPathSet);
     printf("Non-Robust Path ZDD Count: %d\n", ZddCount);

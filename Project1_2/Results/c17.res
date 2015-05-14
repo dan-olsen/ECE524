@@ -1,9 +1,7 @@
 Robust Path ZDD Count: 22
-Robust R Path ZDD Count: 11
-Robust F Path ZDD Count: 11
 Non-Robust Path ZDD Count: 0
 Validated Non-Robust Path ZDD Count: 0
 Good Path ZDD Count: 11
 Suspect Set ZDD Count: 0
 
-Execution Time: 0.009770 s
+Execution Time: 0.048663 s

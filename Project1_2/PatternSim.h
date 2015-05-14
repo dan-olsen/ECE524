@@ -19,6 +19,7 @@
 int *getNextPattern(FILE **Pat, int Npi);
 void applyPatternRobust(GATE *Node, int *pattern, int Tgat);
 void applyPatternNonRobust(GATE *Node, int *pattern, int Tgat);
+void applyPatternFunctional(GATE *Node, int *pattern, int Tgat);
 void printPattern(int *pattern, int Npi);
 
 #endif /* USER_H_ */
