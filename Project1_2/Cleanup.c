@@ -139,6 +139,9 @@ void clearNodePnt(GATE *Node, int Tgat)
             case BUFF:
                 if(Node[i].Pnt != NULL)
                 {
+                    printf("Pnt Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, Node[i].Pnt));
+                    Cudd_zddPrintDebug(manager, Node[i].Pnt, 1, 3);
+
                     Cudd_RecursiveDerefZdd(manager, Node[i].Pnt);
                     Node[i].Pnt = NULL;
                 }

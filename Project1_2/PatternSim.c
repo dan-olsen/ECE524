@@ -461,7 +461,7 @@ void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
                         continue;
                     }
 
-                    tmpRVal = nonRobustSimAND[tmpRVal][Node[tmpList->Id].TempVal];
+                    tmpRVal = functionalSimAND[tmpRVal][Node[tmpList->Id].TempVal];
                 }
 
                 Node[i].TempVal = tmpRVal;
@@ -477,7 +477,7 @@ void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
                         continue;
                     }
 
-                    tmpRVal = nonRobustSimAND[tmpRVal][Node[tmpList->Id].TempVal];
+                    tmpRVal = functionalSimAND[tmpRVal][Node[tmpList->Id].TempVal];
                 }
 
                 Node[i].TempVal = simNOT[tmpRVal];
@@ -493,7 +493,7 @@ void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
                         continue;
                     }
 
-                    tmpRVal = nonRobustSimOR[tmpRVal][Node[tmpList->Id].TempVal];
+                    tmpRVal = functionalSimOR[tmpRVal][Node[tmpList->Id].TempVal];
                 }
 
                 Node[i].TempVal = tmpRVal;
@@ -509,7 +509,7 @@ void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
                         continue;
                     }
 
-                    tmpRVal = nonRobustSimOR[tmpRVal][Node[tmpList->Id].TempVal];
+                    tmpRVal = functionalSimOR[tmpRVal][Node[tmpList->Id].TempVal];
                 }
 
                 Node[i].TempVal = simNOT[tmpRVal];
@@ -526,11 +526,11 @@ void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
                         continue;
                     }
 
-                    tmpRVal2 = nonRobustSimOR[tmpRVal2][simNOT[Node[tmpList->Id].TempVal]];
-                    tmpRVal = nonRobustSimOR[tmpRVal][Node[tmpList->Id].TempVal];
+                    tmpRVal2 = functionalSimOR[tmpRVal2][simNOT[Node[tmpList->Id].TempVal]];
+                    tmpRVal = functionalSimOR[tmpRVal][Node[tmpList->Id].TempVal];
                 }
 
-                Node[i].TempVal = robustSimAND[tmpRVal][tmpRVal2];
+                Node[i].TempVal = functionalSimAND[tmpRVal][tmpRVal2];
 
                 break;
             case XNOR:
@@ -544,11 +544,11 @@ void applyPatternFunctional(GATE *Node, int *pattern, int Tgat)
                         continue;
                     }
 
-                    tmpRVal2 = nonRobustSimAND[tmpRVal2][simNOT[Node[tmpList->Id].TempVal]];
-                    tmpRVal = nonRobustSimAND[tmpRVal][Node[tmpList->Id].TempVal];
+                    tmpRVal2 = functionalSimAND[tmpRVal2][simNOT[Node[tmpList->Id].TempVal]];
+                    tmpRVal = functionalSimAND[tmpRVal][Node[tmpList->Id].TempVal];
                 }
 
-                Node[i].TempVal = nonRobustSimOR[tmpRVal][tmpRVal2];
+                Node[i].TempVal = functionalSimOR[tmpRVal][tmpRVal2];
 
                 break;
             case BUFF:

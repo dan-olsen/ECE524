@@ -166,7 +166,7 @@ void InitiGat(GATE *Node, int Num)
     Node[Num].Pnt = NULL;
     Node[Num].Delay = 0;
     Node[Num].PathCount = NULL;
-    Node[Num].CosensitizationMark = 0;
+    Node[Num].CosensitizationMark = Node[Num].CheckValidateMark = Node[Num].ValidatedMark = 0;
     Node[Num].RobustVal = Node[Num].NonRobustVal =  Node[Num].FuncVal = 0;
 
     return;

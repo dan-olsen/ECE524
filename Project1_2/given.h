@@ -72,7 +72,7 @@ typedef struct GATE_type {
     DdNode *TempRpath, *TempFpath;          //ZDDS of Rising & Falling Path
     DdNode *TempPath;
     DdNode *Nnt, *RnT, *Snt, *Pnt;
-    int CosensitizationMark;
+    int CosensitizationMark, CheckValidateMark, ValidatedMark;
     PATH_COUNT *PathCount;
     int RobustVal, NonRobustVal, FuncVal;
 

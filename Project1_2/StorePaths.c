@@ -513,7 +513,7 @@ void storeRnT(GATE *Node, DdNode **PathSet, int Tgat)
     }
 }
 
-void storePnt(GATE *Node, int i, DdNode **PathSet, int Tgat)
+void storePnt(GATE *Node, int i, int Tgat)
 {
     LIST *tmpList = NULL;
     DdNode *tmpNode = NULL, *tmpNode2 = NULL;
@@ -629,27 +629,38 @@ void storePnt(GATE *Node, int i, DdNode **PathSet, int Tgat)
 
 }
 
-void extractVNR(GATE *Node, DdNode **PathSet, int Npo)
+void extractVNR(GATE *Node, DdNode **PathSet, int Npo, int Tgat)
 {
 	int i;
 	DdNode *tmpNode = NULL;
 
+    for(i = 1; i <= Tgat; i++)
+    {
+        if(Node[i].ValidatedMark == 1)
+        {
+            printf("Node at %d Validated\n", i);
+        }
+    }
+
     for(i = 1; i < Npo; i++)
     {
-    	if(*PathSet == NULL)
-		{
-            *PathSet = Node[primaryOutputs[i]].Pnt;
-			Cudd_Ref(*PathSet);
+        if(Node[primaryOutputs[i]].Nnt != NULL)
+        {
+            if(*PathSet == NULL)
+            {
+                *PathSet = Node[primaryOutputs[i]].Nnt;
+                Cudd_Ref(*PathSet);
 
-		} else {
-            tmpNode = Cudd_zddUnion(manager, *PathSet, Node[primaryOutputs[i]].Pnt);
-			Cudd_Ref(tmpNode);
-			Cudd_RecursiveDerefZdd(manager, *PathSet);
-            Cudd_RecursiveDerefZdd(manager, Node[primaryOutputs[i]].Pnt);
-            Node[primaryOutputs[i]].Pnt = NULL;
+            } else {
+                tmpNode = Cudd_zddUnion(manager, *PathSet, Node[primaryOutputs[i]].Nnt);
+                Cudd_Ref(tmpNode);
+                Cudd_RecursiveDerefZdd(manager, *PathSet);
+                Cudd_RecursiveDerefZdd(manager, Node[primaryOutputs[i]].Nnt);
+                Node[primaryOutputs[i]].Nnt = NULL;
 
-			*PathSet = tmpNode;
-		}
+                *PathSet = tmpNode;
+            }
+        }
     }
 }
 
@@ -740,15 +751,11 @@ DdNode *containment(DdManager *zdd, DdNode *P, DdNode *Q)
     if (P1 == NULL)
 		return NULL;
 
-    //cuddRef(P1);
-
     if (P0 == NULL)
     {
     	Cudd_RecursiveDerefZdd(zdd, P1);
 		return NULL;
     }
-
-    //cuddRef(P0);
 
     cuddZddGetCofactors2(zdd, Q, x, &Q1, &Q0);
 
@@ -817,7 +824,7 @@ DdNode *containment(DdManager *zdd, DdNode *P, DdNode *Q)
     cuddDeref(P);
     cuddDeref(Q);
 
-    cuddCacheInsert2(zdd, containment, P, Q, R);
+    cuddCacheInsert2(zdd, containment, P, Q, tmpNode);
 
     return R;
 }
@@ -833,34 +840,135 @@ void checkRobustlyTestedOffInput(GATE* Node, int i, DdNode **RobustPathSet)
     DdNode *tmpNode = NULL;
     DdNode *tmpNode2 = NULL;
 
+    if(checkFanIns(Node, i) == 1 && Node[i].ValidatedMark != 1)
+    {
+        for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
+        {
+            if(Node[tmpList->Id].RnT != NULL && Node[tmpList->Id].Pnt != NULL && Node[i].Nnt != NULL && checkIfOffInput(Node, i) == 1)
+            {
+                printf("Start Check\n");
+                printf("RnT Zdd Count at %d = %d\n", tmpList->Id, Cudd_zddCount(manager, Node[tmpList->Id].RnT));
+                Cudd_zddPrintDebug(manager, Node[tmpList->Id].RnT, 1, 3);
+
+                printf("Pnt Zdd Count at %d = %d\n", tmpList->Id, Cudd_zddCount(manager, Node[tmpList->Id].Pnt));
+                Cudd_zddPrintDebug(manager, Node[tmpList->Id].Pnt, 1, 3);
+
+                tmpNode = Cudd_zddUnateProduct(manager, Node[tmpList->Id].RnT, Node[tmpList->Id].Pnt);
+                Cudd_Ref(tmpNode);
+
+                printf("RobustPathSet Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, *RobustPathSet));
+                Cudd_zddPrintDebug(manager, *RobustPathSet, 1, 3);
+
+                printf("tmpNode Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, tmpNode));
+                Cudd_zddPrintDebug(manager, tmpNode, 1, 3);
+
+                tmpNode2 = Cudd_zddIntersect(manager, *RobustPathSet, tmpNode);
+                Cudd_Ref(tmpNode2);
+                Cudd_RecursiveDerefZdd(manager, tmpNode);
+
+                printf("containment tmp2 Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, tmpNode2));
+                Cudd_zddPrintDebug(manager, tmpNode2, 1, 3);
+
+                printf("containment Pnt Zdd Count at %d = %d\n", tmpList->Id, Cudd_zddCount(manager, Node[tmpList->Id].Pnt));
+                Cudd_zddPrintDebug(manager, Node[tmpList->Id].Pnt, 1, 3);
+
+                tmpNode = containment(manager, tmpNode2, Node[tmpList->Id].Pnt);
+                Cudd_Ref(tmpNode);
+                Cudd_RecursiveDerefZdd(manager, tmpNode2);
+
+                printf("containment Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, tmpNode));
+                Cudd_zddPrintDebug(manager, tmpNode, 1, 3);
+
+                printf("Nnt Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, Node[i].Nnt));
+                Cudd_zddPrintDebug(manager, Node[i].Nnt, 1, 3);
+
+                tmpNode2 = Cudd_zddIntersect(manager, Node[i].Nnt, tmpNode);
+                Cudd_Ref(tmpNode2);
+                Cudd_RecursiveDerefZdd(manager, tmpNode);
+                Cudd_RecursiveDerefZdd(manager, Node[i].Nnt);
+
+                printf("tmpNode2 Zdd Count at %d = %d\n", i, Cudd_zddCount(manager, tmpNode2));
+                Cudd_zddPrintDebug(manager, tmpNode2, 1, 3);
+
+                Node[i].Nnt = tmpNode2;
+            }
+        }
+
+        if(Node[i].Nnt != NULL)
+        {
+            Node[i].ValidatedMark = 1;
+        }
+    }
+}
+
+int checkFanIns(GATE *Node, int i)
+{
+    LIST *tmpList = NULL;
+    int tran = -1;
+
     for(tmpList = Node[i].Fin; tmpList != NULL; tmpList = tmpList->Next)
     {
-        if(Node[tmpList->Id].RnT != NULL && Node[tmpList->Id].Pnt != NULL && Node[i].Nnt != NULL)
+        if(tran == -1)
+            tran = Node[tmpList->Id].NonRobustVal;
+
+        if(Node[tmpList->Id].NonRobustVal != tran)
         {
-            tmpNode = Cudd_zddProduct(manager, Node[tmpList->Id].RnT, Node[tmpList->Id].Pnt);
-            Cudd_Ref(tmpNode);
-
-            tmpNode2 = Cudd_zddIntersect(manager, *RobustPathSet, tmpNode);
-            Cudd_Ref(tmpNode2);
-            Cudd_RecursiveDerefZdd(manager, tmpNode);
-
-            tmpNode = containment(manager, tmpNode2, Node[tmpList->Id].Pnt);
-            Cudd_Ref(tmpNode);
-            Cudd_RecursiveDerefZdd(manager, tmpNode2);
-
-            tmpNode2 = Cudd_zddIntersect(manager, Node[i].Nnt, tmpNode);
-            Cudd_Ref(tmpNode2);
-            Cudd_RecursiveDerefZdd(manager, tmpNode);
-            Cudd_RecursiveDerefZdd(manager, Node[i].Nnt);
-
-            Node[i].Nnt = tmpNode2;
+            return 1;
         }
     }
 
+    return 0;
+}
+
+int checkIfOffInput(GATE* Node, int i)
+{
+    switch(Node[i].Type) {
+        case INPT:
+            return 0;
+
+            break;
+        case AND:
+        case NAND:
+            if(Node[i].NonRobustVal == R1)
+                return 1;
+            else
+                return 0;
+
+            break;
+        case OR:
+        case NOR:
+            if(Node[i].NonRobustVal == F0)
+                return 1;
+            else
+                return 0;
+
+            break;
+        case BUFF:
+            return 0;
+
+            break;
+        default:
+            return 0;
+
+            //printf("Hit Default at i: %d ", i);
+            //printf("Type: %d\n", graph[i].typ);
+            break;
+    }
+
+    return 0;
+}
+
+void setValidatedMark(GATE* Node, int i)
+{
     if(Node[i].Nnt != NULL)
     {
-        //Node[i].Pnt =
+        Node[i].ValidatedMark = 1;
     }
+}
+
+void setCheckValidateMark(GATE* Node, int i)
+{
+
 }
 
 void setCosensitizationMark(GATE* Node, int i)
